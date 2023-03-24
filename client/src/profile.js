@@ -5,3 +5,5 @@ class Profile {
         this.surname = surname;
     }
 }
+
+export default Profile;

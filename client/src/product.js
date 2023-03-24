@@ -5,3 +5,5 @@ class Product {
         this.brand = brand;
     }
 }
+
+export default Product;

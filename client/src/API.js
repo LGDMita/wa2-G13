@@ -1,5 +1,5 @@
-import { Product } from "./product";
-import { Profile } from "./profile";
+import Product from "./product";
+import Profile from "./profile";
 
 const SERVER_URL = 'http://localhost:8080';
 
@@ -12,7 +12,7 @@ const getProducts = async () => {
         });
     }
     else
-        throw new Error(rows.msg);
+        throw new Error(rows.detail);
 };
 
 const getProduct = async (ean) => {
@@ -22,7 +22,7 @@ const getProduct = async (ean) => {
         return new Product(row.ean, row.name, row.brand)
     }
     else {
-        throw new Error(`${response.status} - ${row.msg}`);
+        throw new Error(`${response.status} - ${row.detail}`);
     }
 };
 
@@ -33,7 +33,7 @@ const getUserInfo = async (email) => {
         return new Profile(row.email, row.name, row.surname)
     }
     else {
-        throw new Error(`${response.status} - ${row.msg}`);
+        throw new Error(`${response.status} - ${row.detail}`);
     }
 };
 
@@ -48,22 +48,22 @@ const addProfile = async (profile) => {
     });
     if (!response.ok) {
         const row = await response.json();
-        throw new Error(`${response.status} - ${row.msg}`);
+        throw new Error(`${response.status} - ${row.detail}`);
     }
 }
 
-const updateProfile = async (email) => {
-    const response = await fetch(`${SERVER_URL}/API/profiles/`, {
+const updateProfile = async (email, profile) => {
+    const response = await fetch(`${SERVER_URL}/API/profiles/${email}`, {
         method: 'PUT',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ "email": email })
+        body: JSON.stringify({ "profile": profile })
     });
     if (!response.ok) {
         const row = await response.json();
-        throw new Error(`${response.status} - ${row.msg}`);
+        throw new Error(`${response.status} - ${row.detail}`);
     }
 }
 
