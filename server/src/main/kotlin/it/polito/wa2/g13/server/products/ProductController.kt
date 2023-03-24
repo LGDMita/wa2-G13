@@ -14,7 +14,7 @@ class ProductController(
     }
 
     @GetMapping("/products/{ean}")
-    fun getProduct(@PathVariable ean: String): ProductDTO?{
-        return productService.getProduct(ean)
+    fun getProduct(@PathVariable ean: String): ProductDTO? {
+        return productService.getProduct(ean) ?: throw ProductNotFoundException()
     }
 }
