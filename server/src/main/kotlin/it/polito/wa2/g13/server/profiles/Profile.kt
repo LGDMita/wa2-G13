@@ -11,4 +11,10 @@ class Profile {
     var email= ""
     var name= ""
     var surname= ""
+
+    constructor(email: String, name: String, surname: String) {
+        this.email = email
+        this.name = name
+        this.surname = surname
+    }
 }

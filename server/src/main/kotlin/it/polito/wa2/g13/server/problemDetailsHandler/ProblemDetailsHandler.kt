@@ -2,6 +2,7 @@ package it.polito.wa2.g13.server.problemDetailsHandler
 
 import it.polito.wa2.g13.server.products.DuplicateProductException
 import it.polito.wa2.g13.server.products.ProductNotFoundException
+import it.polito.wa2.g13.server.profiles.DuplicateProfileException
 import it.polito.wa2.g13.server.profiles.ProfileNotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail
@@ -22,4 +23,7 @@ class ProblemDetailsHandler : ResponseEntityExceptionHandler() {
     fun handleProfileNotFound(e: ProfileNotFoundException) = ProblemDetail
         .forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!! )
 
+    @ExceptionHandler(DuplicateProfileException::class)
+    fun handleDuplicateProfile(e: DuplicateProfileException) = ProblemDetail
+        .forStatusAndDetail(HttpStatus.CONFLICT, e.message!!)
 }
