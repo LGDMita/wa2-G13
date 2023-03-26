@@ -14,14 +14,14 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 class ProblemDetailsHandler : ResponseEntityExceptionHandler() {
     @ExceptionHandler(ProductNotFoundException::class)
     fun handleProductNotFound(e: ProductNotFoundException) = ProblemDetail
-        .forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!! )
+        .forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
     @ExceptionHandler(DuplicateProductException::class)
     fun handleDuplicateProduct(e: DuplicateProductException) = ProblemDetail
         .forStatusAndDetail(HttpStatus.CONFLICT, e.message!!)
 
     @ExceptionHandler(ProfileNotFoundException::class)
     fun handleProfileNotFound(e: ProfileNotFoundException) = ProblemDetail
-        .forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!! )
+        .forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
 
     @ExceptionHandler(DuplicateProfileException::class)
     fun handleDuplicateProfile(e: DuplicateProfileException) = ProblemDetail
