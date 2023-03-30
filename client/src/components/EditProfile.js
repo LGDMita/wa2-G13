@@ -5,20 +5,21 @@ import React, {useState} from "react";
 import Profile from "../profile"
 
 function EditProfile() {
-    const [email, setEmail] = useState('');
+    const [oldEmail, setOldEmail] = useState('');
+    const [newEmail, setNewEmail] = useState('');
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
 
-    function editProfile() {
+    async function editProfile() {
         try {
-            const profile = API.getUserInfo(email);
+            /* const profile = API.getUserInfo(email);
             if (!profile) {
                 alert("User with this email doesn't exist!")
-            } else {
-                const profile = new Profile(email, name, surname);
-                API.updateProfile(email, profile)
-                alert("User successfully added!")
-            }
+            } else {*/
+            const profile = new Profile(newEmail, name, surname);
+            await API.updateProfile(oldEmail, profile)
+            alert("User successfully modified!")
+            //}
         } catch (error) {
             alert(error);
         }
@@ -28,9 +29,15 @@ function EditProfile() {
         <div className="edit-profile">
             <h3>Edit profile</h3>
             <Form onSubmit={e => e.preventDefault()}>
+
                 <Form.Group className="mb-3" controlId="formBasicEmail">
-                    <Form.Label>Email address</Form.Label>
-                    <Form.Control type="email" placeholder="Email" onChange={e => setEmail(e.target.value)}/>
+                    <Form.Label>Old email address</Form.Label>
+                    <Form.Control type="email" placeholder="Email" onChange={e => setOldEmail(e.target.value)}/>
+                </Form.Group>
+
+                <Form.Group className="mb-3" controlId="formBasicEmail">
+                    <Form.Label>New email address (confirm it, if you don't want to change it)</Form.Label>
+                    <Form.Control type="email" placeholder="Email" onChange={e => setNewEmail(e.target.value)}/>
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formBasicName">
@@ -44,7 +51,7 @@ function EditProfile() {
                 </Form.Group>
 
                 <Button variant="primary" type="submit" onClick={() => editProfile()}>
-                    Add profile
+                    Edit profile
                 </Button>
             </Form>
         </div>
