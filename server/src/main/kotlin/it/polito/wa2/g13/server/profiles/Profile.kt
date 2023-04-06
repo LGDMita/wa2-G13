@@ -6,15 +6,9 @@ import jakarta.persistence.Table
 
 @Entity
 @Table(name= "profiles")
-class Profile {
-    @Id
-    var email= ""
-    var name= ""
-    var surname= ""
+class Profile(@Id var email: String, var name: String, var surname: String) {
 
-    constructor(email: String, name: String, surname: String) {
-        this.email = email
-        this.name = name
-        this.surname = surname
+    override fun toString(): String {
+        return "email=${email} name=${name} surname=${surname}"
     }
 }

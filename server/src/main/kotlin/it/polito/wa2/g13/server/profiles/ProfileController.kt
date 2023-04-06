@@ -7,21 +7,23 @@ class ProfileController(
     private val profileService : ProfileService
 ) : ProfileService{
 
-    @CrossOrigin(origins = ["http://localhost:3000"])
-    @GetMapping("/profiles/{email}")
+    @GetMapping("/API/profiles/{email}")
     override fun getProfile(@PathVariable email: String) : ProfileDTO?{
+        println("profile - getProfile email=${email}")
         return profileService.getProfile(email) ?: throw ProfileNotFoundException()
     }
-    @CrossOrigin(origins = ["http://localhost:3000"])
-    @PostMapping("/profiles/")
+
+    @PostMapping("/API/profiles")
     override fun setProfile(@RequestBody profile: Profile) : Boolean{
+        println("profile - setProfile ${profile.toString()}")
         return if(profileService.setProfile(profile)) {
             true
         } else throw DuplicateProfileException()
     }
-    @CrossOrigin(origins = ["http://localhost:3000"])
-    @PutMapping("/profiles/{email}")
+
+    @PutMapping("/API/profiles/{email}")
     override fun modifyProfile(@PathVariable email: String, @RequestBody profile: Profile) : Boolean{
+        println("profile - modifyProfile email=${email}")
         return if(profileService.modifyProfile(email, profile)){
             true
         }else throw ProfileNotFoundException()

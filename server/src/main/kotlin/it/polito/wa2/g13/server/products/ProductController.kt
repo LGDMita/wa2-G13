@@ -1,6 +1,5 @@
 package it.polito.wa2.g13.server.products
 
-import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController
@@ -9,15 +8,15 @@ import org.springframework.web.bind.annotation.RestController
 class ProductController(
     private val productService: ProductService
 ){
-    @CrossOrigin(origins = ["http://localhost:3000"])
-    @GetMapping("/products/")
+    @GetMapping("/API/products/")
     fun getAll(): List<ProductDTO>{
+        println("product - getAll")
         return productService.getAll()
     }
 
-    @CrossOrigin(origins = ["http://localhost:3000"])
-    @GetMapping("/products/{ean}")
+    @GetMapping("/API/products/{ean}")
     fun getProduct(@PathVariable ean: String): ProductDTO? {
+        println("product - getProduct ean=${ean}")
         return productService.getProduct(ean) ?: throw ProductNotFoundException()
     }
 }
