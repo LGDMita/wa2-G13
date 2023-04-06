@@ -1,20 +1,16 @@
 import API from '../API';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import Table from 'react-bootstrap/Table';
 
 
 function ProductTable() {
-    let products;
+
+    const [products, setProducts] = useState([]);
+    async function load(){
+        setProducts(await API.getProducts());
+    }
     useEffect(() => {
-        const loadList = () => {
-            try {
-                // eslint-disable-next-line react-hooks/exhaustive-deps
-                products = [];//API.getProducts();
-            } catch (error) {
-                alert(error);
-            }
-        };
-        loadList();
+        void load();
     }, []);
 
     return (
@@ -29,16 +25,16 @@ function ProductTable() {
                 </tr>
                 </thead>
                 <tbody>
-                {/*
+                {
                     products.map(p => {
                         return (
-                            <tr>
+                            <tr key={p.ean}>
                                 <td>{p.ean}</td>
                                 <td>{p.name}</td>
                                 <td>{p.brand}</td>
                             </tr>
                         )
-                    })*/
+                    })
                 }
                 </tbody>
             </Table>

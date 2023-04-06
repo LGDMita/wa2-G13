@@ -5,10 +5,10 @@ import React, {useState} from "react";
 function SingleProduct() {
     const [ean, setEan] = useState('');
 
-    function getProduct() {
+    async function getProduct() {
         try {
-            const product = API.getProduct(ean);
-            if (!product) {
+            const product =  await API.getProduct(ean);
+            if (product.ean!== undefined) {
                 alert(`Product with ean ${ean} found!\nName: ${product.name}\nBrand: ${product.brand}`);
             } else {
                 alert(`Product with ean ${ean} NOT found!`)

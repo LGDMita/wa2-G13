@@ -5,13 +5,13 @@ import React, {useState} from "react";
 function SingleProfile() {
     const [email, setEmail] = useState('');
 
-    function getProfile() {
+    async function getProfile() {
         try {
-            const profile = API.getUserInfo(email);
-            if (!profile) {
+            const profile = await API.getUserInfo(email);
+            if (profile.email!== undefined) {
                 alert(`User with email ${email} found!\nName: ${profile.name}\nSurname: ${profile.surname}`);
             } else {
-                alert(`Product with ean ${email} NOT found!`)
+                alert(`User with email ${email} NOT found!`)
             }
         } catch (error) {
             alert(error);

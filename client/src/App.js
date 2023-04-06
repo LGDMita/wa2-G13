@@ -6,7 +6,7 @@ import {ProductTable} from "./components/ProductTable";
 import {SingleProduct} from "./components/SingleProduct";
 import {SingleProfile} from "./components/SingleProfile";
 import {AddProfile} from "./components/AddProfile";
-import {EditProfile} from "./components/Edit profile";
+import {EditProfile} from "./components/EditProfile";
 
 function App() {
     return (

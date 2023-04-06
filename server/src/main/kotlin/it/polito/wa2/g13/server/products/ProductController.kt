@@ -10,13 +10,13 @@ class ProductController(
 ){
     @GetMapping("/API/products/")
     fun getAll(): List<ProductDTO>{
-        println("getAll");
+        println("product - getAll")
         return productService.getAll()
     }
 
     @GetMapping("/API/products/{ean}")
     fun getProduct(@PathVariable ean: String): ProductDTO? {
-        println("getProduct - ean=${ean}");
+        println("product - getProduct ean=${ean}")
         return productService.getProduct(ean) ?: throw ProductNotFoundException()
     }
 }

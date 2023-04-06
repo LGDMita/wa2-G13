@@ -9,16 +9,16 @@ function AddProfile() {
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
 
-    function addProfile() {
+    async function addProfile() {
         try {
-            const profile = API.getUserInfo(email);
-            if (!profile) {
+            //const profile = await API.getUserInfo(email);
+            /*if (!profile) {
                 alert("User with this email already exist!")
-            } else {
-                const profile = new Profile(email, name, surname);
-                API.addProfile(profile);
-                alert("User successfully added!")
-            }
+            } else {*/
+            const profile = new Profile(email, name, surname);
+            await API.addProfile(profile);
+            alert("User successfully added!")
+            //}
         } catch (error) {
             alert(error);
         }

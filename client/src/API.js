@@ -4,8 +4,8 @@ import Profile from "./profile";
 const SERVER_URL = 'http://localhost:8080';
 
 const getProducts = async () => {
-    const response = await fetch(`${SERVER_URL}/API/products/`);
-    const rows = await response.json();
+    const response = await fetch(`${SERVER_URL}/API/products/`)
+    const rows = await response.json()
     if (response.ok) {
         return rows.map(row => {
             return new Product(row.ean, row.name, row.brand)
@@ -38,13 +38,13 @@ const getUserInfo = async (email) => {
 };
 
 const addProfile = async (profile) => {
-    const response = await fetch(`${SERVER_URL}/API/profiles/`, {
+    const response = await fetch(`${SERVER_URL}/API/profiles`, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ "profile": profile })
+        body: JSON.stringify({'email': profile.email, 'name': profile.name, 'surname': profile.surname})
     });
     if (!response.ok) {
         const row = await response.json();
@@ -59,7 +59,7 @@ const updateProfile = async (email, profile) => {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ "profile": profile })
+        body: JSON.stringify({'email': profile.email, 'name': profile.name, 'surname': profile.surname})
     });
     if (!response.ok) {
         const row = await response.json();

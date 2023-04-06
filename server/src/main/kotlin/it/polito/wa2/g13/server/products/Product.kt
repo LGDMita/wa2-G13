@@ -11,4 +11,8 @@ class Product {
     var ean: String = ""
     var name: String = ""
     var brand: String = ""
+
+    override fun toString(): String {
+        return "ean=${ean} name=${name} brand=${brand}"
+    }
 }
