@@ -9,22 +9,22 @@ class ProfileController(
 
     @GetMapping("/API/profiles/{email}")
     override fun getProfile(@PathVariable email: String) : ProfileDTO?{
-        println("profile - getProfile email=${email}")
+        //println("profile - getProfile email=${email}")
         return profileService.getProfile(email) ?: throw ProfileNotFoundException()
     }
 
     @PostMapping("/API/profiles")
-    override fun setProfile(@RequestBody profile: Profile) : Boolean{
-        println("profile - setProfile ${profile.toString()}")
-        return if(profileService.setProfile(profile)) {
+    override fun setProfile(@RequestBody profileDTO: ProfileDTO) : Boolean{
+        //println("profile - setProfile ${profile.toString()}")
+        return if(profileService.setProfile(profileDTO)) {
             true
         } else throw DuplicateProfileException()
     }
 
     @PutMapping("/API/profiles/{email}")
-    override fun modifyProfile(@PathVariable email: String, @RequestBody profile: Profile) : Boolean{
-        println("profile - modifyProfile email=${email}")
-        return if(profileService.modifyProfile(email, profile)){
+    override fun modifyProfile(@PathVariable email: String, @RequestBody profileDTO: ProfileDTO) : Boolean{
+        //println("profile - modifyProfile email=${email}")
+        return if(profileService.modifyProfile(email, profileDTO)){
             true
         }else throw ProfileNotFoundException()
     }

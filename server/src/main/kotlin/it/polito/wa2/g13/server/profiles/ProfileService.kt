@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service
 interface ProfileService {
     fun getProfile(email: String): ProfileDTO?
 
-    fun setProfile(profile: Profile): Boolean
+    fun setProfile(profileDTO: ProfileDTO): Boolean
 
-    fun modifyProfile(email: String, profile: Profile): Boolean
+    fun modifyProfile(email: String, profileDTO: ProfileDTO): Boolean
 }

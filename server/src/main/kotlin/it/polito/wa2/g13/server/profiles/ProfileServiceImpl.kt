@@ -11,19 +11,19 @@ class ProfileServiceImpl(
         return profileRepository.findByIdOrNull(email)?.toDTO()
     }
 
-    override fun setProfile(profile: Profile): Boolean{
-        return if(!profileRepository.existsById(profile.email)){
-            profileRepository.save(profile)
+    override fun setProfile(profileDTO: ProfileDTO): Boolean{
+        return if(!profileRepository.existsById(profileDTO.toProfile().email)){
+            profileRepository.save(profileDTO.toProfile())
             true
         }else{
             false
         }
     }
 
-    override fun modifyProfile(email: String, profile: Profile): Boolean {
+    override fun modifyProfile(email: String, profileDTO: ProfileDTO): Boolean {
         return if(profileRepository.existsById(email)){
             profileRepository.deleteById(email)
-            profileRepository.save(profile)
+            profileRepository.save(profileDTO.toProfile())
             true
         }else{
             false

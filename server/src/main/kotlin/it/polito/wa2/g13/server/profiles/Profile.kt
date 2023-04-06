@@ -8,9 +8,11 @@ import jakarta.persistence.Table
 @Table(name= "profiles")
 class Profile(@Id var email: String, var name: String, var surname: String) {
 
-    override fun toString(): String {
+    /*override fun toString(): String {
         return "email=${email} name=${name} surname=${surname}"
-    }
+    }*/
+}
 
-
+fun ProfileDTO.toProfile(): Profile {
+    return Profile(email, name, surname)
 }

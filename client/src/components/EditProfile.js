@@ -12,14 +12,14 @@ function EditProfile() {
 
     async function editProfile() {
         try {
-            const profile = API.getUserInfo(oldEmail);
+            /*const profile = API.getUserInfo(oldEmail);
             if (!profile) {
                 alert("User with this email doesn't exist!")
-            } else {
+            } else {*/
             const profile = new Profile(newEmail, name, surname);
             await API.updateProfile(oldEmail, profile)
             alert("User successfully modified!")
-            }
+            //}
         } catch (error) {
             alert(error);
         }
@@ -36,7 +36,7 @@ function EditProfile() {
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formBasicEmail">
-                    <Form.Label>New email address (confirm it, if you don't want to change it)</Form.Label>
+                    <Form.Label>New email address (confirm the old one, if you don't want to change it)</Form.Label>
                     <Form.Control type="email" placeholder="Email" onChange={e => setNewEmail(e.target.value)}/>
                 </Form.Group>
 
