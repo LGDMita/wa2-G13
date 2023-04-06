@@ -17,4 +17,6 @@ class Profile {
         this.name = name
         this.surname = surname
     }
+
+
 }

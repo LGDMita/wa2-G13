@@ -11,21 +11,21 @@ class ProfileServiceImpl(
         return profileRepository.findByIdOrNull(email)?.toDTO()
     }
 
-    override fun setProfile(email: String, name: String, surname: String): Boolean{
-        return if(!profileRepository.existsById(email)){
+    override fun setProfile(email: String, name: String, surname: String): Boolean {
+        return if (!profileRepository.existsById(email)) {
             profileRepository.save(Profile(email, name, surname))
             true
-        }else{
+        } else {
             false
         }
     }
 
-    override fun modifyProfile(email: String,name: String, surname: String): Boolean {
-        return if(profileRepository.existsById(email)){
+    override fun modifyProfile(email: String, name: String, surname: String): Boolean {
+        return if (profileRepository.existsById(email)) {
             profileRepository.deleteById(email) // maybe not necessary, we have to control if the replacement in the DB is automatic or not
             profileRepository.save(Profile(email, name, surname))
             true
-        }else{
+        } else {
             false
         }
     }

@@ -9,23 +9,36 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class ProfileController(
-    private val profileService : ProfileService
-) : ProfileService{
+    private val profileService: ProfileService
+) : ProfileService {
 
-    @GetMapping("/profiles/{email}")
-    override fun getProfile(@PathVariable email: String) : ProfileDTO?{
+    @GetMapping("/API/profiles/{email}")
+    override fun getProfile(@PathVariable email: String): ProfileDTO? {
+        println("getProfile - email=${email}");
         return profileService.getProfile(email) ?: throw ProfileNotFoundException()
     }
-    @PostMapping("/profiles/")
-    override fun setProfile(@RequestBody email: String, @RequestBody name: String, @RequestBody surname: String) : Boolean{
-        return if(profileService.setProfile(email, name, surname)) {
+
+    @PostMapping("/API/profiles/")
+    override fun setProfile(
+        @RequestBody email: String,
+        @RequestBody name: String,
+        @RequestBody surname: String
+    ): Boolean {
+        println("setProfile - email=${email} name=${name} surname=${surname}");
+        return if (profileService.setProfile(email, name, surname)) {
             true
         } else throw DuplicateProfileException()
     }
-    @PutMapping("/profiles/{email}")
-    override fun modifyProfile(@PathVariable email: String, @RequestBody name: String, @RequestBody surname: String) : Boolean{
-        return if(profileService.modifyProfile(email, name, surname)){
+
+    @PutMapping("/API/profiles/{email}")
+    override fun modifyProfile(
+        @PathVariable email: String,
+        @RequestBody name: String,
+        @RequestBody surname: String
+    ): Boolean {
+        println("modifyProfile - email=${email} name=${name} surname=${surname}");
+        return if (profileService.modifyProfile(email, name, surname)) {
             true
-        }else throw ProfileNotFoundException()
+        } else throw ProfileNotFoundException()
     }
 }
