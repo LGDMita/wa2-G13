@@ -1,5 +1,7 @@
 package it.polito.wa2.g13.server.profiles
 
+import jakarta.validation.Valid
+import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -14,18 +16,18 @@ class ProfileController(
     }
 
     @PostMapping("/API/profiles")
-    override fun setProfile(@RequestBody profileDTO: ProfileDTO) : Boolean{
+    override fun setProfile(@RequestBody @Valid profileDTO: ProfileDTO, br: BindingResult) : Boolean{
         //println("profile - setProfile ${profile.toString()}")
-        return if(profileService.setProfile(profileDTO)) {
-            true
-        } else throw DuplicateProfileException()
+        return if(!br.hasErrors()){
+            if(profileService.setProfile(profileDTO, br)) true else throw DuplicateProfileException()
+        }else throw InvalidArgumentsException()
     }
 
     @PutMapping("/API/profiles/{email}")
-    override fun modifyProfile(@PathVariable email: String, @RequestBody profileDTO: ProfileDTO) : Boolean{
+    override fun modifyProfile(@PathVariable email: String, @RequestBody @Valid profileDTO: ProfileDTO, br: BindingResult) : Boolean{
         //println("profile - modifyProfile email=${email}")
-        return if(profileService.modifyProfile(email, profileDTO)){
-            true
-        }else throw ProfileNotFoundException()
+        return if(!br.hasErrors()) {
+            if(profileService.modifyProfile(email, profileDTO, br)) true else throw ProfileNotFoundException()
+        }else throw InvalidArgumentsException()
     }
 }

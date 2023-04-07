@@ -4,6 +4,7 @@ import it.polito.wa2.g13.server.products.DuplicateProductException
 import it.polito.wa2.g13.server.products.ProductNotFoundException
 import it.polito.wa2.g13.server.profiles.DuplicateProfileException
 import it.polito.wa2.g13.server.profiles.ProfileNotFoundException
+import it.polito.wa2.g13.server.profiles.InvalidArgumentsException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -26,4 +27,8 @@ class ProblemDetailsHandler : ResponseEntityExceptionHandler() {
     @ExceptionHandler(DuplicateProfileException::class)
     fun handleDuplicateProfile(e: DuplicateProfileException) = ProblemDetail
         .forStatusAndDetail(HttpStatus.CONFLICT, e.message!!)
+
+    @ExceptionHandler(InvalidArgumentsException::class)
+    fun handleDuplicateProfile(e: InvalidArgumentsException) = ProblemDetail
+        .forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
 }
