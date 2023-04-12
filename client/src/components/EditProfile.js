@@ -5,21 +5,16 @@ import React, {useState} from "react";
 import Profile from "../profile"
 
 function EditProfile() {
-    const [oldEmail, setOldEmail] = useState('');
-    const [newEmail, setNewEmail] = useState('');
-    const [name, setName] = useState('');
-    const [surname, setSurname] = useState('');
+    const [oldEmail, setOldEmail] = useState(null);
+    const [newEmail, setNewEmail] = useState(null);
+    const [name, setName] = useState(null);
+    const [surname, setSurname] = useState(null);
 
     async function editProfile() {
         try {
-            /*const profile = API.getUserInfo(oldEmail);
-            if (!profile) {
-                alert("User with this email doesn't exist!")
-            } else {*/
             const profile = new Profile(newEmail, name, surname);
             await API.updateProfile(oldEmail, profile)
             alert("User successfully modified!")
-            //}
         } catch (error) {
             alert(error);
         }

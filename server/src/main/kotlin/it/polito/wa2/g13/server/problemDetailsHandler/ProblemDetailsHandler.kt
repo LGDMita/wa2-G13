@@ -3,8 +3,9 @@ package it.polito.wa2.g13.server.problemDetailsHandler
 import it.polito.wa2.g13.server.products.DuplicateProductException
 import it.polito.wa2.g13.server.products.ProductNotFoundException
 import it.polito.wa2.g13.server.profiles.DuplicateProfileException
-import it.polito.wa2.g13.server.profiles.ProfileNotFoundException
 import it.polito.wa2.g13.server.profiles.InvalidArgumentsException
+import it.polito.wa2.g13.server.profiles.ProfileNotFoundException
+import jakarta.validation.ConstraintViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -16,6 +17,7 @@ class ProblemDetailsHandler : ResponseEntityExceptionHandler() {
     @ExceptionHandler(ProductNotFoundException::class)
     fun handleProductNotFound(e: ProductNotFoundException) = ProblemDetail
         .forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
+
     @ExceptionHandler(DuplicateProductException::class)
     fun handleDuplicateProduct(e: DuplicateProductException) = ProblemDetail
         .forStatusAndDetail(HttpStatus.CONFLICT, e.message!!)
@@ -30,5 +32,9 @@ class ProblemDetailsHandler : ResponseEntityExceptionHandler() {
 
     @ExceptionHandler(InvalidArgumentsException::class)
     fun handleDuplicateProfile(e: InvalidArgumentsException) = ProblemDetail
+        .forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
+
+    @ExceptionHandler(ConstraintViolationException::class)
+    fun handleInvalidConstrain(e: ConstraintViolationException) = ProblemDetail
         .forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
 }

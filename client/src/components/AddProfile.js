@@ -5,20 +5,15 @@ import React, {useState} from "react";
 import Profile from "../profile"
 
 function AddProfile() {
-    const [email, setEmail] = useState('');
-    const [name, setName] = useState('');
-    const [surname, setSurname] = useState('');
+    const [email, setEmail] = useState(null);
+    const [name, setName] = useState(null);
+    const [surname, setSurname] = useState(null);
 
     async function addProfile() {
         try {
-            //const profile = await API.getUserInfo(email);
-            /*if (!profile) {
-                alert("User with this email already exist!")
-            } else {*/
             const profile = new Profile(email, name, surname);
             await API.addProfile(profile);
             alert("User successfully added!")
-            //}
         } catch (error) {
             alert(error);
         }

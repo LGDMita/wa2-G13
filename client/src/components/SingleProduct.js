@@ -3,15 +3,18 @@ import {Button, InputGroup, Form} from "react-bootstrap";
 import React, {useState} from "react";
 
 function SingleProduct() {
-    const [ean, setEan] = useState('');
+    const [ean, setEan] = useState(null);
 
     async function getProduct() {
         try {
-            const product =  await API.getProduct(ean);
-            if (product.ean!== undefined) {
-                alert(`Product with ean ${ean} found!\nName: ${product.name}\nBrand: ${product.brand}`);
-            } else {
-                alert(`Product with ean ${ean} NOT found!`)
+            if (ean !== null && ean !== "") {
+                const product = await API.getProduct(ean);
+                if (product.ean !== undefined) {
+                    alert(`Product with ean ${ean} found!\nName: ${product.name}\nBrand: ${product.brand}`);
+                }
+            }
+            else {
+                alert(`Please, insert EAN before continue!`);
             }
         } catch (error) {
             alert(error);
