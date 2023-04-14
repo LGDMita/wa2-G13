@@ -17,15 +17,6 @@ class ProfileController(
         return profileService.getProfile(email) ?: throw ProfileNotFoundException()
     }
 
-    @PostMapping("/API/profiles")
-    fun setProfile(@RequestBody @Valid profileDTO: ProfileDTO, br: BindingResult): Boolean {
-        if (!br.hasErrors()) {
-           return if (profileService.setProfile(profileDTO, br)) true else throw DuplicateProfileException()
-        }
-        else
-            throw InvalidArgumentsException()
-    }
-
     @PutMapping("/API/profiles/{email}")
     fun modifyProfile(
         @PathVariable @Email email: String,
@@ -35,5 +26,19 @@ class ProfileController(
         return if (!br.hasErrors()) {
             if (profileService.modifyProfile(email, profileDTO, br)) true else throw ProfileNotFoundException()
         } else throw InvalidArgumentsException()
+    }
+}
+
+@RestController
+class ProfileControllerBR(
+    private val profileService: ProfileService
+) {
+    @PostMapping("/API/profiles")
+    fun setProfile(@RequestBody @Valid profileDTO: ProfileDTO, br: BindingResult): Boolean {
+        if (!br.hasErrors()) {
+            return if (profileService.setProfile(profileDTO, br)) true else throw DuplicateProfileException()
+        }
+        else
+            throw InvalidArgumentsException()
     }
 }

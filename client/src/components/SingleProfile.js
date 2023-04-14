@@ -3,11 +3,11 @@ import {Button, InputGroup, Form} from "react-bootstrap";
 import React, {useState} from "react";
 
 function SingleProfile() {
-    const [email, setEmail] = useState(null);
+    const [email, setEmail] = useState("");
 
     async function getProfile() {
         try {
-            if (email !== null && email !== "") {
+            if (email !== "") {
                 const profile = await API.getUserInfo(email);
                 if (profile.email!== undefined) {
                     alert(`User with email ${email} found!\nName: ${profile.name}\nSurname: ${profile.surname}`);

@@ -5,16 +5,20 @@ import React, {useState} from "react";
 import Profile from "../profile"
 
 function EditProfile() {
-    const [oldEmail, setOldEmail] = useState(null);
-    const [newEmail, setNewEmail] = useState(null);
-    const [name, setName] = useState(null);
-    const [surname, setSurname] = useState(null);
+    const [oldEmail, setOldEmail] = useState("");
+    const [newEmail, setNewEmail] = useState("");
+    const [name, setName] = useState("");
+    const [surname, setSurname] = useState("");
 
     async function editProfile() {
         try {
-            const profile = new Profile(newEmail, name, surname);
-            await API.updateProfile(oldEmail, profile)
-            alert("User successfully modified!")
+            if (oldEmail !== "" && newEmail !== "" && name !== "" && surname !== "") {
+                const profile = new Profile(newEmail, name, surname);
+                await API.updateProfile(oldEmail, profile)
+                alert("User successfully modified!")
+            } else {
+                alert(`Please, complete all the field before continue!`);
+            }
         } catch (error) {
             alert(error);
         }

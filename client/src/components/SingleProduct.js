@@ -3,11 +3,11 @@ import {Button, InputGroup, Form} from "react-bootstrap";
 import React, {useState} from "react";
 
 function SingleProduct() {
-    const [ean, setEan] = useState(null);
+    const [ean, setEan] = useState("");
 
     async function getProduct() {
         try {
-            if (ean !== null && ean !== "") {
+            if (ean !== "") {
                 const product = await API.getProduct(ean);
                 if (product.ean !== undefined) {
                     alert(`Product with ean ${ean} found!\nName: ${product.name}\nBrand: ${product.brand}`);
