@@ -5,10 +5,15 @@
 .table-products {
   height: 500px;
   overflow-y: scroll;
+  padding-top: 30px;
 }
 
 .single-product, .single-profile, .add-profile, .edit-profile {
   margin-top: 50px;
   border-top: 1px black solid;
   padding-top: 20px;
+}
+
+.edit-profile {
+  padding-bottom: 30px;
 }
