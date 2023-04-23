@@ -13,10 +13,10 @@ class Attachment(
     var type: String,
     var size: Long,
     var data_bin: Byte,
-    var dateTime: Date) {
+    var datetime: Date) {
 
 }
 
 fun AttachmentDTO.toAttachment(): Attachment {
-    return Attachment(attachmentId, messageId, type, size, data_bin, dateTime)
+    return Attachment(attachmentId, messageId, type, size, data_bin, datetime)
 }
