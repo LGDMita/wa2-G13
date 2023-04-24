@@ -1,14 +1,17 @@
 package it.polito.wa2.g13.server.ticketing.attachments
 
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.Table
+import it.polito.wa2.g13.server.ticketing.messages.Message
+import jakarta.persistence.*
 import java.util.Date
 
 @Entity
 @Table(name= "attachments")
 class Attachment(
-    @Id var attachmentId: Long,
+    @Id
+    var attachmentId: Long,
+    @ManyToOne
+    @JoinColumn(name = "messageId")
+    var message: Message,
     var type: String,
     var size: Long,
     var dataBin: Byte,
@@ -17,5 +20,5 @@ class Attachment(
 }
 
 fun AttachmentDTO.toAttachment(): Attachment {
-    return Attachment(attachmentId, type, size, dataBin, datetime)
+    return Attachment(attachmentId, message, type, size, dataBin, datetime)
 }

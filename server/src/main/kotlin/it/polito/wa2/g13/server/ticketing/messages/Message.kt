@@ -1,11 +1,8 @@
 package it.polito.wa2.g13.server.ticketing.messages
 
+import it.polito.wa2.g13.server.ticketing.attachments.Attachment
 import it.polito.wa2.g13.server.ticketing.tickets.Ticket
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.JoinColumn
-import jakarta.persistence.ManyToOne
-import jakarta.persistence.Table
+import jakarta.persistence.*
 import java.util.Date
 
 @Entity
@@ -18,9 +15,11 @@ class Message(
     var ticket: Ticket,
     var fromUser: Boolean,
     var text: String,
-    var datetime: Date
+    var datetime: Date,
+    @OneToMany(mappedBy = "attachments")
+    var attachments: MutableSet<Attachment>
 ) {}
 
 fun MessageDTO.toMessage(): Message {
-    return Message(messageId, ticket, fromUser, text, datetime)
+    return Message(messageId, ticket, fromUser, text, datetime, attachments)
 }

@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/client.iml" filepath="$PROJECT_DIR$/client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/server.main.iml" filepath="$PROJECT_DIR$/.idea/modules/server.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ticketing.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ticketing.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/wa2-G13.iml" filepath="$PROJECT_DIR$/.idea/wa2-G13.iml" />
     </modules>

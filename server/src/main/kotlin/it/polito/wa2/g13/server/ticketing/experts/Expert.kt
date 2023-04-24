@@ -13,7 +13,6 @@ class Expert(
     var surname: String,
     var sector: String,
     var email: String) {
-
 }
 
 fun ExpertDTO.toExpert(): Expert {

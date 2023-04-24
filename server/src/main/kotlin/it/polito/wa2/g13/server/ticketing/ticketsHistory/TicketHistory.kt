@@ -1,11 +1,13 @@
 package it.polito.wa2.g13.server.ticketing.ticketsHistory
 
 import it.polito.wa2.g13.server.ticketing.tickets.Ticket
-import jakarta.persistence.JoinColumn
-import jakarta.persistence.ManyToOne
+import jakarta.persistence.*
 import java.util.*
 
-data class TicketHistory(
+@Entity
+@Table(name= "ticketsHistory")
+class TicketHistory(
+    @Id
     var historyId: Long,
     @ManyToOne
     @JoinColumn(name = "ticketId")
