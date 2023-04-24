@@ -12,7 +12,7 @@ class Ticket(
     @Id
     var ticketId: Long,
     @ManyToOne
-    @JoinColumn(name = "email")
+    @JoinColumn(name = "profileId")
     var profile: Profile,
     var ean: String,
     var priorityLevel: Int,
