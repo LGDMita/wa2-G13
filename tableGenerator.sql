@@ -9,6 +9,17 @@ create table products
 alter table products
     owner to postgres;
 
+create table profiles
+(
+    email   varchar(255) not null
+        primary key,
+    name    varchar(255),
+    surname varchar(255)
+);
+
+alter table profiles
+    owner to postgres;
+
 create table experts
 (
     "expertId" integer not null
@@ -20,17 +31,6 @@ create table experts
 );
 
 alter table experts
-    owner to postgres;
-
-create table profiles
-(
-    email   varchar(255) not null
-        primary key,
-    name    varchar(255),
-    surname varchar(255)
-);
-
-alter table profiles
     owner to postgres;
 
 create table tickets
@@ -51,7 +51,7 @@ create table tickets
     status          varchar(15)
         constraint tickets_status_check
             check ((status)::text = ANY
-                   ((ARRAY ['open'::character varying, 'closed'::character varying, 'in_progress'::character varying, 'reopened'::character varying, 'resolved'::character varying])::text[])),
+        ((ARRAY ['open'::character varying, 'closed'::character varying, 'in_progress'::character varying, 'reopened'::character varying, 'resolved'::character varying])::text[])),
     "creationDate"  timestamp
 );
 
@@ -69,7 +69,7 @@ create table "ticketsHistory"
     "oldStatus" varchar(15)
         constraint tickets_history_old_status_check
             check (("oldStatus")::text = ANY
-                   (ARRAY [('open'::character varying)::text, ('closed'::character varying)::text, ('in_progress'::character varying)::text, ('reopened'::character varying)::text, ('resolved'::character varying)::text])),
+        (ARRAY [('open'::character varying)::text, ('closed'::character varying)::text, ('in_progress'::character varying)::text, ('reopened'::character varying)::text, ('resolved'::character varying)::text])),
     "newStatus" varchar(15)
         constraint tickets_history_new_status_check
             check (("newStatus")::text = ANY
@@ -100,7 +100,8 @@ create table attachments
     "attachmentId" integer not null
         primary key,
     "messageId"    integer
-        references messages,
+        constraint attachments_message_id_fkey
+            references messages,
     type           varchar(15),
     size           integer,
     "dataBin"      bytea,
@@ -109,20 +110,4 @@ create table attachments
 
 alter table attachments
     owner to postgres;
-
-create table "messagesAttachments"
-(
-    "messageId"    integer not null
-        constraint message_attachments_message_id_fkey
-            references messages,
-    "attachmentId" integer not null
-        constraint message_attachments_attachment_id_fkey
-            references attachments,
-    constraint message_attachments_pkey
-        primary key ("messageId", "attachmentId")
-);
-
-alter table "messagesAttachments"
-    owner to postgres;
-
 
