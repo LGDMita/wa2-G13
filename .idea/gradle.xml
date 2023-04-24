@@ -17,6 +17,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/ticketing" />
+            <option value="$PROJECT_DIR$/ticketing/server" />
           </set>
         </option>
       </GradleProjectSettings>
