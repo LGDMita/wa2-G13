@@ -4,10 +4,10 @@ package it.polito.wa2.g13.server.ticketing.tickets
 import it.polito.wa2.g13.server.profiles.Profile
 import it.polito.wa2.g13.server.ticketing.experts.Expert
 import jakarta.persistence.*
-import java.util.Date
+import java.util.*
 
 @Entity
-@Table(name= "tickets")
+@Table(name = "tickets")
 class Ticket(
     @Id
     var ticketId: Long,
