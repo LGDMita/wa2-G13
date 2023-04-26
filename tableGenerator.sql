@@ -58,7 +58,7 @@ create table tickets
 alter table tickets
     owner to postgres;
 
-create table "ticketsHistory"
+create table tickets_history
 (
     history_id integer not null
         constraint tickets_history_pkey
@@ -70,14 +70,14 @@ create table "ticketsHistory"
         constraint tickets_history_old_status_check
             check ((old_status)::text = ANY
         (ARRAY [('open'::character varying)::text, ('closed'::character varying)::text, ('in_progress'::character varying)::text, ('reopened'::character varying)::text, ('resolved'::character varying)::text])),
-    "newStatus" varchar(15)
+    new_status varchar(15)
         constraint tickets_history_new_status_check
-            check (("newStatus")::text = ANY
+            check ((new_status)::text = ANY
                    (ARRAY [('open'::character varying)::text, ('closed'::character varying)::text, ('in_progress'::character varying)::text, ('reopened'::character varying)::text, ('resolved'::character varying)::text])),
     date_time    timestamp
 );
 
-alter table "ticketsHistory"
+alter table tickets_history
     owner to postgres;
 
 create table messages
