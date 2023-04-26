@@ -22,7 +22,7 @@ alter table profiles
 
 create table experts
 (
-    "expertId" integer not null
+    expert_id integer not null
         primary key,
     name       varchar(255),
     surname    varchar(255),
@@ -35,24 +35,24 @@ alter table experts
 
 create table tickets
 (
-    "ticketId"      integer not null
+    ticket_id      integer not null
         primary key,
-    "profileId"     varchar(255)
+    profile_id     varchar(255)
         constraint tickets_profiles_email_fk
             references profiles,
     ean             varchar(15)
         references products,
-    "priorityLevel" integer
+    priority_level integer
         constraint tickets_priority_level_check
-            check (("priorityLevel" >= 0) AND ("priorityLevel" <= 4)),
-    "expertId"      integer
+            check ((priority_level >= 0) AND (priority_level <= 4)),
+    expert_id      integer
         constraint tickets_expert_id_fkey
             references experts,
     status          varchar(15)
         constraint tickets_status_check
             check ((status)::text = ANY
         ((ARRAY ['open'::character varying, 'closed'::character varying, 'in_progress'::character varying, 'reopened'::character varying, 'resolved'::character varying])::text[])),
-    "creationDate"  timestamp
+    "creation_date"  timestamp
 );
 
 alter table tickets
@@ -60,21 +60,21 @@ alter table tickets
 
 create table "ticketsHistory"
 (
-    "historyId" integer not null
+    history_id integer not null
         constraint tickets_history_pkey
             primary key,
-    "ticketId"  integer
+    ticket_id  integer
         constraint tickets_history_ticket_id_fkey
             references tickets,
-    "oldStatus" varchar(15)
+    old_status varchar(15)
         constraint tickets_history_old_status_check
-            check (("oldStatus")::text = ANY
+            check ((old_status)::text = ANY
         (ARRAY [('open'::character varying)::text, ('closed'::character varying)::text, ('in_progress'::character varying)::text, ('reopened'::character varying)::text, ('resolved'::character varying)::text])),
     "newStatus" varchar(15)
         constraint tickets_history_new_status_check
             check (("newStatus")::text = ANY
                    (ARRAY [('open'::character varying)::text, ('closed'::character varying)::text, ('in_progress'::character varying)::text, ('reopened'::character varying)::text, ('resolved'::character varying)::text])),
-    datetime    timestamp
+    date_time    timestamp
 );
 
 alter table "ticketsHistory"
@@ -82,12 +82,12 @@ alter table "ticketsHistory"
 
 create table messages
 (
-    "messageId" integer not null
+    message_id integer not null
         primary key,
-    "ticketId"  integer
+    ticket_id  integer
         constraint messages_ticket_id_fkey
             references tickets,
-    "fromUser"  boolean,
+    from_user  boolean,
     text        varchar(1023),
     datetime    timestamp
 );
@@ -97,14 +97,14 @@ alter table messages
 
 create table attachments
 (
-    "attachmentId" integer not null
+    attachment_id integer not null
         primary key,
-    "messageId"    integer
+    message_id    integer
         constraint attachments_message_id_fkey
             references messages,
     type           varchar(15),
     size           integer,
-    "dataBin"      bytea,
+    data_bin      bytea,
     datetime       timestamp
 );
 

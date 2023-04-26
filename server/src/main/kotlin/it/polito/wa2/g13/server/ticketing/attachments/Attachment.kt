@@ -14,7 +14,7 @@ class Attachment(
     var message: Message,
     var type: String,
     var size: Long,
-    var dataBin: Byte,
+    var dataBin: ByteArray,
     var datetime: Date) {
 
 }

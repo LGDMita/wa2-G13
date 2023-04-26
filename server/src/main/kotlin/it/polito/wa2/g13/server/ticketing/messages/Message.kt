@@ -16,7 +16,7 @@ class Message(
     var fromUser: Boolean,
     var text: String,
     var datetime: Date,
-    @OneToMany(mappedBy = "attachments", cascade = [CascadeType.ALL])
+    @OneToMany(mappedBy = "message", cascade = [CascadeType.ALL])
     var attachments: MutableSet<Attachment>
 ) {}
 
