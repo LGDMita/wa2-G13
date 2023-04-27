@@ -5,6 +5,4 @@ import org.springframework.web.bind.annotation.*
 @RestController
 class ExpertController(
     private val expertService: ExpertService
-) {
-
-}
+)

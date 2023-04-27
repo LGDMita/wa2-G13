@@ -15,9 +15,7 @@ class Attachment(
     var type: String,
     var size: Long,
     var dataBin: ByteArray,
-    var datetime: Date) {
-
-}
+    var datetime: Date)
 
 fun AttachmentDTO.toAttachment(): Attachment {
     return Attachment(attachmentId, message, type, size, dataBin, datetime)

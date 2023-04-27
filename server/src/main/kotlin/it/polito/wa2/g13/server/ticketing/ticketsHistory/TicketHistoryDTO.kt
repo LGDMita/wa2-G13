@@ -9,9 +9,7 @@ class TicketHistoryDTO(
     var oldStatus: String,
     var newStatus: String,
     var dateTime: Date
-) {
-
-}
+)
 
 fun TicketHistoryDTO.toTicket(): TicketHistory {
     return TicketHistory(historyId, ticket, oldStatus, newStatus, dateTime)

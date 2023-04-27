@@ -29,14 +29,15 @@ class TicketServiceImpl(
         }
     }
 
-    override fun filterTicket(
-        ean: String,
-        profile: Profile,
-        priorityLevel: Int,
-        expert: Expert,
-        status: String,
-        creationDate: Date
-    ): List<Ticket> {
-        return ticketRepository.filterTickets(ean, profile, priorityLevel, expert, status, creationDate)
+    override fun getFilteredTickets(
+        ean: String?,
+        profileId: String?,
+        priorityLevel: Int?,
+        expertId: Long?,
+        status: String?,
+        creationDateStart: Date?,
+        creationDateStop: Date?
+    ): List<TicketDTO> {
+        return ticketRepository.getFilteredTickets(ean, profileId, priorityLevel, expertId, status, creationDateStart, creationDateStop)
     }
 }

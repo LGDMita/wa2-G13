@@ -18,7 +18,7 @@ class Message(
     var datetime: Date,
     @OneToMany(mappedBy = "message", cascade = [CascadeType.ALL])
     var attachments: MutableSet<Attachment>
-) {}
+)
 
 fun MessageDTO.toMessage(): Message {
     return Message(messageId, ticket, fromUser, text, datetime, attachments)

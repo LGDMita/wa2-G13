@@ -5,7 +5,7 @@ import jakarta.persistence.*
 import java.util.*
 
 @Entity
-@Table(name= "ticketsHistory")
+@Table(name= "tickets_history")
 class TicketHistory(
     @Id
     var historyId: Long,

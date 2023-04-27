@@ -13,12 +13,13 @@ interface TicketService {
 
     fun modifyTicket(ticketId: Long, ticket: TicketDTO): Boolean
 
-    fun filterTicket(
-        ean: String,
-        profile: Profile,
-        priorityLevel: Int,
-        expert: Expert,
-        status: String,
-        creationDate: Date
-    ): List<Ticket>
+    fun getFilteredTickets(
+        ean: String?,
+        profileId: String?,
+        priorityLevel: Int?,
+        expertId: Long?,
+        status: String?,
+        creationDateStart: Date?,
+        creationDateStop: Date?
+    ): List<TicketDTO>
 }

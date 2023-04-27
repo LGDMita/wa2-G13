@@ -5,6 +5,4 @@ import org.springframework.web.bind.annotation.*
 @RestController
 class AttachmentController(
     private val attachmentService: AttachmentService
-) {
-
-}
+)

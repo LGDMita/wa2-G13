@@ -5,6 +5,4 @@ import org.springframework.stereotype.Service
 @Service
 class TicketHistoryServiceImpl(
     private val ticketHistoryRepository: TicketHistoryRepository
-) : TicketHistoryService {
-
-}
+) : TicketHistoryService

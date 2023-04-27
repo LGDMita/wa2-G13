@@ -12,8 +12,7 @@ class Expert(
     var name: String,
     var surname: String,
     var sector: String,
-    var email: String) {
-}
+    var email: String)
 
 fun ExpertDTO.toExpert(): Expert {
     return Expert(expertId, name, surname, sector, email)
