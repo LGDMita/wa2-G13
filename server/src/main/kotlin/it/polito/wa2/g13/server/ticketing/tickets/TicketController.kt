@@ -10,12 +10,11 @@ class TicketController(
 ) {
     @PostMapping("/API/tickets")
     fun createTicket(
-        @RequestBody @Valid ticketDTO: TicketDTO,
+        @RequestBody @Valid ticketPostDTO: TicketPostDTO,
         br: BindingResult
     ): TicketDTO? {
         if (!br.hasErrors()) {
-            val createdTicketOrNull = ticketService.createTicket(ticketDTO, br)
-            return createdTicketOrNull ?: throw DuplicateTicketException()
+            return ticketService.createTicket(ticketPostDTO, br)
         }
         else
             throw InvalidTicketArgumentsException()
