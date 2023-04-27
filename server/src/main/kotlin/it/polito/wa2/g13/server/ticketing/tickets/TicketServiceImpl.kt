@@ -6,6 +6,8 @@ import it.polito.wa2.g13.server.profiles.ProfileNotFoundException
 import it.polito.wa2.g13.server.profiles.ProfileRepository
 import it.polito.wa2.g13.server.ticketing.experts.ExpertNotFoundException
 import it.polito.wa2.g13.server.ticketing.experts.ExpertRepository
+import it.polito.wa2.g13.server.ticketing.ticketsHistory.TicketHistory
+import it.polito.wa2.g13.server.ticketing.ticketsHistory.TicketHistoryRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.validation.BindingResult
@@ -16,7 +18,8 @@ class TicketServiceImpl(
     private val ticketRepository: TicketRepository,
     private val expertRepository: ExpertRepository,
     private val profileRepository: ProfileRepository,
-    private val productRepository: ProductRepository
+    private val productRepository: ProductRepository,
+    private val ticketHistoryRepository: TicketHistoryRepository
 ) : TicketService {
 
     override fun createTicket(ticketPostDTO: TicketPostDTO, br: BindingResult): TicketDTO? {
@@ -25,38 +28,54 @@ class TicketServiceImpl(
 
         val profile = profileRepository.findByIdOrNull(ticketPostDTO.profileId) ?: throw ProfileNotFoundException()
         val product = productRepository.findByIdOrNull(ticketPostDTO.ean) ?: throw ProductNotFoundException()
+        val date = Date()
 
-
-        return ticketRepository.save(Ticket(
+        val ticket = ticketRepository.save(Ticket(
             ticketId = ticketPostDTO.ticketId,
             profile = profile,
             product = product,
             priorityLevel = null,
             expert = null,
-            status = null,
-            creationDate = Date()
-        )).toDTO()
+            status = "open",
+            creationDate = date
+        ))
+
+        ticketHistoryRepository.save(TicketHistory(
+            ticket = ticket,
+            oldStatus = ticket.status,
+            newStatus = "open",
+            dateTime = date
+        ))
+
+        return ticket.toDTO()
 
     }
 
-    override fun changeStatus(ticketId: Long, status: String): Boolean {
+    override fun changeStatus(ticketId: Long, newStatus: String): Boolean {
         val ticket = ticketRepository.findByIdOrNull(ticketId) ?: throw TicketNotFoundException()
         val oldStatus = ticket.status
 
-        if(oldStatus == status)
+        if(oldStatus == newStatus)
             return true
 
-        if(oldStatus != null && !stateChangeChecker(oldStatus, status))
+        if(!stateChangeChecker(oldStatus, newStatus))
                 throw StateChangeNotAllowedException()
 
-        ticketRepository.save(Ticket(
+        val updatedTicket = ticketRepository.save(Ticket(
             ticketId = ticketId,
             profile = ticket.profile,
             product = ticket.product,
             priorityLevel = ticket.priorityLevel,
             expert = ticket.expert,
-            status = status,
+            status = newStatus,
             creationDate = ticket.creationDate
+        ))
+
+        ticketHistoryRepository.save(TicketHistory(
+            ticket = updatedTicket,
+            oldStatus = oldStatus,
+            newStatus = newStatus,
+            dateTime = Date()
         ))
 
         return true

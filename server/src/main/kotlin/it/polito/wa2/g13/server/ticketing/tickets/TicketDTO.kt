@@ -12,7 +12,7 @@ data class TicketDTO(
     var product: Product,
     var priorityLevel: Int?,
     var expert: Expert?,
-    var status: String?,
+    var status: String,
     var creationDate: Date
 )
 

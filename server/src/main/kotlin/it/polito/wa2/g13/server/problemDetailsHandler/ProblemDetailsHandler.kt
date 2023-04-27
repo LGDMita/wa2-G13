@@ -66,7 +66,7 @@ class ProblemDetailsHandler : ResponseEntityExceptionHandler() {
 
     @ExceptionHandler(DuplicateTicketException::class)
     fun handleDuplicateProfile(e: DuplicateTicketException) = ProblemDetail
-        .forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
+        .forStatusAndDetail(HttpStatus.CONFLICT, e.message!!)
 
 
 }

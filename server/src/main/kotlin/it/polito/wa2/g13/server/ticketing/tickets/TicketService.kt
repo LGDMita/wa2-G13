@@ -7,7 +7,7 @@ import org.springframework.validation.BindingResult
 interface TicketService {
 
     fun createTicket(ticketPostDTO: TicketPostDTO, br: BindingResult): TicketDTO?
-    fun changeStatus(ticketId: Long, status: String): Boolean
+    fun changeStatus(ticketId: Long, newStatus: String): Boolean
     fun changePriority(ticketId: Long, priorityLevel: Int): Boolean
     fun changeExpert(ticketId: Long, expertId: Long): Boolean
 }

@@ -22,7 +22,7 @@ class Ticket(
     @ManyToOne
     @JoinColumn(name = "expertId")
     var expert: Expert?,
-    var status: String?,
+    var status: String,
     var creationDate: Date
 ) {
 
