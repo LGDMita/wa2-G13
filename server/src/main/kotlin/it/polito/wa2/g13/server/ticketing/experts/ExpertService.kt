@@ -5,4 +5,13 @@ import org.springframework.validation.BindingResult
 
 @Service
 interface ExpertService {
+    fun setExpert(expertDTO: ExpertDTO): Boolean
+
+    fun getExpertById(id: Long): ExpertDTO?
+
+    fun modifyExpert(id: Long, expertDTO: ExpertDTO): Int
+
+    fun getExpertsBySector(sector: String): List<ExpertDTO>?
+
+    fun deleteExpertById(id: Long) : Unit
 }
