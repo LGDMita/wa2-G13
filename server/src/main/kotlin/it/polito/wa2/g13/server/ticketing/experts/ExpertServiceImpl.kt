@@ -7,4 +7,8 @@ class ExpertServiceImpl(
     private val expertRepository: ExpertRepository
 ) : ExpertService {
 
+    override fun getExperts(): List<ExpertDTO> {
+        return expertRepository.findAll().map{it.toDTO()}
+    }
+
 }

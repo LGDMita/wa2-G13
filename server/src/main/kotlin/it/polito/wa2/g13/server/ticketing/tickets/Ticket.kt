@@ -3,6 +3,7 @@ package it.polito.wa2.g13.server.ticketing.tickets
 
 import it.polito.wa2.g13.server.profiles.Profile
 import it.polito.wa2.g13.server.ticketing.experts.Expert
+import it.polito.wa2.g13.server.ticketing.messages.Message
 import jakarta.persistence.*
 import java.util.Date
 
@@ -20,9 +21,14 @@ class Ticket(
     @JoinColumn(name = "expertId")
     var expert: Expert,
     var status: String,
-    var creationDate: Date
+    var creationDate: Date,
+    @OneToMany(mappedBy = "ticket")
+    var messages : MutableSet<Message> = mutableSetOf()
 ) {
-
+    fun addMessage(message: Message){
+        message.ticket=this
+        messages.add(message)
+    }
 }
 
 fun TicketDTO.toTicket(): Ticket {

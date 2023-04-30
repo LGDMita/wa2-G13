@@ -5,4 +5,5 @@ import org.springframework.validation.BindingResult
 
 @Service
 interface ExpertService {
+    fun getExperts() : List<ExpertDTO>
 }
