@@ -24,10 +24,16 @@ class TicketServiceImpl(
 
     override fun createTicket(ticketPostDTO: TicketPostDTO, br: BindingResult): TicketDTO? {
 
+        // If the profileId contained in the request doesn't exist throws exception
         val profile = profileRepository.findByIdOrNull(ticketPostDTO.profileId) ?: throw ProfileNotFoundException()
+
+        // If the productId contained in the request doesn't exist throws exception
         val product = productRepository.findByIdOrNull(ticketPostDTO.ean) ?: throw ProductNotFoundException()
+
+        // Contains the current date and time, that will be associated to the ticket
         val date = Date()
 
+        // Saves the ticket in the repository
         val ticket = ticketRepository.save(Ticket(
             profile = profile,
             product = product,
@@ -37,6 +43,7 @@ class TicketServiceImpl(
             creationDate = date
         ))
 
+        // Saves the ticket state change in the repository. This is not a real state change, both old and new status are "open", but its useful to have it for debugging reasons
         ticketHistoryRepository.save(TicketHistory(
             ticket = ticket,
             oldStatus = ticket.status,
@@ -49,15 +56,22 @@ class TicketServiceImpl(
     }
 
     override fun changeStatus(ticketId: Long, newStatus: String): Boolean {
+
+        // If the ticketId contained in the URI doesn't exist throws an exception
         val ticket = ticketRepository.findByIdOrNull(ticketId) ?: throw TicketNotFoundException()
+
+        // Takes the old status from the existing ticket
         val oldStatus = ticket.status
 
+        // If the ticket is already in the state contained in the request, just return true
         if(oldStatus == newStatus)
             return true
 
+        // If the state change is not allowed throws an exception
         if(!stateChangeChecker(oldStatus, newStatus))
                 throw StateChangeNotAllowedException()
 
+        // Updates the ticket with the new state, all th other values remain the same
         val updatedTicket = ticketRepository.save(Ticket(
             ticketId = ticketId,
             profile = ticket.profile,
@@ -68,6 +82,7 @@ class TicketServiceImpl(
             creationDate = ticket.creationDate
         ))
 
+        // Saves the state change in the repository
         ticketHistoryRepository.save(TicketHistory(
             ticket = updatedTicket,
             oldStatus = oldStatus,
@@ -79,11 +94,15 @@ class TicketServiceImpl(
     }
 
     override fun changePriority(ticketId: Long, priorityLevel: Int): Boolean {
+
+        // If the ticketId contained in the URI doesn't exist throws an exception
         val ticket = ticketRepository.findByIdOrNull(ticketId) ?: throw TicketNotFoundException()
 
+        // If the ticket has already the priority level contained in the request, just return true
         if(ticket.priorityLevel == priorityLevel)
             return true
 
+        // Updates the ticket with the new priority level, all the other values remain the same
         ticketRepository.save(Ticket(
             ticketId = ticketId,
             profile = ticket.profile,
@@ -98,16 +117,18 @@ class TicketServiceImpl(
     }
 
     override fun changeExpert(ticketId: Long, expertId: Long): Boolean {
-        val ticket = ticketRepository.findByIdOrNull(ticketId)
-        val expert = expertRepository.findByIdOrNull((expertId))
 
-        if(ticket == null)
-            throw TicketNotFoundException()
-        if(expert == null)
-            throw ExpertNotFoundException()
+        // If the ticketId contained in the URI doesn't exist throws an exception
+        val ticket = ticketRepository.findByIdOrNull(ticketId) ?: throw TicketNotFoundException()
+
+        // If the expertId contained in the request doesn't exist throws an exception
+        val expert = expertRepository.findByIdOrNull((expertId)) ?: throw ExpertNotFoundException()
+
+        // If the ticket is already managed by the expert whose id is contained in the request, just return true
         if(ticket.expert?.expertId == expertId)
             return true
 
+        // Updates the ticket with the new priority level, all the other values remain the same
         ticketRepository.save(Ticket(
             ticketId = ticketId,
             profile = ticket.profile,

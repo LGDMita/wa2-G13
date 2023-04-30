@@ -1,5 +1,8 @@
 package it.polito.wa2.g13.server.ticketing.tickets
 
+/**
+ * Checks that a state change is allowed
+ */
 fun stateChangeChecker(old: String, new: String): Boolean {
     return when(old){
         "open" -> new != "reopened"
