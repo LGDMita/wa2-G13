@@ -23,15 +23,12 @@ class TicketServiceImpl(
 ) : TicketService {
 
     override fun createTicket(ticketPostDTO: TicketPostDTO, br: BindingResult): TicketDTO? {
-        if(ticketRepository.existsById(ticketPostDTO.ticketId))
-            throw DuplicateTicketException()
 
         val profile = profileRepository.findByIdOrNull(ticketPostDTO.profileId) ?: throw ProfileNotFoundException()
         val product = productRepository.findByIdOrNull(ticketPostDTO.ean) ?: throw ProductNotFoundException()
         val date = Date()
 
         val ticket = ticketRepository.save(Ticket(
-            ticketId = ticketPostDTO.ticketId,
             profile = profile,
             product = product,
             priorityLevel = null,

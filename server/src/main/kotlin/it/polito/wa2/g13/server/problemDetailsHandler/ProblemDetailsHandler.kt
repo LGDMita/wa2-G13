@@ -6,7 +6,6 @@ import it.polito.wa2.g13.server.profiles.DuplicateProfileException
 import it.polito.wa2.g13.server.profiles.InvalidArgumentsException
 import it.polito.wa2.g13.server.profiles.ProfileNotFoundException
 import it.polito.wa2.g13.server.ticketing.experts.ExpertNotFoundException
-import it.polito.wa2.g13.server.ticketing.tickets.DuplicateTicketException
 import it.polito.wa2.g13.server.ticketing.tickets.InvalidTicketArgumentsException
 import it.polito.wa2.g13.server.ticketing.tickets.StateChangeNotAllowedException
 import it.polito.wa2.g13.server.ticketing.tickets.TicketNotFoundException
@@ -62,10 +61,6 @@ class ProblemDetailsHandler : ResponseEntityExceptionHandler() {
 
     @ExceptionHandler(StateChangeNotAllowedException::class)
     fun handleInvalidTicketArgumentsException(e: StateChangeNotAllowedException) = ProblemDetail
-        .forStatusAndDetail(HttpStatus.CONFLICT, e.message!!)
-
-    @ExceptionHandler(DuplicateTicketException::class)
-    fun handleDuplicateProfile(e: DuplicateTicketException) = ProblemDetail
         .forStatusAndDetail(HttpStatus.CONFLICT, e.message!!)
 
 

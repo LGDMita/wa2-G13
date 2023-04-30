@@ -10,7 +10,7 @@ class TicketController(
 ) {
     @PostMapping("/API/tickets")
     fun createTicket(
-        @RequestBody @Valid ticketPostDTO: TicketPostDTO,
+        @Valid @RequestBody(required = true) ticketPostDTO: TicketPostDTO,
         br: BindingResult
     ): TicketDTO? {
         if (!br.hasErrors()) {

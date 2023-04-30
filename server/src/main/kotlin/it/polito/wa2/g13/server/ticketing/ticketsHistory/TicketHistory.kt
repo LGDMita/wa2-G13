@@ -10,7 +10,7 @@ class TicketHistory(
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tickets_history_generator")
     @SequenceGenerator(name = "tickets_history_generator", sequenceName = "tickets_history_seq", allocationSize = 1)
-    var historyId: Long = 1,
+    var historyId: Long = 0,
     @ManyToOne
     @JoinColumn(name = "ticketId")
     var ticket: Ticket,
