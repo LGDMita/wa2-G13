@@ -1,6 +1,10 @@
 package it.polito.wa2.g13.server.ticketing.tickets
 
+import jakarta.validation.Valid
+import jakarta.validation.constraints.*
 import org.springframework.format.annotation.DateTimeFormat
+import org.springframework.validation.BindingResult
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import java.util.Date
 
@@ -18,40 +22,63 @@ class TicketController(
         return ticketService.getTicket(ticketId) ?: throw TicketNotFoundException()
     }
 
-    @GetMapping("/API/tickets/")
-    fun getFilteredTickets(
-        @RequestParam("ean") ean: String,
-        @RequestParam("profileId") profileId: String,
-        @RequestParam("priorityLevel") priorityLevel: Int,
-        @RequestParam("expertId") expertId: Long,
-        @RequestParam("status") status: String,
-        @RequestParam("creationDateStart") @DateTimeFormat(pattern = "yyyy-mm-dd")
-        creationDateStart: Date,
-        @RequestParam("creationDateStop") @DateTimeFormat(pattern = "yyyy-mm-dd")
-        creationDateStop: Date,
-    ): List<TicketDTO> {
-        return ticketService.getFilteredTickets(ean, profileId, priorityLevel, expertId, status, creationDateStart, creationDateStop)
-    }
-
-/*    @GetMapping("/API/tickets/?ean={ean}&profileId={profileId}&priorityLevel={priorityLevel}&" +
-            "expertId={expertId}&status={status}&creationDateStart={creationDateStart}&creationDateStop={creationDateStop}")
-    fun getFilteredTickets(
-        @PathVariable("ean") ean: String,
-        @PathVariable("profileId") profileId: String,
-        @PathVariable("priorityLevel") priorityLevel: Int,
-        @PathVariable("expertId") expertId: Long,
-        @PathVariable("status") status: String,
-        @PathVariable("creationDateStart") creationDateStart: Date,
-        @PathVariable("creationDateStop") creationDateStop: Date,
-    ): List<TicketDTO> {
-        return ticketService.getFilteredTickets(ean, profileId, priorityLevel, expertId, status, creationDateStart, creationDateStop)
-    }*/
-
     @PutMapping("/API/ticket/")
     fun modifyTicket(
         @RequestParam("ticketId") ticketId: Long,
-        @RequestBody ticketDTO: TicketDTO
+        @RequestBody @Valid ticketDTO: TicketDTO,
+        br: BindingResult
     ): Boolean {
-        return ticketService.modifyTicket(ticketId, ticketDTO)
+        if (!br.hasErrors()) {
+            if (ticketService.getTicket(ticketId) != null) {
+                return ticketService.modifyTicket(ticketId, ticketDTO)
+            }
+            else {
+                throw TicketNotFoundException()
+            }
+        }
+        else {
+            throw InvalidTicketException()
+        }
+    }
+}
+
+@RestController
+@Validated
+class TicketControllerValidated(
+    private val ticketService: TicketService
+) {
+    @GetMapping("/API/tickets/")
+    fun getFilteredTickets(
+        @RequestParam("ean")
+        @Size(min=1, max=15, message = "Ean MUST be a NON empty string of max 15 chars")
+        ean: String?,
+        @RequestParam("profileId")
+        @Email
+        profileId: String?,
+        @RequestParam("priorityLevel")
+        @Min(value = 0, message = "Minimum value for priorityLevel is 0")
+        @Max(value = 4, message = "Minimum value for priorityLevel is 4")
+        priorityLevel: Int?,
+        @RequestParam("expertId")
+        expertId: Long?,
+        @RequestParam("status")
+        @Size(min=1, max=15, message = "Status MUST be a NON empty string of max 15 chars")
+        status: String?,
+        @RequestParam("creationDateStart")
+        @DateTimeFormat(pattern = "yyyy-MM-dd")
+        creationDateStart: Date?,
+        @RequestParam("creationDateStop")
+        @DateTimeFormat(pattern = "yyyy-MM-dd")
+        creationDateStop: Date?,
+    ): List<TicketDTO> {
+        return ticketService.getFilteredTickets(
+            ean,
+            profileId,
+            priorityLevel,
+            expertId,
+            status,
+            creationDateStart,
+            creationDateStop
+        )
     }
 }

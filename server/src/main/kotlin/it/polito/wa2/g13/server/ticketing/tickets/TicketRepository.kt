@@ -7,21 +7,20 @@ import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
-interface TicketRepository : JpaRepository<Ticket, String> {
+interface TicketRepository : JpaRepository<Ticket, Long> {
 
-    @Query(
+   @Query(
         "Select t from Ticket t where (:ean is null or t.ean=:ean) " +
                 "and (:profileId is null or t.profile.email=:profileId) " +
                 "and (:priorityLevel is null or t.priorityLevel=:priorityLevel) " +
                 "and (:expertId is null or t.expert.expertId=:expertId) and (:status is null or t.status=:status) " +
-                "and (:creationDateStart is null or t.creationDate >= :creationDateStart) " +
-                "and (:creationDateStop is null or t.creationDate <= :creationDateStop)"
+                "and (cast(:creationDateStart as timestamp) is null or t.creationDate >= :creationDateStart) " +
+                "and (cast(:creationDateStop as timestamp) is null or t.creationDate <= :creationDateStop)"
     )
-
     fun getFilteredTickets(
         @Param("ean") ean: String?, @Param("profileId") profileId: String?,
         @Param("priorityLevel") priorityLevel: Int?, @Param("expertId") expertId: Long?,
         @Param("status") status: String?, @Param("creationDateStart") creationDateStart: Date?,
         @Param("creationDateStop") creationDateStop: Date?
-    ): List<TicketDTO>
+    ): List<Ticket>
 }

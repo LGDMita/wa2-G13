@@ -1,10 +1,9 @@
 package it.polito.wa2.g13.server.ticketing.tickets
 
-import it.polito.wa2.g13.server.profiles.Profile
-import it.polito.wa2.g13.server.ticketing.experts.Expert
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.*
+
 
 @Service
 class TicketServiceImpl(
@@ -16,12 +15,11 @@ class TicketServiceImpl(
     }
 
     override fun getTicket(ticketId: Long): TicketDTO? {
-        return ticketRepository.findByIdOrNull(ticketId.toString())?.toDTO()
+        return ticketRepository.findByIdOrNull(ticketId)?.toDTO()
     }
 
     override fun modifyTicket(ticketId: Long, ticket: TicketDTO): Boolean {
-        return if (ticketRepository.existsById(ticketId.toString())) {
-            ticketRepository.deleteById(ticketId.toString())
+        return if (ticketRepository.existsById(ticketId)) {
             ticketRepository.save(ticket.toTicket())
             true
         } else {
@@ -38,6 +36,6 @@ class TicketServiceImpl(
         creationDateStart: Date?,
         creationDateStop: Date?
     ): List<TicketDTO> {
-        return ticketRepository.getFilteredTickets(ean, profileId, priorityLevel, expertId, status, creationDateStart, creationDateStop)
+        return ticketRepository.getFilteredTickets(ean, profileId, priorityLevel, expertId, status, creationDateStart, creationDateStop).map { t -> t.toDTO() }
     }
 }

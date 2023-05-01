@@ -7,11 +7,13 @@ import jakarta.validation.Valid
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 
 import java.util.*
 
 data class TicketDTO(
+    @field:NotNull
     var ticketId: Long,
     @Valid
     var profile: Profile,
@@ -26,6 +28,7 @@ data class TicketDTO(
     @field:Size(min=1, max=15, message = "Status MUST be a NON empty string of max 15 chars")
     @field:NotBlank(message="Status can NOT be blank")
     var status: String,
+    @field:NotNull
     var creationDate: Date,
     var messages: MutableSet<Message>
 )

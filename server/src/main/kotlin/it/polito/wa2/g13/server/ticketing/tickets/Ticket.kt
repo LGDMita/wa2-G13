@@ -11,6 +11,8 @@ import java.util.*
 @Table(name = "tickets")
 class Ticket(
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tickets_generator")
+    @SequenceGenerator(name = "tickets_generator", sequenceName = "tickets_seq", allocationSize = 1)
     var ticketId: Long,
     @ManyToOne
     @JoinColumn(name = "profileId")
