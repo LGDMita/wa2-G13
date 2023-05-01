@@ -24,7 +24,7 @@ class TicketController(
     fun changeStatus(
         @PathVariable ticketId: Int,
         @RequestBody req: Map<String, Any>
-    ): Boolean {
+    ): TicketDTO? {
         val status = req["status"] ?: throw InvalidTicketArgumentsException()
 
         if(status !is String)
@@ -39,7 +39,7 @@ class TicketController(
     fun changePriority(
         @PathVariable ticketId: Int,
         @RequestBody req: Map<String, Any>
-    ): Boolean {
+    ): TicketDTO? {
         val priorityLevel = req["priorityLevel"] ?: throw InvalidTicketArgumentsException()
 
         if(priorityLevel !is Int)
@@ -54,7 +54,7 @@ class TicketController(
     fun changeExpert(
         @PathVariable ticketId: Int,
         @RequestBody req: Map<String, Any>
-    ): Boolean {
+    ): TicketDTO? {
         val expertId = req["expertId"] ?: throw InvalidTicketArgumentsException()
 
         if(expertId !is Int)

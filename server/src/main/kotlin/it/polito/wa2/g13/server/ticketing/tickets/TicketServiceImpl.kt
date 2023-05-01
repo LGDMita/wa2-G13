@@ -55,7 +55,7 @@ class TicketServiceImpl(
 
     }
 
-    override fun changeStatus(ticketId: Long, newStatus: String): Boolean {
+    override fun changeStatus(ticketId: Long, newStatus: String): TicketDTO? {
 
         // If the ticketId contained in the URI doesn't exist throws an exception
         val ticket = ticketRepository.findByIdOrNull(ticketId) ?: throw TicketNotFoundException()
@@ -63,15 +63,15 @@ class TicketServiceImpl(
         // Takes the old status from the existing ticket
         val oldStatus = ticket.status
 
-        // If the ticket is already in the state contained in the request, just return true
+        // If the ticket is already in the state contained in the request, just return it
         if(oldStatus == newStatus)
-            return true
+            return ticket.toDTO()
 
         // If the state change is not allowed throws an exception
         if(!stateChangeChecker(oldStatus, newStatus))
                 throw StateChangeNotAllowedException()
 
-        // Updates the ticket with the new state, all th other values remain the same
+        // Updates the ticket with the new state, all the other values remain the same
         val updatedTicket = ticketRepository.save(Ticket(
             ticketId = ticketId,
             profile = ticket.profile,
@@ -90,20 +90,20 @@ class TicketServiceImpl(
             dateTime = Date()
         ))
 
-        return true
+        return updatedTicket.toDTO()
     }
 
-    override fun changePriority(ticketId: Long, priorityLevel: Int): Boolean {
+    override fun changePriority(ticketId: Long, priorityLevel: Int): TicketDTO? {
 
         // If the ticketId contained in the URI doesn't exist throws an exception
         val ticket = ticketRepository.findByIdOrNull(ticketId) ?: throw TicketNotFoundException()
 
-        // If the ticket has already the priority level contained in the request, just return true
+        // If the ticket has already the priority level contained in the request, just return it
         if(ticket.priorityLevel == priorityLevel)
-            return true
+            return ticket.toDTO()
 
-        // Updates the ticket with the new priority level, all the other values remain the same
-        ticketRepository.save(Ticket(
+        // Updates and returns the ticket with the new priority level, all the other values remain the same
+        return ticketRepository.save(Ticket(
             ticketId = ticketId,
             profile = ticket.profile,
             product = ticket.product,
@@ -111,12 +111,10 @@ class TicketServiceImpl(
             expert = ticket.expert,
             status = ticket.status,
             creationDate = ticket.creationDate
-        ))
-
-        return true
+        )).toDTO()
     }
 
-    override fun changeExpert(ticketId: Long, expertId: Long): Boolean {
+    override fun changeExpert(ticketId: Long, expertId: Long): TicketDTO? {
 
         // If the ticketId contained in the URI doesn't exist throws an exception
         val ticket = ticketRepository.findByIdOrNull(ticketId) ?: throw TicketNotFoundException()
@@ -126,10 +124,10 @@ class TicketServiceImpl(
 
         // If the ticket is already managed by the expert whose id is contained in the request, just return true
         if(ticket.expert?.expertId == expertId)
-            return true
+            return ticket.toDTO()
 
-        // Updates the ticket with the new priority level, all the other values remain the same
-        ticketRepository.save(Ticket(
+        // Updates and returns the ticket with the new priority level, all the other values remain the same
+        return ticketRepository.save(Ticket(
             ticketId = ticketId,
             profile = ticket.profile,
             product = ticket.product,
@@ -137,9 +135,7 @@ class TicketServiceImpl(
             expert = expert,
             status = ticket.status,
             creationDate = ticket.creationDate
-        ))
-
-        return true
+        )).toDTO()
     }
 
 }

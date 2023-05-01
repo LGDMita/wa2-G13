@@ -14,15 +14,15 @@ interface TicketService {
     /**
      * Changes the status of an existing ticket
      */
-    fun changeStatus(ticketId: Long, newStatus: String): Boolean
+    fun changeStatus(ticketId: Long, newStatus: String): TicketDTO?
 
     /**
      * Changes the priority level of an existing ticket
      */
-    fun changePriority(ticketId: Long, priorityLevel: Int): Boolean
+    fun changePriority(ticketId: Long, priorityLevel: Int): TicketDTO?
 
     /**
      * Changes the expert that is responsible for an existing ticket
      */
-    fun changeExpert(ticketId: Long, expertId: Long): Boolean
+    fun changeExpert(ticketId: Long, expertId: Long): TicketDTO?
 }
