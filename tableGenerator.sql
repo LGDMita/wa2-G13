@@ -26,7 +26,6 @@ create table experts
         primary key,
     name       varchar(255),
     surname    varchar(255),
-    sector     varchar(255),
     email      varchar(255)
 );
 
@@ -111,3 +110,20 @@ create table attachments
 alter table attachments
     owner to postgres;
 
+create table sectors
+(
+    sector_id integer not null
+        primary key,
+    name varchar(31)
+);
+
+create table expert_sector
+(
+    expert_id integer not null
+        constraint experts_sectors_expert_id_fkey
+        references experts,
+    sector_id integer not null
+        constraint experts_sectors_sector_id_fkey
+        references sectors,
+    primary key (expert_id, sector_id)
+)

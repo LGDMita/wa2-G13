@@ -1,13 +1,15 @@
 package it.polito.wa2.g13.server.ticketing.experts
 
 
+import it.polito.wa2.g13.server.ticketing.sectors.SectorRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
 
 @Service
 class ExpertServiceImpl(
-    private val expertRepository: ExpertRepository
+    private val expertRepository: ExpertRepository,
+    private val sectorRepository: SectorRepository
 ) : ExpertService {
 
     override fun setExpert(expertDTO: ExpertDTO): Boolean {
@@ -21,15 +23,15 @@ class ExpertServiceImpl(
     }
 
     override fun getExpertById(id: Long): ExpertDTO?{
-        return expertRepository.findByIdOrNull(id.toString())?.toDTO()
+        return expertRepository.findByIdOrNull(id)?.toDTO()
     }
 
     override fun modifyExpert(id: Long, expertDTO: ExpertDTO): Int {
-        return if(expertRepository.existsById(id.toString())){
-            if(expertRepository.existsByEmail(expertDTO.toExpert().email)){
+        return if(expertRepository.existsById(id)){
+            if(expertRepository.existsByEmail(expertDTO.email)){
                 0 // DuplicateExpertException
             }else{
-                expertRepository.save(expertDTO.toExpert())
+                expertRepository.save(expertDTO.toExpertWithId(id))
                 1 // Ok
             }
         }else{
@@ -37,23 +39,21 @@ class ExpertServiceImpl(
         }
     }
 
-    override fun getExpertsBySector(sector: String): List<ExpertDTO>? {
-
-        val listOfExperts= expertRepository.findBySector(sector)
-        return if (listOfExperts.isEmpty()){
+    override fun getExpertsBySector(sectorName: String): List<ExpertDTO>? {
+        return if (!sectorRepository.existsByName(sectorName)) {
             null
-        }else{
-            val listOfExpertDTOs= mutableListOf<ExpertDTO>()
-            for(e in listOfExperts){
-                listOfExpertDTOs.add(e.toDTO())
+        } else {
+            val sector= sectorRepository.findByName(sectorName)
+            val listOfExpertDTOs=
+                expertRepository.findExpertsBySectors(sector).map{e -> e.toDTO()}
+            return listOfExpertDTOs.ifEmpty {
+                null
             }
-            listOfExpertDTOs
         }
-
     }
 
     override fun deleteExpertById(id: Long){
-        expertRepository.deleteById(id.toString())
+        expertRepository.deleteById(id)
     }
 
 }

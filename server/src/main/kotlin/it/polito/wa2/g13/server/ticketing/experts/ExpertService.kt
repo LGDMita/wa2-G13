@@ -1,7 +1,6 @@
 package it.polito.wa2.g13.server.ticketing.experts
 
 import org.springframework.stereotype.Service
-import org.springframework.validation.BindingResult
 
 @Service
 interface ExpertService {
@@ -11,7 +10,7 @@ interface ExpertService {
 
     fun modifyExpert(id: Long, expertDTO: ExpertDTO): Int
 
-    fun getExpertsBySector(sector: String): List<ExpertDTO>?
+    fun getExpertsBySector(sectorName: String): List<ExpertDTO>?
 
-    fun deleteExpertById(id: Long) : Unit
+    fun deleteExpertById(id: Long)
 }

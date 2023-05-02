@@ -9,6 +9,8 @@ import it.polito.wa2.g13.server.ticketing.experts.DuplicateExpertException
 import it.polito.wa2.g13.server.ticketing.experts.ExpertInvalidArgumentsException
 import it.polito.wa2.g13.server.ticketing.experts.ExpertNotFoundException
 import it.polito.wa2.g13.server.ticketing.experts.ExpertsOfSelectedSectorNotFoundException
+import it.polito.wa2.g13.server.ticketing.sectors.SectorInvalidArgumentException
+import it.polito.wa2.g13.server.ticketing.sectors.SectorsNotFoundException
 import jakarta.validation.ConstraintViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail
@@ -58,4 +60,11 @@ class ProblemDetailsHandler : ResponseEntityExceptionHandler() {
     fun handleProductNotFound(e: ExpertsOfSelectedSectorNotFoundException) = ProblemDetail
         .forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
 
+    @ExceptionHandler(SectorsNotFoundException::class)
+    fun handleProductNotFound(e: SectorsNotFoundException) = ProblemDetail
+        .forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
+
+    @ExceptionHandler(SectorInvalidArgumentException::class)
+    fun handleDuplicateProfile(e: SectorInvalidArgumentException) = ProblemDetail
+        .forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
 }

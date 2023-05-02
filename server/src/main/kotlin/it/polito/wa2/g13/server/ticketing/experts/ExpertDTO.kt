@@ -12,14 +12,11 @@ data class ExpertDTO(
     @field:Size(min=1, max=255, message = "Surname MUST be a NON empty string of max 255 chars")
     @field:NotBlank(message="Name can NOT be blank")
     val surname: String,
-    @field:Size(min=1, max=255, message = "Sector MUST be a NON empty string of max 255 chars")
-    @field:NotBlank(message="Name can NOT be blank")
-    val sector: String,
     @field:Email(message="The email MUST be in a valid email format ")
     @field:NotBlank(message="Email can NOT be blank")
     val email: String
 )
 
 fun Expert.toDTO(): ExpertDTO {
-    return ExpertDTO(expertId, name, surname, sector, email)
+    return ExpertDTO(expertId, name, surname, email)
 }
