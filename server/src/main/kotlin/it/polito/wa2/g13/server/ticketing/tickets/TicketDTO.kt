@@ -17,9 +17,8 @@ data class TicketDTO(
     var ticketId: Long,
     @Valid
     var profile: Profile,
-    @field:Size(min=1, max=15, message = "Ean MUST be a NON empty string of max 15 chars")
-    @field:NotBlank(message="Ean can NOT be blank")
-    var ean: String,
+    @Valid
+    var product: Product,
     @field:Min(value = 0, message = "Minimum value for priorityLevel is 0")
     @field:Max(value = 4, message = "Minimum value for priorityLevel is 4")
     var priorityLevel: Int,
@@ -35,4 +34,5 @@ data class TicketDTO(
 
 fun Ticket.toDTO(): TicketDTO {
     return TicketDTO(ticketId, profile, ean, priorityLevel, expert, status, creationDate, messages)
+    return TicketDTO(ticketId, profile, product, priorityLevel, expert, status, creationDate)
 }

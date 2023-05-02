@@ -5,8 +5,6 @@ import it.polito.wa2.g13.server.products.ProductNotFoundException
 import it.polito.wa2.g13.server.profiles.DuplicateProfileException
 import it.polito.wa2.g13.server.profiles.InvalidArgumentsException
 import it.polito.wa2.g13.server.profiles.ProfileNotFoundException
-import it.polito.wa2.g13.server.ticketing.tickets.InvalidTicketException
-import it.polito.wa2.g13.server.ticketing.tickets.TicketNotFoundException
 import jakarta.validation.ConstraintViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail
@@ -39,6 +37,28 @@ class ProblemDetailsHandler : ResponseEntityExceptionHandler() {
     @ExceptionHandler(ConstraintViolationException::class)
     fun handleInvalidConstrain(e: ConstraintViolationException) = ProblemDetail
         .forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
+
+    @ExceptionHandler(TicketNotFoundException::class)
+    fun handleTicketNotFound(e: TicketNotFoundException) = ProblemDetail
+        .forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
+
+    @ExceptionHandler(InvalidTicketArgumentsException::class)
+    fun handleInvalidTicketArgumentsException(e: InvalidTicketArgumentsException) = ProblemDetail
+        .forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
+
+    @ExceptionHandler(DataIntegrityViolationException::class)
+    fun handleInvalidTicketArgumentsException(e: DataIntegrityViolationException) = ProblemDetail
+        .forStatusAndDetail(HttpStatus.CONFLICT, e.message!!)
+
+    @ExceptionHandler(ExpertNotFoundException::class)
+    fun handleTicketNotFound(e: ExpertNotFoundException) = ProblemDetail
+        .forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
+
+    @ExceptionHandler(StateChangeNotAllowedException::class)
+    fun handleInvalidTicketArgumentsException(e: StateChangeNotAllowedException) = ProblemDetail
+        .forStatusAndDetail(HttpStatus.CONFLICT, e.message!!)
+
+
 
     @ExceptionHandler(InvalidTicketException::class)
     fun handleInvalidTicket(e: InvalidTicketException) = ProblemDetail

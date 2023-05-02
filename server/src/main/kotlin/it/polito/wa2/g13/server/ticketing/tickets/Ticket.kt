@@ -3,12 +3,11 @@ package it.polito.wa2.g13.server.ticketing.tickets
 
 import it.polito.wa2.g13.server.profiles.Profile
 import it.polito.wa2.g13.server.ticketing.experts.Expert
-import it.polito.wa2.g13.server.ticketing.messages.Message
 import jakarta.persistence.*
-import java.util.*
+import java.util.Date
 
 @Entity
-@Table(name = "tickets")
+@Table(name= "tickets")
 class Ticket(
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tickets_generator")
@@ -17,8 +16,10 @@ class Ticket(
     @ManyToOne
     @JoinColumn(name = "profileId")
     var profile: Profile,
-    var ean: String,
-    var priorityLevel: Int,
+    @ManyToOne
+    @JoinColumn(name = "ean")
+    var product: Product,
+    var priorityLevel: Int?,
     @ManyToOne
     @JoinColumn(name = "expertId")
     var expert: Expert,
@@ -29,5 +30,5 @@ class Ticket(
 )
 
 fun TicketDTO.toTicket(): Ticket {
-    return Ticket(ticketId, profile, ean, priorityLevel, expert, status, creationDate, messages)
+    return Ticket(ticketId, profile, product, priorityLevel, expert, status, creationDate, messages)
 }
