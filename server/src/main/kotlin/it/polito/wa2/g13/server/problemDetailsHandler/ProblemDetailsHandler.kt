@@ -5,7 +5,13 @@ import it.polito.wa2.g13.server.products.ProductNotFoundException
 import it.polito.wa2.g13.server.profiles.DuplicateProfileException
 import it.polito.wa2.g13.server.profiles.InvalidArgumentsException
 import it.polito.wa2.g13.server.profiles.ProfileNotFoundException
+import it.polito.wa2.g13.server.ticketing.experts.ExpertNotFoundException
+import it.polito.wa2.g13.server.ticketing.tickets.InvalidTicketArgumentsException
+import it.polito.wa2.g13.server.ticketing.tickets.InvalidTicketException
+import it.polito.wa2.g13.server.ticketing.tickets.StateChangeNotAllowedException
+import it.polito.wa2.g13.server.ticketing.tickets.TicketNotFoundException
 import jakarta.validation.ConstraintViolationException
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -58,13 +64,7 @@ class ProblemDetailsHandler : ResponseEntityExceptionHandler() {
     fun handleInvalidTicketArgumentsException(e: StateChangeNotAllowedException) = ProblemDetail
         .forStatusAndDetail(HttpStatus.CONFLICT, e.message!!)
 
-
-
     @ExceptionHandler(InvalidTicketException::class)
     fun handleInvalidTicket(e: InvalidTicketException) = ProblemDetail
-        .forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
-
-    @ExceptionHandler(TicketNotFoundException::class)
-    fun handleInvalidTicket(e: TicketNotFoundException) = ProblemDetail
         .forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
 }

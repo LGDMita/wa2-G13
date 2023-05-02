@@ -10,7 +10,7 @@ import java.util.*
 interface TicketRepository : JpaRepository<Ticket, Long> {
 
    @Query(
-        "Select t from Ticket t where (:ean is null or t.ean=:ean) " +
+        "Select t from Ticket t where (:ean is null or t.product.ean=:ean) " +
                 "and (:profileId is null or t.profile.email=:profileId) " +
                 "and (:priorityLevel is null or t.priorityLevel=:priorityLevel) " +
                 "and (:expertId is null or t.expert.expertId=:expertId) and (:status is null or t.status=:status) " +

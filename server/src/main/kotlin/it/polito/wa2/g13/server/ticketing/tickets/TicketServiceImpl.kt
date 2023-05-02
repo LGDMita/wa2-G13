@@ -68,10 +68,11 @@ class TicketServiceImpl(
             priorityLevel = null,
             expert = null,
             status = "open",
-            creationDate = date
+            creationDate = date,
+            messages = null,
         ))
 
-        // Saves the ticket state change in the repository. This is not a real state change, both old and new status are "open", but its useful to have it for debugging reasons
+        // Saves the ticket state change in the repository. This is not a real state change, both old and new status are "open", but it's useful to have it for debugging reasons
         ticketHistoryRepository.save(TicketHistory(
             ticket = ticket,
             oldStatus = ticket.status,
@@ -107,7 +108,8 @@ class TicketServiceImpl(
             priorityLevel = ticket.priorityLevel,
             expert = ticket.expert,
             status = newStatus,
-            creationDate = ticket.creationDate
+            creationDate = ticket.creationDate,
+            messages = ticket.messages
         ))
 
         // Saves the state change in the repository
@@ -138,7 +140,8 @@ class TicketServiceImpl(
             priorityLevel = priorityLevel,
             expert = ticket.expert,
             status = ticket.status,
-            creationDate = ticket.creationDate
+            creationDate = ticket.creationDate,
+            messages = ticket.messages
         ))
 
         return true
@@ -164,7 +167,8 @@ class TicketServiceImpl(
             priorityLevel = ticket.priorityLevel,
             expert = expert,
             status = ticket.status,
-            creationDate = ticket.creationDate
+            creationDate = ticket.creationDate,
+            messages = ticket.messages
         ))
 
         return true

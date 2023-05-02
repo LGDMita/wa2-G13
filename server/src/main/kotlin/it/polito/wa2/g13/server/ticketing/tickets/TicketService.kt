@@ -1,7 +1,5 @@
 package it.polito.wa2.g13.server.ticketing.tickets
 
-import it.polito.wa2.g13.server.profiles.Profile
-import it.polito.wa2.g13.server.ticketing.experts.Expert
 import org.springframework.stereotype.Service
 import java.util.*
 import org.springframework.validation.BindingResult
