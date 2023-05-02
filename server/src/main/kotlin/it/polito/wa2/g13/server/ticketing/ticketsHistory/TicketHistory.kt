@@ -5,7 +5,7 @@ import jakarta.persistence.*
 import java.util.*
 
 @Entity
-@Table(name= "tickets_history")
+@Table(name= "ticketsHistory")
 class TicketHistory(
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tickets_history_generator")

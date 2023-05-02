@@ -5,4 +5,11 @@ import org.springframework.web.bind.annotation.*
 @RestController
 class ExpertController(
     private val expertService: ExpertService
-)
+) {
+
+    //get: /API/experts
+    @GetMapping("/API/experts")
+    fun getMessages() : List<ExpertDTO>{
+        return expertService.getExperts()
+    }
+}

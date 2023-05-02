@@ -21,6 +21,9 @@ class TicketServiceImpl(
     private val productRepository: ProductRepository,
     private val ticketHistoryRepository: TicketHistoryRepository
 ) : TicketService {
+    override fun ticketExist(id: Long) : Boolean {
+        return ticketRepository.existsById(id)
+    }
 
     override fun getTickets(): List<Ticket> {
         return ticketRepository.findAll()
