@@ -18,5 +18,5 @@ class Expert(
 }
 
 fun ExpertDTO.toExpert(): Expert {
-    return Expert(name, surname, sector, email,expertId)
+    return Expert(expertId, name, surname, sector, email)
 }

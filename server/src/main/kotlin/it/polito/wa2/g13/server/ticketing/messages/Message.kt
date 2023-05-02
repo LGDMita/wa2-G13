@@ -1,5 +1,6 @@
 package it.polito.wa2.g13.server.ticketing.messages
 
+import it.polito.wa2.g13.server.EntityBase
 import it.polito.wa2.g13.server.ticketing.attachments.Attachment
 import it.polito.wa2.g13.server.ticketing.attachments.toAttachment
 import it.polito.wa2.g13.server.ticketing.tickets.Ticket

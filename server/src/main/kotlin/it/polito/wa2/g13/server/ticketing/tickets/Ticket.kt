@@ -1,8 +1,10 @@
 package it.polito.wa2.g13.server.ticketing.tickets
 
 
+import it.polito.wa2.g13.server.products.Product
 import it.polito.wa2.g13.server.profiles.Profile
 import it.polito.wa2.g13.server.ticketing.experts.Expert
+import it.polito.wa2.g13.server.ticketing.messages.Message
 import jakarta.persistence.*
 import java.util.Date
 
@@ -26,11 +28,11 @@ class Ticket(
     var status: String,
     var creationDate: Date,
     @OneToMany(mappedBy = "ticket")
-    var messages : MutableSet<Message> = mutableSetOf()
+    var messages : MutableSet<Message>? = mutableSetOf()
 ) {
     fun addMessage(message: Message){
         message.ticket=this
-        messages.add(message)
+        messages?.add(message)
     }
 }
 
