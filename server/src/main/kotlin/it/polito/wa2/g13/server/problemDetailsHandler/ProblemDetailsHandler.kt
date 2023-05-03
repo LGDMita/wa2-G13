@@ -5,13 +5,7 @@ import it.polito.wa2.g13.server.products.ProductNotFoundException
 import it.polito.wa2.g13.server.profiles.DuplicateProfileException
 import it.polito.wa2.g13.server.profiles.InvalidArgumentsException
 import it.polito.wa2.g13.server.profiles.ProfileNotFoundException
-import it.polito.wa2.g13.server.ticketing.experts.ExpertNotFoundException
-import it.polito.wa2.g13.server.ticketing.tickets.InvalidTicketArgumentsException
-import it.polito.wa2.g13.server.ticketing.tickets.InvalidTicketException
-import it.polito.wa2.g13.server.ticketing.tickets.StateChangeNotAllowedException
-import it.polito.wa2.g13.server.ticketing.tickets.TicketNotFoundException
 import jakarta.validation.ConstraintViolationException
-import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -42,6 +36,30 @@ class ProblemDetailsHandler : ResponseEntityExceptionHandler() {
 
     @ExceptionHandler(ConstraintViolationException::class)
     fun handleInvalidConstrain(e: ConstraintViolationException) = ProblemDetail
+        .forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
+
+    @ExceptionHandler(ExpertInvalidArgumentsException::class)
+    fun handleDuplicateProfile(e: ExpertInvalidArgumentsException) = ProblemDetail
+        .forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
+
+    @ExceptionHandler(DuplicateExpertException::class)
+    fun handleDuplicateProduct(e: DuplicateExpertException) = ProblemDetail
+        .forStatusAndDetail(HttpStatus.CONFLICT, e.message!!)
+
+    @ExceptionHandler(ExpertNotFoundException::class)
+    fun handleProductNotFound(e: ExpertNotFoundException) = ProblemDetail
+        .forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
+
+    @ExceptionHandler(ExpertsOfSelectedSectorNotFoundException::class)
+    fun handleProductNotFound(e: ExpertsOfSelectedSectorNotFoundException) = ProblemDetail
+        .forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
+
+    @ExceptionHandler(SectorsNotFoundException::class)
+    fun handleProductNotFound(e: SectorsNotFoundException) = ProblemDetail
+        .forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
+
+    @ExceptionHandler(SectorInvalidArgumentException::class)
+    fun handleDuplicateProfile(e: SectorInvalidArgumentException) = ProblemDetail
         .forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
 
     @ExceptionHandler(TicketNotFoundException::class)
