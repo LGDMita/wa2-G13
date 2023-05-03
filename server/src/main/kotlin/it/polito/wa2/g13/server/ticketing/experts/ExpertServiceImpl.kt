@@ -43,16 +43,14 @@ class ExpertServiceImpl(
     }
 
     override fun getExpertsBySector(sectorName: String): List<ExpertDTO>? {
-        return if (!sectorRepository.existsByName(sectorName)) {
+
+        val sector= sectorRepository.findByName(sectorName)
+        val listOfExpertDTOs=
+            expertRepository.findExpertsBySectors(sector).map{e -> e.toDTO()}
+        return listOfExpertDTOs.ifEmpty {
             null
-        } else {
-            val sector= sectorRepository.findByName(sectorName)
-            val listOfExpertDTOs=
-                expertRepository.findExpertsBySectors(sector).map{e -> e.toDTO()}
-            return listOfExpertDTOs.ifEmpty {
-                null
-            }
         }
+
     }
 
     override fun deleteExpertById(id: Long){

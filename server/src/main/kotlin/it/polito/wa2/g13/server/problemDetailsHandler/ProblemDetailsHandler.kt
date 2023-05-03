@@ -8,13 +8,12 @@ import it.polito.wa2.g13.server.profiles.ProfileNotFoundException
 import it.polito.wa2.g13.server.ticketing.experts.DuplicateExpertException
 import it.polito.wa2.g13.server.ticketing.experts.ExpertInvalidArgumentsException
 import it.polito.wa2.g13.server.ticketing.experts.ExpertNotFoundException
-import it.polito.wa2.g13.server.ticketing.sectors.SectorInvalidArgumentException
-import it.polito.wa2.g13.server.ticketing.sectors.SectorsNotFoundException
 import it.polito.wa2.g13.server.ticketing.tickets.InvalidTicketArgumentsException
 import it.polito.wa2.g13.server.ticketing.tickets.InvalidTicketException
 import it.polito.wa2.g13.server.ticketing.tickets.StateChangeNotAllowedException
 import it.polito.wa2.g13.server.ticketing.tickets.TicketNotFoundException
 import it.polito.wa2.g13.server.ticketing.experts.ExpertsOfSelectedSectorNotFoundException
+import it.polito.wa2.g13.server.ticketing.sectors.*
 import jakarta.validation.ConstraintViolationException
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
@@ -72,6 +71,18 @@ class ProblemDetailsHandler : ResponseEntityExceptionHandler() {
     @ExceptionHandler(SectorInvalidArgumentException::class)
     fun handleDuplicateProfile(e: SectorInvalidArgumentException) = ProblemDetail
         .forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
+
+    @ExceptionHandler(ExpertSectorsNotFoundException::class)
+    fun handleTicketNotFound(e: ExpertSectorsNotFoundException) = ProblemDetail
+        .forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
+
+    @ExceptionHandler(SectorNotFoundException::class)
+    fun handleTicketNotFound(e: SectorNotFoundException) = ProblemDetail
+        .forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
+
+    @ExceptionHandler(ExpertSectorNotFoundException::class)
+    fun handleTicketNotFound(e: ExpertSectorNotFoundException) = ProblemDetail
+        .forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
 
     @ExceptionHandler(TicketNotFoundException::class)
     fun handleTicketNotFound(e: TicketNotFoundException) = ProblemDetail

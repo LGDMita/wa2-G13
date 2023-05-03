@@ -1,13 +1,17 @@
 package it.polito.wa2.g13.server.ticketing.experts
 
 
+import it.polito.wa2.g13.server.ticketing.sectors.SectorNotFoundException
+import it.polito.wa2.g13.server.ticketing.sectors.SectorService
+import it.polito.wa2.g13.server.ticketing.sectors.SectorsNotFoundException
 import jakarta.validation.Valid
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 
 @RestController
 class ExpertController(
-    private val expertService: ExpertService
+    private val expertService: ExpertService,
+    private val sectorService: SectorService
 ) {
 
     //get: /API/experts
@@ -57,7 +61,17 @@ class ExpertController(
 
     @GetMapping("/API/experts/")
     fun getExpertsBySector(@RequestParam sectorName: String) : List<ExpertDTO>?{
-        return expertService.getExpertsBySector(sectorName) ?: throw ExpertsOfSelectedSectorNotFoundException()
+        val sectorName= sectorName.lowercase()
+        val sectors= sectorService.getAllSectors()
+        if(sectors!= null){
+            if(sectors.find { s -> s.name== sectorName } != null){
+                return expertService.getExpertsBySector(sectorName) ?: throw ExpertsOfSelectedSectorNotFoundException()
+            }else{
+                throw SectorNotFoundException()
+            }
+        }else{
+            throw SectorsNotFoundException()
+        }
     }
 
     @DeleteMapping("/API/experts/{id}")

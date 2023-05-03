@@ -33,7 +33,3 @@ fun SectorDTO.toSector(): Sector {
     return Sector(sectorId, name)
 }
 
-fun SectorDTO.toSectorWithId(id: Long): Sector{
-    return Sector(id, name)
-}
-

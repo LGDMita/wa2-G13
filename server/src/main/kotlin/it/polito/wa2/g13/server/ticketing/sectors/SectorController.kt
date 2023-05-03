@@ -20,7 +20,7 @@ class SectorController (
     @GetMapping("/API/experts/{id}/sectors")
     fun getSectorsOfExpert(@PathVariable id: Long) : List<SectorDTO>?{
         if(expertService.getExpertById(id)!= null)
-            return sectorService.getSectorsOfExpert(id) ?: throw SectorsNotFoundException()
+            return sectorService.getSectorsOfExpert(id) ?: throw ExpertSectorsNotFoundException()
         else
             throw ExpertNotFoundException()
     }
@@ -42,11 +42,25 @@ class SectorController (
     @DeleteMapping("/API/experts/{expertId}/sectors/{sectorId}")
     fun deleteSectorForExpert(@PathVariable expertId: Long,
                               @PathVariable sectorId: Long){
+
         if(expertService.getExpertById(expertId)!= null){
-            sectorService.deleteSectorForExpert(expertId, sectorId)
+            val sectors= sectorService.getAllSectors()
+            if(sectors!= null){
+                if(sectors.find { s -> s.sectorId== sectorId } != null){
+                    val expertSectors= sectorService.getSectorsOfExpert(expertId)
+                    if(expertSectors!= null){
+                        if(expertSectors.find { s -> s.sectorId== sectorId } != null)
+                            sectorService.deleteSectorForExpert(expertId, sectorId)
+                        else
+                            throw ExpertSectorNotFoundException()
+                    }else
+                        throw ExpertSectorsNotFoundException()
+                }else
+                    throw SectorNotFoundException()
+            }else
+                throw SectorsNotFoundException()
         }else
             throw ExpertNotFoundException()
-
     }
 
 }
