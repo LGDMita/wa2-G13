@@ -6,13 +6,18 @@ import jakarta.persistence.Table
 
 @Entity
 @Table(name="products")
-class Product {
+class Product (
     @Id
-    var ean: String = ""
-    var name: String = ""
+    var ean: String = "",
+    var name: String = "",
     var brand: String = ""
+){
 
     override fun toString(): String {
         return "ean=${ean} name=${name} brand=${brand}"
     }
+}
+
+fun ProductDTO.toProduct(): Product {
+    return Product(ean, name, brand)
 }

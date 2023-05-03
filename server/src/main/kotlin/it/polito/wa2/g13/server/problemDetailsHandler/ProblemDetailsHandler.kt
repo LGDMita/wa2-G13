@@ -5,7 +5,18 @@ import it.polito.wa2.g13.server.products.ProductNotFoundException
 import it.polito.wa2.g13.server.profiles.DuplicateProfileException
 import it.polito.wa2.g13.server.profiles.InvalidArgumentsException
 import it.polito.wa2.g13.server.profiles.ProfileNotFoundException
+import it.polito.wa2.g13.server.ticketing.experts.DuplicateExpertException
+import it.polito.wa2.g13.server.ticketing.experts.ExpertInvalidArgumentsException
+import it.polito.wa2.g13.server.ticketing.experts.ExpertNotFoundException
+import it.polito.wa2.g13.server.ticketing.sectors.SectorInvalidArgumentException
+import it.polito.wa2.g13.server.ticketing.sectors.SectorsNotFoundException
+import it.polito.wa2.g13.server.ticketing.tickets.InvalidTicketArgumentsException
+import it.polito.wa2.g13.server.ticketing.tickets.InvalidTicketException
+import it.polito.wa2.g13.server.ticketing.tickets.StateChangeNotAllowedException
+import it.polito.wa2.g13.server.ticketing.tickets.TicketNotFoundException
+import it.polito.wa2.g13.server.ticketing.experts.ExpertsOfSelectedSectorNotFoundException
 import jakarta.validation.ConstraintViolationException
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -73,10 +84,6 @@ class ProblemDetailsHandler : ResponseEntityExceptionHandler() {
     @ExceptionHandler(DataIntegrityViolationException::class)
     fun handleInvalidTicketArgumentsException(e: DataIntegrityViolationException) = ProblemDetail
         .forStatusAndDetail(HttpStatus.CONFLICT, e.message!!)
-
-    @ExceptionHandler(ExpertNotFoundException::class)
-    fun handleTicketNotFound(e: ExpertNotFoundException) = ProblemDetail
-        .forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
 
     @ExceptionHandler(StateChangeNotAllowedException::class)
     fun handleInvalidTicketArgumentsException(e: StateChangeNotAllowedException) = ProblemDetail

@@ -13,7 +13,7 @@ interface TicketRepository : JpaRepository<Ticket, Long> {
         "Select t from Ticket t where (:ean is null or t.product.ean=:ean) " +
                 "and (:profileId is null or t.profile.email=:profileId) " +
                 "and (:priorityLevel is null or t.priorityLevel=:priorityLevel) " +
-                "and (:expertId is null or t.expert.getId()=:expertId) and (:status is null or t.status=:status) " +
+                "and (:expertId is null or t.expert.id=:expertId) and (:status is null or t.status=:status) " +
                 "and (cast(:creationDateStart as timestamp) is null or t.creationDate >= :creationDateStart) " +
                 "and (cast(:creationDateStop as timestamp) is null or t.creationDate <= :creationDateStop)"
     )

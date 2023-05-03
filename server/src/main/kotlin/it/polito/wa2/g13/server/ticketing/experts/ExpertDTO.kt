@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 
 data class ExpertDTO(
-    val expertId: Long,
+    val expertId: Long?,
     @field:Size(min=1, max=255, message = "Name MUST be a NON empty string of max 255 chars")
     @field:NotBlank(message="Name can NOT be blank")
     val name: String,
@@ -18,5 +18,5 @@ data class ExpertDTO(
 )
 
 fun Expert.toDTO(): ExpertDTO {
-    return ExpertDTO(getId(), name, surname, sector, email)
+    return ExpertDTO(getId(), name, surname, email)
 }

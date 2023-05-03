@@ -1,9 +1,8 @@
 package it.polito.wa2.g13.server.ticketing.experts
 
 import it.polito.wa2.g13.server.EntityBase
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.Table
+import it.polito.wa2.g13.server.ticketing.sectors.Sector
+import jakarta.persistence.*
 
 @Entity
 @Table(name= "experts")

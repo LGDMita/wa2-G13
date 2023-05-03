@@ -72,7 +72,7 @@ class TicketServiceImpl(
             expert = null,
             status = "open",
             creationDate = date,
-            messages = null,
+            messages = mutableSetOf(),
         ))
 
         // Saves the ticket state change in the repository. This is not a real state change, both old and new status are "open", but it's useful to have it for debugging reasons
