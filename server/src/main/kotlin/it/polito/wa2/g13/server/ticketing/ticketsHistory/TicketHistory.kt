@@ -20,5 +20,5 @@ class TicketHistory(
 )
 
 fun TicketHistory.toDTO(): TicketHistoryDTO {
-    return TicketHistoryDTO(historyId, ticket, oldStatus, newStatus, dateTime)
+    return TicketHistoryDTO(historyId, ticket.ticketId, oldStatus, newStatus, dateTime)
 }

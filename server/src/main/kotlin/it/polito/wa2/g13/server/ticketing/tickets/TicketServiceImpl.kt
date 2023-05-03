@@ -159,7 +159,7 @@ class TicketServiceImpl(
         val expert = expertRepository.findByIdOrNull((expertId)) ?: throw ExpertNotFoundException()
 
         // If the ticket is already managed by the expert whose id is contained in the request, just return true
-        if(ticket.expert?.expertId == expertId)
+        if(ticket.expert?.getId() == expertId)
             return true
 
         // Updates the ticket with the new priority level, all the other values remain the same

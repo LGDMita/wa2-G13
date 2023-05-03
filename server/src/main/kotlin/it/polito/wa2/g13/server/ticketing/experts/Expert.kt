@@ -8,8 +8,6 @@ import jakarta.persistence.Table
 @Entity
 @Table(name= "experts")
 class Expert(
-    @Id
-    var expertId: Long,
     var name: String,
     var surname: String,
     var sector: String,
@@ -18,5 +16,5 @@ class Expert(
 }
 
 fun ExpertDTO.toExpert(): Expert {
-    return Expert(expertId, name, surname, sector, email)
+    return Expert(name, surname, sector, email,expertId)
 }
