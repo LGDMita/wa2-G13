@@ -3,6 +3,7 @@ package it.polito.wa2.g13.server.ticketing.tickets
 import jakarta.validation.Valid
 import jakarta.validation.constraints.*
 import org.springframework.format.annotation.DateTimeFormat
+import org.springframework.http.HttpStatus
 import org.springframework.validation.BindingResult
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
@@ -82,6 +83,7 @@ class TicketControllerValidated(
         )
     }
     @PostMapping("/API/tickets")
+    @ResponseStatus(HttpStatus.CREATED)
     fun createTicket(
         @Valid @RequestBody(required = true) ticketPostDTO: TicketPostDTO,
         br: BindingResult
