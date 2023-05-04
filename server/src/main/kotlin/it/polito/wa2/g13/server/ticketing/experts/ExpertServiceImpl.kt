@@ -31,7 +31,7 @@ class ExpertServiceImpl(
 
     override fun modifyExpert(id: Long, expertDTO: ExpertDTO): Int {
         return if(expertRepository.existsById(id)){
-            if(expertRepository.existsByEmail(expertDTO.email)){
+            if(expertRepository.existsByEmailAndIdNot(expertDTO.email, id)){
                 0 // DuplicateExpertException
             }else{
                 expertRepository.save(expertDTO.toExpertWithId(id))
