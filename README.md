@@ -10,6 +10,39 @@ GitHub Repository: https://github.com/MolinengoLuigi/wa2-G13
 
 
 ### TICKETING APIs LIST
+- POST `/API/tickets/`
+  - Request parameters: none
+  - Request body `TicketPostDto`
+  - Result:
+    - status: `201` if tickets is correctly created
+      - body: `TicketDTO`
+    - status: `422` if body validation fails
+    - status: `404` if product or profile contained in `TicketPostDto` don't exist
+- PUT `/API/tickets/{ticketId}/changeStatus`
+  - Request parameters: id of the target ticket
+  - Request body: `{"status": "in_progress"} (example)`
+  - Result:
+    - status: `200` if modify succeeds
+      - body: `true`
+    - status: `422` if body validation fails
+    - status: `404` if ticket in request param doesn't exist
+    - status: `409` if ticket state change is not allowed
+- PUT `/API/tickets/{ticketId}/changePriority`
+  - Request parameters: id of the target ticket
+  - Request body: `{"priorityLevel": 0} (example)`
+  - Result:
+    - status: `200` if modify succeeds
+      - body: `true`
+    - status: `422` if body validation fails
+    - status: `404` if ticket in request param doesn't exist
+- PUT `/API/tickets/{ticketId}/changeExpert`
+  - Request parameters: id of the target ticket
+  - Request body: `{"expertId": 1} (example)`
+  - Result:
+    - status: `200` if modify succeeds
+      - body: `true`
+    - status: `422` if body validation fails
+    - status: `404` if ticket in request param or expert in body don't exist
 - GET `/API/tickets/`
   - Request parameters: none
   - Request body: none
