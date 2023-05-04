@@ -12,7 +12,7 @@ interface TicketService {
 
     fun getTicket(ticketId: Long): TicketDTO?
 
-    fun modifyTicket(ticketId: Long, ticket: TicketDTO): Boolean
+    fun modifyTicket(ticket: TicketDTO): Boolean
 
     fun getFilteredTickets(
         ean: String?,

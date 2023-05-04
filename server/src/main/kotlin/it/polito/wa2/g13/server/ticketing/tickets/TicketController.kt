@@ -24,13 +24,12 @@ class TicketController(
 
     @PutMapping("/API/ticket/")
     fun modifyTicket(
-        @RequestParam("ticketId") ticketId: Long,
         @RequestBody @Valid ticketDTO: TicketDTO,
         br: BindingResult
     ): Boolean {
         if (!br.hasErrors()) {
-            if (ticketService.getTicket(ticketId) != null) {
-                return ticketService.modifyTicket(ticketId, ticketDTO)
+            if (ticketService.getTicket(ticketDTO.ticketId) != null) {
+                return ticketService.modifyTicket(ticketDTO)
             }
             else {
                 throw TicketNotFoundException()
@@ -63,6 +62,7 @@ class TicketControllerValidated(
         expertId: Long?,
         @RequestParam("status")
         @Size(min=1, max=15, message = "Status MUST be a NON empty string of max 15 chars")
+        @Pattern(regexp = "(open|closed|resolved|in_progress|reopened)")
         status: String?,
         @RequestParam("creationDateStart")
         @DateTimeFormat(pattern = "yyyy-MM-dd")

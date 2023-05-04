@@ -9,11 +9,7 @@ import it.polito.wa2.g13.server.ticketing.experts.toDTO
 import it.polito.wa2.g13.server.ticketing.messages.MessageDTO
 import it.polito.wa2.g13.server.ticketing.messages.toDTO
 import jakarta.validation.Valid
-import jakarta.validation.constraints.Max
-import jakarta.validation.constraints.Min
-import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.NotNull
-import jakarta.validation.constraints.Size
+import jakarta.validation.constraints.*
 
 import java.util.*
 
@@ -31,6 +27,7 @@ data class TicketDTO(
     var expert: ExpertDTO?,
     @field:Size(min=1, max=15, message = "Status MUST be a NON empty string of max 15 chars")
     @field:NotBlank(message="Status can NOT be blank")
+    @field:Pattern(regexp = "(open|closed|resolved|in_progress|reopened)")
     var status: String,
     @field:NotNull
     var creationDate: Date,

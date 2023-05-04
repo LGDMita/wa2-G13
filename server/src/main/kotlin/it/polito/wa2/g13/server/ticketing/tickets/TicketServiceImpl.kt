@@ -33,8 +33,8 @@ class TicketServiceImpl(
         return ticketRepository.findByIdOrNull(ticketId)?.toDTO()
     }
 
-    override fun modifyTicket(ticketId: Long, ticket: TicketDTO): Boolean {
-        return if (ticketRepository.existsById(ticketId)) {
+    override fun modifyTicket(ticket: TicketDTO): Boolean {
+        return if (ticketRepository.existsById(ticket.ticketId)) {
             ticketRepository.save(ticket.toTicket())
             true
         } else {
