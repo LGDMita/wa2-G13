@@ -55,13 +55,17 @@ class MassiApplicationTests {
     @Autowired
     lateinit var profileRepository: ProfileRepository
 
-    @Test
-    fun creationTicketSuccessTest() {
-        productRepository.save(Product(ean = "123123123123123"))
-        profileRepository.save(Profile(email = "bob@bob.com", name = "bob", surname = "aggiustatutto"))
-        val baseUrl = "http://localhost:$port/API/tickets"
+    fun creationTicketTest(
+        baseUrl: String = "http://localhost:$port/API/tickets",
+        profileId: String = "this@exists.com",
+        ean: String = "000000000000000",
+        expectedStatus: HttpStatus
+    ) {
+        productRepository.save(Product(ean = "000000000000000"))
+        profileRepository.save(Profile(email = "this@exists.com", name = "this", surname = "exists"))
         val uri = URI(baseUrl)
-        val ticketPost = TicketPostDTO("bob@bob.com", "123123123123123")
+
+        val ticketPost = TicketPostDTO(profileId, ean)
 
         val headers = HttpHeaders()
         headers.set("X-COM-PERSIST", "true")
@@ -71,156 +75,91 @@ class MassiApplicationTests {
         val result = restTemplate.postForEntity(uri, request, String::class.java)
 
         //Verify request succeed
-        Assertions.assertEquals(HttpStatus.CREATED, result.statusCode)
+        Assertions.assertEquals(expectedStatus, result.statusCode)
+    }
 
-        print(ticketRepository.findById(1).get().product.ean)
+    fun updateTicketStatusOrPriorityLevelOrExpertIdTest(
+        operationUrl: String,
+        body: Map<String, Any>,
+        expectedStatus: HttpStatus
+    ) {
+        val product = Product(ean = "000000000000000")
+        val profile = Profile(email = "this@exists.com", name = "this", surname = "exists")
+        productRepository.save(product)
+        profileRepository.save(profile)
+        expertRepository.save(Expert(email = "expert@email.com", name = "super", surname = "expert"))
+        ticketRepository.save(Ticket(
+            creationDate = Date(),
+            expert = null,
+            priorityLevel = null,
+            product = product,
+            profile = profile,
+            status = "open"
+        ))
+
+        val baseUrl = "http://localhost:$port/API/tickets/1/$operationUrl"
+        val uri = URI(baseUrl)
+
+        val headers = HttpHeaders()
+        headers.set("X-COM-PERSIST", "true")
+
+        val request = HttpEntity(body, headers)
+
+        val result = restTemplate.exchange(uri, HttpMethod.PUT, request, String::class.java)
+
+        //Verify request succeed
+        Assertions.assertEquals(expectedStatus, result.statusCode)
+    }
+
+    @Test
+    fun creationTicketSuccessTest() {
+        creationTicketTest(expectedStatus = HttpStatus.CREATED)
     }
 
     @Test
     fun creationTicketInvalidEanTest() {
-        profileRepository.save(Profile(email = "bob@bob.com", name = "bob", surname = "aggiustatutto"))
-        val baseUrl = "http://localhost:$port/API/tickets"
-        val uri = URI(baseUrl)
-        val ticketPost = TicketPostDTO("bob@bob.com", "12312312312312")
-
-        val headers = HttpHeaders()
-        headers.set("X-COM-PERSIST", "true")
-
-        val request = HttpEntity(ticketPost, headers)
-
-        val result = restTemplate.postForEntity(uri, request, String::class.java)
-
-        //Verify request succeed
-        Assertions.assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, result.statusCode)
+        creationTicketTest(ean = "", expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY)
     }
 
     @Test
     fun creationTicketBlankProfileIdTest() {
-        productRepository.save(Product(ean = "123123123123123"))
-        val baseUrl = "http://localhost:$port/API/tickets"
-        val uri = URI(baseUrl)
-        val ticketPost = TicketPostDTO("", "12312312312312")
-
-        val headers = HttpHeaders()
-        headers.set("X-COM-PERSIST", "true")
-
-        val request = HttpEntity(ticketPost, headers)
-
-        val result = restTemplate.postForEntity(uri, request, String::class.java)
-
-        //Verify request succeed
-        Assertions.assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, result.statusCode)
+        creationTicketTest(profileId = "", expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY)
     }
 
     @Test
     fun creationTicketNonExistingProfileIdTest() {
-        productRepository.save(Product(ean = "123123123123123"))
-        val baseUrl = "http://localhost:$port/API/tickets"
-        val uri = URI(baseUrl)
-        val ticketPost = TicketPostDTO("bob@bob.com", "123123123123123")
-
-        val headers = HttpHeaders()
-        headers.set("X-COM-PERSIST", "true")
-
-        val request = HttpEntity(ticketPost, headers)
-
-        val result = restTemplate.postForEntity(uri, request, String::class.java)
-
-        //Verify request succeed
-        Assertions.assertEquals(HttpStatus.NOT_FOUND, result.statusCode)
+        creationTicketTest(profileId = "doesnt@exist.com", expectedStatus = HttpStatus.NOT_FOUND)
     }
 
     @Test
     fun creationTicketNonExistingEanTest() {
-        profileRepository.save(Profile(email = "bob@bob.com", name = "bob", surname = "aggiustatutto"))
-        val baseUrl = "http://localhost:$port/API/tickets"
-        val uri = URI(baseUrl)
-        val ticketPost = TicketPostDTO("bob@bob.com", "123123123123123")
-
-        val headers = HttpHeaders()
-        headers.set("X-COM-PERSIST", "true")
-
-        val request = HttpEntity(ticketPost, headers)
-
-        val result = restTemplate.postForEntity(uri, request, String::class.java)
-
-        //Verify request succeed
-        Assertions.assertEquals(HttpStatus.NOT_FOUND, result.statusCode)
+        creationTicketTest(ean = "000000000000001", expectedStatus = HttpStatus.NOT_FOUND)
     }
 
     @Test
     fun updateTicketStatusSuccessTest() {
-        val product = Product(ean = "123123123123123")
-        val profile = Profile(email = "bob@bob.com", name = "bob", surname = "aggiustatutto")
-        productRepository.save(product)
-        profileRepository.save(profile)
-        ticketRepository.save(Ticket(creationDate = Date(), expert = null, priorityLevel = null, product = product, profile = profile, status = "open"))
-
-        val baseUrl = "http://localhost:$port/API/tickets/1/changeStatus"
-        val uri = URI(baseUrl)
-        val ticketPut = mapOf("status" to "in_progress")
-
-        val headers = HttpHeaders()
-        headers.set("X-COM-PERSIST", "true")
-
-        val request = HttpEntity(ticketPut, headers)
-
-        val result = restTemplate.exchange(uri, HttpMethod.PUT, request, String::class.java)
-
-        //Verify request succeed
-        Assertions.assertEquals(HttpStatus.OK, result.statusCode)
-
-        print(ticketRepository.findById(1).get().status)
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            operationUrl = "changeStatus",
+            body = mapOf("status" to "in_progress"),
+            expectedStatus = HttpStatus.OK
+        )
     }
 
     @Test
     fun updateTicketPrioritySuccessTest() {
-        val product = Product(ean = "123123123123123")
-        val profile = Profile(email = "bob@bob.com", name = "bob", surname = "aggiustatutto")
-        productRepository.save(product)
-        profileRepository.save(profile)
-        ticketRepository.save(Ticket(creationDate = Date(), expert = null, priorityLevel = null, product = product, profile = profile, status = "open"))
-
-        val baseUrl = "http://localhost:$port/API/tickets/1/changePriority"
-        val uri = URI(baseUrl)
-        val ticketPut = mapOf("priorityLevel" to 1)
-
-        val headers = HttpHeaders()
-        headers.set("X-COM-PERSIST", "true")
-
-        val request = HttpEntity(ticketPut, headers)
-
-        val result = restTemplate.exchange(uri, HttpMethod.PUT, request, String::class.java)
-
-        //Verify request succeed
-        Assertions.assertEquals(HttpStatus.OK, result.statusCode)
-
-        print(ticketRepository.findById(1).get().priorityLevel)
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            operationUrl = "changePriority",
+            body = mapOf("priorityLevel" to 0),
+            expectedStatus = HttpStatus.OK
+        )
     }
 
     @Test
     fun updateTicketExpertSuccessTest() {
-        val product = Product(ean = "123123123123123")
-        val profile = Profile(email = "bob@bob.com", name = "bob", surname = "aggiustatutto")
-        productRepository.save(product)
-        profileRepository.save(profile)
-        expertRepository.save(Expert(email = "tom@tom.com", name = "timmy", surname = "tom"))
-        ticketRepository.save(Ticket(creationDate = Date(), expert = null, priorityLevel = null, product = product, profile = profile, status = "open"))
-
-        val baseUrl = "http://localhost:$port/API/tickets/1/changeExpert"
-        val uri = URI(baseUrl)
-        val ticketPost = mapOf("expertId" to 1)
-
-        val headers = HttpHeaders()
-        headers.set("X-COM-PERSIST", "true")
-
-        val request = HttpEntity(ticketPost, headers)
-
-        val result = restTemplate.exchange(uri, HttpMethod.PUT, request, String::class.java)
-
-        //Verify request succeed
-        Assertions.assertEquals(HttpStatus.OK, result.statusCode)
-
-        print(ticketRepository.findById(1).get().expert?.getId())
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            operationUrl = "changeExpert",
+            body = mapOf("expertId" to 1),
+            expectedStatus = HttpStatus.OK
+        )
     }
 }
