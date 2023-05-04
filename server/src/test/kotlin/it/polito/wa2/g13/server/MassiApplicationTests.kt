@@ -67,10 +67,7 @@ class MassiApplicationTests {
 
         val ticketPost = TicketPostDTO(profileId, ean)
 
-        val headers = HttpHeaders()
-        headers.set("X-COM-PERSIST", "true")
-
-        val request = HttpEntity(ticketPost, headers)
+        val request = HttpEntity(ticketPost)
 
         val result = restTemplate.postForEntity(uri, request, String::class.java)
 
@@ -101,10 +98,7 @@ class MassiApplicationTests {
         val baseUrl = "http://localhost:$port/API/tickets/$ticketId/$operationUrl"
         val uri = URI(baseUrl)
 
-        val headers = HttpHeaders()
-        headers.set("X-COM-PERSIST", "true")
-
-        val request = HttpEntity(body, headers)
+        val request = HttpEntity(body)
 
         val result = restTemplate.exchange(uri, HttpMethod.PUT, request, String::class.java)
 
