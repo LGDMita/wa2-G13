@@ -25,7 +25,6 @@ import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import java.net.URI
 import java.util.*
-import kotlin.math.exp
 
 
 @Testcontainers
@@ -56,29 +55,6 @@ class MassiApplicationTests {
     lateinit var productRepository: ProductRepository
     @Autowired
     lateinit var profileRepository: ProfileRepository
-
-    fun creationTicketTest(
-        baseUrl: String = "http://localhost:$port/API/tickets",
-        profileId: String = "this@exists.com",
-        ean: String = "000000000000000",
-        expectedStatus: HttpStatus,
-        expectedErrorMessage: String = ""
-    ) {
-        productRepository.save(Product(ean = "000000000000000"))
-        profileRepository.save(Profile(email = "this@exists.com", name = "this", surname = "exists"))
-        val uri = URI(baseUrl)
-
-        val ticketPost = TicketPostDTO(profileId, ean)
-
-        val request = HttpEntity(ticketPost)
-
-        val result = restTemplate.postForEntity(uri, request, String::class.java)
-
-        //Verify request succeed
-        Assertions.assertEquals(expectedStatus, result.statusCode)
-        if(expectedErrorMessage != "")
-            Assertions.assertEquals(expectedErrorMessage, JSONObject(result.body).get("detail"))
-    }
 
     fun updateTicketStatusOrPriorityLevelOrExpertIdTest(
         ticketId: Int = 1,
@@ -135,6 +111,29 @@ class MassiApplicationTests {
             expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY,
             expectedErrorMessage = "createTicket.ticketPostDTO.profileId: The inserted input is not valid!"
         )
+    }
+
+    fun creationTicketTest(
+        baseUrl: String = "http://localhost:$port/API/tickets",
+        profileId: String = "this@exists.com",
+        ean: String = "000000000000000",
+        expectedStatus: HttpStatus,
+        expectedErrorMessage: String = ""
+    ) {
+        productRepository.save(Product(ean = "000000000000000"))
+        profileRepository.save(Profile(email = "this@exists.com", name = "this", surname = "exists"))
+        val uri = URI(baseUrl)
+
+        val ticketPost = TicketPostDTO(profileId, ean)
+
+        val request = HttpEntity(ticketPost)
+
+        val result = restTemplate.postForEntity(uri, request, String::class.java)
+
+        //Verify request succeed
+        Assertions.assertEquals(expectedStatus, result.statusCode)
+        if(expectedErrorMessage != "")
+            Assertions.assertEquals(expectedErrorMessage, JSONObject(result.body).get("detail"))
     }
 
     @Test

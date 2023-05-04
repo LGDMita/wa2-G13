@@ -1,0 +1,823 @@
+package it.polito.wa2.g13.server
+
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import it.polito.wa2.g13.server.products.Product
+import it.polito.wa2.g13.server.products.ProductRepository
+import it.polito.wa2.g13.server.profiles.Profile
+import it.polito.wa2.g13.server.profiles.ProfileRepository
+import it.polito.wa2.g13.server.ticketing.experts.Expert
+import it.polito.wa2.g13.server.ticketing.experts.ExpertRepository
+import it.polito.wa2.g13.server.ticketing.tickets.*
+import org.json.JSONObject
+import org.junit.FixMethodOrder
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
+import org.junit.runners.MethodSorters
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.boot.test.web.server.LocalServerPort
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.test.annotation.DirtiesContext
+import org.springframework.test.context.DynamicPropertyRegistry
+import org.springframework.test.context.DynamicPropertySource
+import org.testcontainers.containers.PostgreSQLContainer
+import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.junit.jupiter.Testcontainers
+import java.net.URI
+import java.util.*
+
+
+@Testcontainers
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING) // force name ordering
+class TicketingApplicationTests {
+    companion object {
+        @Container
+        val postgres = PostgreSQLContainer("postgres:latest")
+
+        @JvmStatic
+        @DynamicPropertySource
+        fun properties(registry: DynamicPropertyRegistry) {
+            registry.add("spring.datasource.url", postgres::getJdbcUrl)
+            registry.add("spring.datasource.username", postgres::getUsername)
+            registry.add("spring.datasource.password", postgres::getPassword)
+            registry.add("spring.jpa.hibernate.ddl-auto") { "create-drop" }
+        }
+    }
+
+    @LocalServerPort
+    protected var port: Int = 8080
+
+    @Autowired
+    lateinit var restTemplate: TestRestTemplate
+
+    @Autowired
+    lateinit var profileRepository: ProfileRepository
+
+    @Autowired
+    lateinit var productRepository: ProductRepository
+
+    @Autowired
+    lateinit var expertRepository: ExpertRepository
+
+    @Autowired
+    lateinit var ticketRepository: TicketRepository
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun t1TestGetAllTickets() {
+        val baseUrl = "http://localhost:$port/API/tickets/"
+        val uri = URI(baseUrl)
+        val myProfile = Profile("luigimolinengo@gmail.com", "Luigi", "Molinengo")
+        val myProduct = Product(
+            "4935531465706",
+            "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
+            "JMT"
+        )
+        val myExpert = Expert("Giovanni", "Malnati", "giovanni.malnati@polito.it")
+        val myTicket = Ticket(
+            profile = myProfile, product = myProduct, priorityLevel = 1, expert = myExpert,
+            status = "open", creationDate = Date(), messages = mutableSetOf()
+        )
+        val myTicket2 = Ticket(
+            profile = myProfile, product = myProduct, priorityLevel = 2, expert = myExpert,
+            status = "closed", creationDate = Date(), messages = mutableSetOf()
+        )
+
+        profileRepository.save(myProfile)
+        productRepository.save(myProduct)
+        expertRepository.save(myExpert)
+        ticketRepository.save(myTicket)
+        ticketRepository.save(myTicket2)
+
+        val result: ResponseEntity<String> = restTemplate.getForEntity(uri, String::class.java)
+
+        val gson = Gson()
+        val arrayTicketType = object : TypeToken<List<Ticket>>() {}.type
+        val tickets: List<TicketDTO> = gson.fromJson(result.body, arrayTicketType)
+
+        Assertions.assertEquals(HttpStatus.OK, result.statusCode)
+        Assertions.assertEquals(2, tickets.size)
+
+        ticketRepository.delete(myTicket)
+        ticketRepository.delete(myTicket2)
+        profileRepository.delete(myProfile)
+        productRepository.delete(myProduct)
+        expertRepository.delete(myExpert)
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun t2TestGetTicketById() {
+        val baseUrl = "http://localhost:$port/API/tickets/2"
+        val uri = URI(baseUrl)
+        val myProfile = Profile("luigimolinengo@gmail.com", "Luigi", "Molinengo")
+        val myProduct = Product(
+            "4935531465706",
+            "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
+            "JMT"
+        )
+        val myExpert = Expert("Giovanni", "Malnati", "giovanni.malnati@polito.it")
+        val myTicket = Ticket(
+            profile = myProfile, product = myProduct, priorityLevel = 1, expert = myExpert,
+            status = "open", creationDate = Date(), messages = mutableSetOf()
+        )
+        val myTicket2 = Ticket(
+            profile = myProfile, product = myProduct, priorityLevel = 2, expert = myExpert,
+            status = "closed", creationDate = Date(), messages = mutableSetOf()
+        )
+
+        profileRepository.save(myProfile)
+        productRepository.save(myProduct)
+        expertRepository.save(myExpert)
+        ticketRepository.save(myTicket)
+        ticketRepository.save(myTicket2)
+
+        val result: ResponseEntity<String> = restTemplate.getForEntity(uri, String::class.java)
+
+        val gson = Gson()
+        val ticketType = object : TypeToken<Ticket>() {}.type
+        val ticket: Ticket = gson.fromJson(result.body, ticketType)
+
+        Assertions.assertEquals(HttpStatus.OK, result.statusCode)
+        Assertions.assertEquals(2, ticket.ticketId)
+
+        ticketRepository.delete(myTicket)
+        ticketRepository.delete(myTicket2)
+        profileRepository.delete(myProfile)
+        productRepository.delete(myProduct)
+        expertRepository.delete(myExpert)
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun t3TestGetTicketByWrongId() {
+        val baseUrl = "http://localhost:$port/API/tickets/5"
+        val uri = URI(baseUrl)
+        val myProfile = Profile("luigimolinengo@gmail.com", "Luigi", "Molinengo")
+        val myProduct = Product(
+            "4935531465706",
+            "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
+            "JMT"
+        )
+        val myExpert = Expert("Giovanni", "Malnati", "giovanni.malnati@polito.it")
+        val myTicket = Ticket(
+            profile = myProfile, product = myProduct, priorityLevel = 1, expert = myExpert,
+            status = "open", creationDate = Date(), messages = mutableSetOf()
+        )
+        val myTicket2 = Ticket(
+            profile = myProfile, product = myProduct, priorityLevel = 2, expert = myExpert,
+            status = "closed", creationDate = Date(), messages = mutableSetOf()
+        )
+
+        profileRepository.save(myProfile)
+        productRepository.save(myProduct)
+        expertRepository.save(myExpert)
+        ticketRepository.save(myTicket)
+        ticketRepository.save(myTicket2)
+
+        val result: ResponseEntity<String> = restTemplate.getForEntity(uri, String::class.java)
+
+        Assertions.assertEquals(HttpStatus.NOT_FOUND, result.statusCode)
+
+        ticketRepository.delete(myTicket)
+        ticketRepository.delete(myTicket2)
+        profileRepository.delete(myProfile)
+        productRepository.delete(myProduct)
+        expertRepository.delete(myExpert)
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun t4TestGetFilteredTickets() {
+        val baseUrl =
+            "http://localhost:$port/API/tickets/?ean=4935531465706&profileId=luigimolinengo@gmail.com&priorityLevel=2"
+        val uri = URI(baseUrl)
+        val myProfile = Profile("luigimolinengo@gmail.com", "Luigi", "Molinengo")
+        val myProduct = Product(
+            "4935531465706",
+            "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
+            "JMT"
+        )
+        val myExpert = Expert("Giovanni", "Malnati", "giovanni.malnati@polito.it")
+        val myTicket = Ticket(
+            profile = myProfile, product = myProduct, priorityLevel = 1, expert = myExpert,
+            status = "open", creationDate = Date(), messages = mutableSetOf()
+        )
+        val myTicket2 = Ticket(
+            profile = myProfile, product = myProduct, priorityLevel = 2, expert = myExpert,
+            status = "closed", creationDate = Date(), messages = mutableSetOf()
+        )
+
+        profileRepository.save(myProfile)
+        productRepository.save(myProduct)
+        expertRepository.save(myExpert)
+        ticketRepository.save(myTicket)
+        ticketRepository.save(myTicket2)
+
+        val result: ResponseEntity<String> = restTemplate.getForEntity(uri, String::class.java)
+
+        val gson = Gson()
+        val arrayTicketType = object : TypeToken<List<Ticket>>() {}.type
+        val tickets: List<Ticket> = gson.fromJson(result.body, arrayTicketType)
+
+        Assertions.assertEquals(HttpStatus.OK, result.statusCode)
+        Assertions.assertEquals(1, tickets.size)
+
+        ticketRepository.delete(myTicket)
+        ticketRepository.delete(myTicket2)
+        profileRepository.delete(myProfile)
+        productRepository.delete(myProduct)
+        expertRepository.delete(myExpert)
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun t5TestGetFilteredTicketsWrongParameters() {
+        val baseUrl =
+            "http://localhost:$port/API/tickets/?ean=4935531465706&profileId=luigimolinengo@gmail.com&priorityLevel=5"
+        val uri = URI(baseUrl)
+        val myProfile = Profile("luigimolinengo@gmail.com", "Luigi", "Molinengo")
+        val myProduct = Product(
+            "4935531465706",
+            "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
+            "JMT"
+        )
+        val myExpert = Expert("Giovanni", "Malnati", "giovanni.malnati@polito.it")
+        val myTicket = Ticket(
+            profile = myProfile, product = myProduct, priorityLevel = 1, expert = myExpert,
+            status = "open", creationDate = Date(), messages = mutableSetOf()
+        )
+        val myTicket2 = Ticket(
+            profile = myProfile, product = myProduct, priorityLevel = 2, expert = myExpert,
+            status = "closed", creationDate = Date(), messages = mutableSetOf()
+        )
+
+        profileRepository.save(myProfile)
+        productRepository.save(myProduct)
+        expertRepository.save(myExpert)
+        ticketRepository.save(myTicket)
+        ticketRepository.save(myTicket2)
+
+        val result: ResponseEntity<String> = restTemplate.getForEntity(uri, String::class.java)
+
+        Assertions.assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, result.statusCode)
+
+        ticketRepository.delete(myTicket)
+        ticketRepository.delete(myTicket2)
+        profileRepository.delete(myProfile)
+        productRepository.delete(myProduct)
+        expertRepository.delete(myExpert)
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun t6TestGetTicketsEmpty() {
+        val baseUrl = "http://localhost:$port/API/tickets/"
+        val uri = URI(baseUrl)
+
+        val result: ResponseEntity<String> = restTemplate.getForEntity(uri, String::class.java)
+
+        val gson = Gson()
+        val ticketType = object : TypeToken<List<Ticket>>() {}.type
+        val tickets: List<Ticket> = gson.fromJson(result.body, ticketType)
+
+        Assertions.assertEquals(HttpStatus.OK, result.statusCode)
+        Assertions.assertEquals(true, tickets.isEmpty())
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun t7TestEditTicket() {
+        val baseUrl = "http://localhost:$port/API/ticket/"
+        val uri = URI(baseUrl)
+
+        val myProfile = Profile("luigimolinengo@gmail.com", "Luigi", "Molinengo")
+        val myProduct = Product(
+            "4935531465706",
+            "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
+            "JMT"
+        )
+        val myExpert = Expert("Giovanni", "Malnati", "giovanni.malnati@polito.it")
+        val myTicket = Ticket(
+            profile = myProfile, product = myProduct, priorityLevel = 1, expert = myExpert,
+            status = "open", creationDate = Date(), messages = mutableSetOf()
+        )
+
+        profileRepository.save(myProfile)
+        productRepository.save(myProduct)
+        expertRepository.save(myExpert)
+        ticketRepository.save(myTicket)
+
+        myTicket.status = "closed"
+        val request = HttpEntity(myTicket.toDTO())
+
+        val result = restTemplate.exchange(uri, HttpMethod.PUT, request, String::class.java)
+
+        Assertions.assertEquals(HttpStatus.OK, result.statusCode)
+        Assertions.assertEquals("true", result?.body)
+
+        ticketRepository.delete(myTicket)
+        profileRepository.delete(myProfile)
+        productRepository.delete(myProduct)
+        expertRepository.delete(myExpert)
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun t8TestEditTicketNoTickedIdPassed() {
+        val baseUrl = "http://localhost:$port/API/ticket/"
+        val uri = URI(baseUrl)
+        val myProfile = Profile("luigimolinengo@gmail.com", "Luigi", "Molinengo")
+        val myProduct = Product(
+            "4935531465706",
+            "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
+            "JMT"
+        )
+        val myExpert = Expert("Giovanni", "Malnati", "giovanni.malnati@polito.it")
+        val myTicket = Ticket(
+            profile = myProfile, product = myProduct, priorityLevel = 1, expert = myExpert,
+            status = "open", creationDate = Date(), messages = mutableSetOf()
+        )
+
+        profileRepository.save(myProfile)
+        productRepository.save(myProduct)
+        expertRepository.save(myExpert)
+        ticketRepository.save(myTicket)
+
+        myTicket.status = "closed"
+        myTicket.ticketId = 5
+        val request = HttpEntity(myTicket.toDTO())
+
+        val result = restTemplate.exchange(uri, HttpMethod.PUT, request, String::class.java)
+
+        Assertions.assertEquals(HttpStatus.NOT_FOUND, result.statusCode)
+
+        ticketRepository.deleteById(1)
+        profileRepository.delete(myProfile)
+        productRepository.delete(myProduct)
+        expertRepository.delete(myExpert)
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun t9TestEditTicketWrongParameterStatus() {
+        val baseUrl = "http://localhost:$port/API/ticket/"
+        val uri = URI(baseUrl)
+
+        val myProfile = Profile("luigimolinengo@gmail.com", "Luigi", "Molinengo")
+        val myProduct = Product(
+            "4935531465706",
+            "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
+            "JMT"
+        )
+        val myExpert = Expert("Giovanni", "Malnati", "giovanni.malnati@polito.it")
+        val myTicket = Ticket(
+            profile = myProfile, product = myProduct, priorityLevel = 1, expert = myExpert,
+            status = "open", creationDate = Date(), messages = mutableSetOf()
+        )
+
+        profileRepository.save(myProfile)
+        productRepository.save(myProduct)
+        expertRepository.save(myExpert)
+        ticketRepository.save(myTicket)
+
+        myTicket.status = "aa"
+        val request = HttpEntity(myTicket.toDTO())
+
+        val result = restTemplate.exchange(uri, HttpMethod.PUT, request, String::class.java)
+
+        Assertions.assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, result.statusCode)
+
+        ticketRepository.delete(myTicket)
+        profileRepository.delete(myProfile)
+        productRepository.delete(myProduct)
+        expertRepository.delete(myExpert)
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun t10TestEditTicketWrongParameterPriorityLevel() {
+        val baseUrl = "http://localhost:$port/API/ticket/"
+        val uri = URI(baseUrl)
+
+        val myProfile = Profile("luigimolinengo@gmail.com", "Luigi", "Molinengo")
+        val myProduct = Product(
+            "4935531465706",
+            "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
+            "JMT"
+        )
+        val myExpert = Expert("Giovanni", "Malnati", "giovanni.malnati@polito.it")
+        val myTicket = Ticket(
+            profile = myProfile, product = myProduct, priorityLevel = 1, expert = myExpert,
+            status = "open", creationDate = Date(), messages = mutableSetOf()
+        )
+
+        profileRepository.save(myProfile)
+        productRepository.save(myProduct)
+        expertRepository.save(myExpert)
+        ticketRepository.save(myTicket)
+
+        myTicket.priorityLevel = 10
+        val request = HttpEntity(myTicket.toDTO())
+
+        val result = restTemplate.exchange(uri, HttpMethod.PUT, request, String::class.java)
+
+        Assertions.assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, result.statusCode)
+
+        ticketRepository.delete(myTicket)
+        profileRepository.delete(myProfile)
+        productRepository.delete(myProduct)
+        expertRepository.delete(myExpert)
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun t11TestGetFilteredTicketsWrongEmail() {
+        val baseUrl =
+            "http://localhost:$port/API/tickets/?ean=4935531465706&profileId=luigimolinengo&priorityLevel=2"
+        val uri = URI(baseUrl)
+        val myProfile = Profile("luigimolinengo@gmail.com", "Luigi", "Molinengo")
+        val myProduct = Product(
+            "4935531465706",
+            "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
+            "JMT"
+        )
+        val myExpert = Expert("Giovanni", "Malnati", "giovanni.malnati@polito.it")
+        val myTicket = Ticket(
+            profile = myProfile, product = myProduct, priorityLevel = 1, expert = myExpert,
+            status = "open", creationDate = Date(), messages = mutableSetOf()
+        )
+        val myTicket2 = Ticket(
+            profile = myProfile, product = myProduct, priorityLevel = 2, expert = myExpert,
+            status = "closed", creationDate = Date(), messages = mutableSetOf()
+        )
+
+        profileRepository.save(myProfile)
+        productRepository.save(myProduct)
+        expertRepository.save(myExpert)
+        ticketRepository.save(myTicket)
+        ticketRepository.save(myTicket2)
+
+        val result: ResponseEntity<String> = restTemplate.getForEntity(uri, String::class.java)
+
+        Assertions.assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, result.statusCode)
+
+        ticketRepository.delete(myTicket)
+        ticketRepository.delete(myTicket2)
+        profileRepository.delete(myProfile)
+        productRepository.delete(myProduct)
+        expertRepository.delete(myExpert)
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun t11TestGetFilteredTicketsWrongStatus() {
+        val baseUrl =
+            "http://localhost:$port/API/tickets/?ean=4935531465706&profileId=luigimolinengo@gmail.com&priorityLevel=2&status=aaa"
+        val uri = URI(baseUrl)
+        val myProfile = Profile("luigimolinengo@gmail.com", "Luigi", "Molinengo")
+        val myProduct = Product(
+            "4935531465706",
+            "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
+            "JMT"
+        )
+        val myExpert = Expert("Giovanni", "Malnati", "giovanni.malnati@polito.it")
+        val myTicket = Ticket(
+            profile = myProfile, product = myProduct, priorityLevel = 1, expert = myExpert,
+            status = "open", creationDate = Date(), messages = mutableSetOf()
+        )
+        val myTicket2 = Ticket(
+            profile = myProfile, product = myProduct, priorityLevel = 2, expert = myExpert,
+            status = "closed", creationDate = Date(), messages = mutableSetOf()
+        )
+
+        profileRepository.save(myProfile)
+        productRepository.save(myProduct)
+        expertRepository.save(myExpert)
+        ticketRepository.save(myTicket)
+        ticketRepository.save(myTicket2)
+
+        val result: ResponseEntity<String> = restTemplate.getForEntity(uri, String::class.java)
+
+        Assertions.assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, result.statusCode)
+
+        ticketRepository.delete(myTicket)
+        ticketRepository.delete(myTicket2)
+        profileRepository.delete(myProfile)
+        productRepository.delete(myProduct)
+        expertRepository.delete(myExpert)
+    }
+
+
+    // ----
+
+
+    fun updateTicketStatusOrPriorityLevelOrExpertIdTest(
+        ticketId: Int = 1,
+        operationUrl: String,
+        body: Map<String, Any?>,
+        expectedStatus: HttpStatus,
+        expectedErrorMessage: String = ""
+    ) {
+        val product = Product(ean = "000000000000000")
+        val profile = Profile(email = "this@exists.com", name = "this", surname = "exists")
+        productRepository.save(product)
+        profileRepository.save(profile)
+        expertRepository.save(Expert(email = "expert@email.com", name = "super", surname = "expert"))
+        ticketRepository.save(Ticket(
+            creationDate = Date(),
+            expert = null,
+            priorityLevel = null,
+            product = product,
+            profile = profile,
+            status = "open"
+        ))
+
+        val baseUrl = "http://localhost:$port/API/tickets/$ticketId/$operationUrl"
+        val uri = URI(baseUrl)
+
+        val request = HttpEntity(body)
+
+        val result = restTemplate.exchange(uri, HttpMethod.PUT, request, String::class.java)
+
+        //Verify request succeed
+        Assertions.assertEquals(expectedStatus, result.statusCode)
+        if(expectedErrorMessage != "")
+            Assertions.assertEquals(expectedErrorMessage, JSONObject(result.body).get("detail"))
+    }
+
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun creationTicketSuccessTest() {
+        creationTicketTest(expectedStatus = HttpStatus.CREATED)
+    }
+
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun creationTicketInvalidEanTest() {
+        creationTicketTest(
+            ean = "",
+            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            expectedErrorMessage = "createTicket.ticketPostDTO.ean: The inserted input is not valid!"
+        )
+    }
+
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun creationTicketBlankProfileIdTest() {
+        creationTicketTest(
+            profileId = "",
+            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            expectedErrorMessage = "createTicket.ticketPostDTO.profileId: The inserted input is not valid!"
+        )
+    }
+
+    fun creationTicketTest(
+        baseUrl: String = "http://localhost:$port/API/tickets",
+        profileId: String = "this@exists.com",
+        ean: String = "000000000000000",
+        expectedStatus: HttpStatus,
+        expectedErrorMessage: String = ""
+    ) {
+        productRepository.save(Product(ean = "000000000000000"))
+        profileRepository.save(Profile(email = "this@exists.com", name = "this", surname = "exists"))
+        val uri = URI(baseUrl)
+
+        val ticketPost = TicketPostDTO(profileId, ean)
+
+        val request = HttpEntity(ticketPost)
+
+        val result = restTemplate.postForEntity(uri, request, String::class.java)
+
+        //Verify request succeed
+        Assertions.assertEquals(expectedStatus, result.statusCode)
+        if(expectedErrorMessage != "")
+            Assertions.assertEquals(expectedErrorMessage, JSONObject(result.body).get("detail"))
+    }
+
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun creationTicketNonExistingProfileIdTest() {
+        creationTicketTest(
+            profileId = "doesnt@exist.com",
+            expectedStatus = HttpStatus.NOT_FOUND,
+            expectedErrorMessage = "Profile Not Found!"
+        )
+    }
+
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun creationTicketNonExistingEanTest() {
+        creationTicketTest(
+            ean = "000000000000001",
+            expectedStatus = HttpStatus.NOT_FOUND,
+            expectedErrorMessage = "Product Not Found!"
+        )
+    }
+
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun updateTicketStatusSuccessTest() {
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            operationUrl = "changeStatus",
+            body = mapOf("status" to "in_progress"),
+            expectedStatus = HttpStatus.OK
+        )
+    }
+
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun updateTicketStatusNullStatusTest() {
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            operationUrl = "changeStatus",
+            body = mapOf("status" to null),
+            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            expectedErrorMessage = "The inserted input is not valid!"
+        )
+    }
+
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun updateTicketStatusNonStringStatusTest() {
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            operationUrl = "changeStatus",
+            body = mapOf("status" to 0),
+            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            expectedErrorMessage = "The inserted input is not valid!"
+        )
+    }
+
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun updateTicketStatusNonExistingStatusTest() {
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            operationUrl = "changeStatus",
+            body = mapOf("status" to "pending"),
+            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            expectedErrorMessage = "The inserted input is not valid!"
+        )
+    }
+
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun updateTicketStatusNonExistingTicketTest() {
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            ticketId = 1000,
+            operationUrl = "changeStatus",
+            body = mapOf("status" to "in_progress"),
+            expectedStatus = HttpStatus.NOT_FOUND,
+            expectedErrorMessage = "Ticket Not Found!"
+        )
+    }
+
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun updateTicketStatusNotAllowedStateChangeTicketTest() {
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            operationUrl = "changeStatus",
+            body = mapOf("status" to "reopened"),
+            expectedStatus = HttpStatus.CONFLICT,
+            expectedErrorMessage = "Ticket state change not allowed!"
+        )
+    }
+
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun updateTicketPrioritySuccessTest() {
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            operationUrl = "changePriority",
+            body = mapOf("priorityLevel" to 0),
+            expectedStatus = HttpStatus.OK
+        )
+    }
+
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun updateTicketPriorityNullPriorityTest() {
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            operationUrl = "changePriority",
+            body = mapOf("priorityLevel" to null),
+            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            expectedErrorMessage = "The inserted input is not valid!"
+        )
+    }
+
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun updateTicketPriorityNonIntStatusTest() {
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            operationUrl = "changePriority",
+            body = mapOf("priorityLevel" to ""),
+            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            expectedErrorMessage = "The inserted input is not valid!"
+        )
+    }
+
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun updateTicketPriorityNonExistingPriorityLevelTest() {
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            operationUrl = "changePriority",
+            body = mapOf("priorityLevel" to 5),
+            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            expectedErrorMessage = "The inserted input is not valid!"
+        )
+    }
+
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun updateTicketPriorityNonExistingTicketTest() {
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            ticketId = 1000,
+            operationUrl = "changePriority",
+            body = mapOf("priorityLevel" to 0),
+            expectedStatus = HttpStatus.NOT_FOUND,
+            expectedErrorMessage = "Ticket Not Found!"
+        )
+    }
+
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun updateTicketExpertSuccessTest() {
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            operationUrl = "changeExpert",
+            body = mapOf("expertId" to 1),
+            expectedStatus = HttpStatus.OK
+        )
+    }
+
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun updateTicketExpertNullExpertTest() {
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            operationUrl = "changeExpert",
+            body = mapOf("expertId" to null),
+            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            expectedErrorMessage = "The inserted input is not valid!"
+        )
+    }
+
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun updateTicketExpertNonIntExpertIdTest() {
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            operationUrl = "changeExpert",
+            body = mapOf("expertId" to ""),
+            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            expectedErrorMessage = "The inserted input is not valid!"
+        )
+    }
+
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun updateTicketExpertNonExistingTicketTest() {
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            ticketId = 1000,
+            operationUrl = "changeExpert",
+            body = mapOf("expertId" to 1),
+            expectedStatus = HttpStatus.NOT_FOUND,
+            expectedErrorMessage = "Ticket Not Found!"
+        )
+    }
+
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun updateTicketExpertNonExistingExpertIdTest() {
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            ticketId = 1,
+            operationUrl = "changeExpert",
+            body = mapOf("expertId" to 0),
+            expectedStatus = HttpStatus.NOT_FOUND,
+            expectedErrorMessage = "Expert Not Found!"
+        )
+    }
+}
