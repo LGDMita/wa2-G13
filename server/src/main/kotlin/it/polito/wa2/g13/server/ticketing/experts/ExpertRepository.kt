@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ExpertRepository : JpaRepository<Expert, Long> {
 
+    fun existsByEmailAndIdNot(email: String, id: Long): Boolean
+
     fun existsByEmail(email: String): Boolean
 
     fun findExpertsBySectors(sector: Sector): List<Expert>

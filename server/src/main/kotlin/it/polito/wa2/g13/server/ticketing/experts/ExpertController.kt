@@ -5,6 +5,7 @@ import it.polito.wa2.g13.server.ticketing.sectors.SectorNotFoundException
 import it.polito.wa2.g13.server.ticketing.sectors.SectorService
 import it.polito.wa2.g13.server.ticketing.sectors.SectorsNotFoundException
 import jakarta.validation.Valid
+import org.springframework.http.HttpStatus
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 
@@ -20,6 +21,7 @@ class ExpertController(
         return expertService.getExperts()
     }
     @PostMapping("/API/experts")
+    @ResponseStatus(HttpStatus.CREATED)
     fun setExpert(@RequestBody @Valid expertDTO: ExpertDTO,
                   br: BindingResult): Boolean {
 
