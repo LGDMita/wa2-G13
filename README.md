@@ -7,3 +7,34 @@ Group members:
  - 306151, MASSIMILIANO PELLEGRINO
 
 GitHub Repository: https://github.com/MolinengoLuigi/wa2-G13
+
+
+### TICKETING APIs LIST
+- GET `/API/tickets/`
+  - Request parameters: none
+  - Request body: none
+  - Result:
+    - status: `200`
+      - body: `List<TicketDTO>`
+- GET `/API/tickets/{ticketId}`
+  - Request parameters: ID of the desired ticket
+  - Request body: none
+  - Result:
+    - status: `200`
+      - body: `TicketDTO`
+    - status: `404` if ticket not found
+- GET `/API/tickets/API/tickets/?ean={ean}&profileId={profileId}&priorityLevel={priorityLevel}&expertId={expertId}&status={status}&creationDateStart={creationDateStart}&creationDateStop={creationDateStop}`
+  - Request parameters: ean, profileId, priorityLevel, expertId, status, creationDateStart & creationDateStop to use for searching the tickets
+  - Request body: none
+  - Result:
+    - status: `200`
+        - body: `List<TicketDTO>`
+    - status: `422` if priorityLevel outside `[0-4]` or if status not in `[open-closed-resolved-in_progress-reopened]` or if profileId not in email format
+- PUT `/API/ticket/`
+  - Request parameters: none
+  - Request body: `TicketDTO` ticket to modify
+  - Result:
+    - status: `200`
+        - body: `true` if ticket exist and modify succeeds
+    - status: `422` if ticket validation fails
+    - status: `404` if no ticket are found with the passed ticketId

@@ -442,9 +442,9 @@ class LuigiApplicationTests {
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    fun t11TestGetFilteredTicketsWrongPriorityLevel() {
+    fun t11TestGetFilteredTicketsWrongEmail() {
         val baseUrl =
-            "http://localhost:$port/API/tickets/?ean=4935531465706&profileId=luigimolinengo@gmail.com&priorityLevel=5"
+            "http://localhost:$port/API/tickets/?ean=4935531465706&profileId=luigimolinengo&priorityLevel=2"
         val uri = URI(baseUrl)
         val myProfile = Profile("luigimolinengo@gmail.com", "Luigi", "Molinengo")
         val myProduct = Product(
