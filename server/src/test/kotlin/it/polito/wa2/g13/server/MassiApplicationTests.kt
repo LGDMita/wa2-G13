@@ -79,8 +79,9 @@ class MassiApplicationTests {
     }
 
     fun updateTicketStatusOrPriorityLevelOrExpertIdTest(
+        ticketId: Int = 1,
         operationUrl: String,
-        body: Map<String, Any>,
+        body: Map<String, Any?>,
         expectedStatus: HttpStatus
     ) {
         val product = Product(ean = "000000000000000")
@@ -97,7 +98,7 @@ class MassiApplicationTests {
             status = "open"
         ))
 
-        val baseUrl = "http://localhost:$port/API/tickets/1/$operationUrl"
+        val baseUrl = "http://localhost:$port/API/tickets/$ticketId/$operationUrl"
         val uri = URI(baseUrl)
 
         val headers = HttpHeaders()
@@ -146,6 +147,52 @@ class MassiApplicationTests {
     }
 
     @Test
+    fun updateTicketStatusNullStatusTest() {
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            operationUrl = "changeStatus",
+            body = mapOf("status" to null),
+            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY
+        )
+    }
+
+    @Test
+    fun updateTicketStatusNonStringStatusTest() {
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            operationUrl = "changeStatus",
+            body = mapOf("status" to 0),
+            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY
+        )
+    }
+
+    @Test
+    fun updateTicketStatusNonExistingStatusTest() {
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            operationUrl = "changeStatus",
+            body = mapOf("status" to "pending"),
+            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY
+        )
+    }
+
+    @Test
+    fun updateTicketStatusNonExistingTicketTest() {
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            ticketId = 1000,
+            operationUrl = "changeStatus",
+            body = mapOf("status" to "in_progress"),
+            expectedStatus = HttpStatus.NOT_FOUND
+        )
+    }
+
+    @Test
+    fun updateTicketStatusNotAllowedStateChangeTicketTest() {
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            operationUrl = "changeStatus",
+            body = mapOf("status" to "reopened"),
+            expectedStatus = HttpStatus.CONFLICT
+        )
+    }
+
+    @Test
     fun updateTicketPrioritySuccessTest() {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             operationUrl = "changePriority",
@@ -155,11 +202,86 @@ class MassiApplicationTests {
     }
 
     @Test
+    fun updateTicketPriorityNullPriorityTest() {
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            operationUrl = "changePriority",
+            body = mapOf("priorityLevel" to null),
+            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY
+        )
+    }
+
+    @Test
+    fun updateTicketPriorityNonIntStatusTest() {
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            operationUrl = "changePriority",
+            body = mapOf("priorityLevel" to ""),
+            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY
+        )
+    }
+
+    @Test
+    fun updateTicketPriorityNonExistingPriorityLevelTest() {
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            operationUrl = "changePriority",
+            body = mapOf("priorityLevel" to 5),
+            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY
+        )
+    }
+
+    @Test
+    fun updateTicketPriorityNonExistingTicketTest() {
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            ticketId = 1000,
+            operationUrl = "changePriority",
+            body = mapOf("priorityLevel" to 0),
+            expectedStatus = HttpStatus.NOT_FOUND
+        )
+    }
+
+    @Test
     fun updateTicketExpertSuccessTest() {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             operationUrl = "changeExpert",
             body = mapOf("expertId" to 1),
             expectedStatus = HttpStatus.OK
+        )
+    }
+
+    @Test
+    fun updateTicketExpertNullExpertTest() {
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            operationUrl = "changeExpert",
+            body = mapOf("expertId" to null),
+            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY
+        )
+    }
+
+    @Test
+    fun updateTicketExpertNonIntExpertIdTest() {
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            operationUrl = "changeExpert",
+            body = mapOf("expertId" to ""),
+            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY
+        )
+    }
+
+    @Test
+    fun updateTicketExpertNonExistingTicketTest() {
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            ticketId = 1000,
+            operationUrl = "changeExpert",
+            body = mapOf("expertId" to 1),
+            expectedStatus = HttpStatus.NOT_FOUND
+        )
+    }
+
+    @Test
+    fun updateTicketExpertNonExistingExpertIdTest() {
+        updateTicketStatusOrPriorityLevelOrExpertIdTest(
+            ticketId = 1,
+            operationUrl = "changeExpert",
+            body = mapOf("expertId" to 0),
+            expectedStatus = HttpStatus.NOT_FOUND
         )
     }
 }

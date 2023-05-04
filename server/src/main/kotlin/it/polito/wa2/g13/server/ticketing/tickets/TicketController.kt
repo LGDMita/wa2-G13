@@ -102,7 +102,7 @@ class TicketControllerValidated(
     ): Boolean {
         val status = req["status"] ?: throw InvalidTicketArgumentsException()
 
-        if(status !is String)
+        if(status !is String || !listOf("open", "in_progress", "reopened", "resolved", "closed").contains(status))
             throw InvalidTicketArgumentsException()
 
         println("Changing status of ticket $ticketId to $status")
@@ -117,7 +117,7 @@ class TicketControllerValidated(
     ): Boolean {
         val priorityLevel = req["priorityLevel"] ?: throw InvalidTicketArgumentsException()
 
-        if(priorityLevel !is Int)
+        if(priorityLevel !is Int || priorityLevel > 4 || priorityLevel < 0)
             throw InvalidTicketArgumentsException()
 
         println("Changing priority level of ticket $ticketId to $priorityLevel")
