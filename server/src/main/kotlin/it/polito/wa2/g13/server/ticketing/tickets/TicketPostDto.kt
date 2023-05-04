@@ -5,8 +5,8 @@ import jakarta.validation.constraints.Size
 import java.util.*
 
 data class TicketPostDTO(
-    @field:NotBlank
+    @field:NotBlank(message = "The inserted input is not valid!")
     var profileId: String,
-    @field:Size(min=15, max=15)
+    @field:Size(min=15, max=15, message = "The inserted input is not valid!")
     var ean: String
 )
