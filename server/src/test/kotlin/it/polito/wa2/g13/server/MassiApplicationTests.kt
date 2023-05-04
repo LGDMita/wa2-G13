@@ -18,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.*
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.containers.PostgreSQLContainer
@@ -91,11 +92,13 @@ class MassiApplicationTests {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun creationTicketSuccessTest() {
         creationTicketTest(expectedStatus = HttpStatus.CREATED)
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun creationTicketInvalidEanTest() {
         creationTicketTest(
             ean = "",
@@ -105,6 +108,7 @@ class MassiApplicationTests {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun creationTicketBlankProfileIdTest() {
         creationTicketTest(
             profileId = "",
@@ -137,6 +141,7 @@ class MassiApplicationTests {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun creationTicketNonExistingProfileIdTest() {
         creationTicketTest(
             profileId = "doesnt@exist.com",
@@ -146,6 +151,7 @@ class MassiApplicationTests {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun creationTicketNonExistingEanTest() {
         creationTicketTest(
             ean = "000000000000001",
@@ -155,6 +161,7 @@ class MassiApplicationTests {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun updateTicketStatusSuccessTest() {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             operationUrl = "changeStatus",
@@ -164,6 +171,7 @@ class MassiApplicationTests {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun updateTicketStatusNullStatusTest() {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             operationUrl = "changeStatus",
@@ -174,6 +182,7 @@ class MassiApplicationTests {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun updateTicketStatusNonStringStatusTest() {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             operationUrl = "changeStatus",
@@ -184,6 +193,7 @@ class MassiApplicationTests {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun updateTicketStatusNonExistingStatusTest() {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             operationUrl = "changeStatus",
@@ -194,6 +204,7 @@ class MassiApplicationTests {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun updateTicketStatusNonExistingTicketTest() {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             ticketId = 1000,
@@ -205,6 +216,7 @@ class MassiApplicationTests {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun updateTicketStatusNotAllowedStateChangeTicketTest() {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             operationUrl = "changeStatus",
@@ -215,6 +227,7 @@ class MassiApplicationTests {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun updateTicketPrioritySuccessTest() {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             operationUrl = "changePriority",
@@ -224,6 +237,7 @@ class MassiApplicationTests {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun updateTicketPriorityNullPriorityTest() {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             operationUrl = "changePriority",
@@ -234,6 +248,7 @@ class MassiApplicationTests {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun updateTicketPriorityNonIntStatusTest() {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             operationUrl = "changePriority",
@@ -244,6 +259,7 @@ class MassiApplicationTests {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun updateTicketPriorityNonExistingPriorityLevelTest() {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             operationUrl = "changePriority",
@@ -254,6 +270,7 @@ class MassiApplicationTests {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun updateTicketPriorityNonExistingTicketTest() {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             ticketId = 1000,
@@ -265,6 +282,7 @@ class MassiApplicationTests {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun updateTicketExpertSuccessTest() {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             operationUrl = "changeExpert",
@@ -274,6 +292,7 @@ class MassiApplicationTests {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun updateTicketExpertNullExpertTest() {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             operationUrl = "changeExpert",
@@ -284,6 +303,7 @@ class MassiApplicationTests {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun updateTicketExpertNonIntExpertIdTest() {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             operationUrl = "changeExpert",
@@ -294,6 +314,7 @@ class MassiApplicationTests {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun updateTicketExpertNonExistingTicketTest() {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             ticketId = 1000,
@@ -305,6 +326,7 @@ class MassiApplicationTests {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun updateTicketExpertNonExistingExpertIdTest() {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             ticketId = 1,
