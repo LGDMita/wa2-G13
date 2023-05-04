@@ -9,6 +9,7 @@ import it.polito.wa2.g13.server.ticketing.experts.ExpertRepository
 import it.polito.wa2.g13.server.ticketing.tickets.Ticket
 import it.polito.wa2.g13.server.ticketing.tickets.TicketPostDTO
 import it.polito.wa2.g13.server.ticketing.tickets.TicketRepository
+import org.json.JSONObject
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -24,6 +25,7 @@ import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import java.net.URI
 import java.util.*
+import kotlin.math.exp
 
 
 @Testcontainers
@@ -59,7 +61,8 @@ class MassiApplicationTests {
         baseUrl: String = "http://localhost:$port/API/tickets",
         profileId: String = "this@exists.com",
         ean: String = "000000000000000",
-        expectedStatus: HttpStatus
+        expectedStatus: HttpStatus,
+        expectedErrorMessage: String = ""
     ) {
         productRepository.save(Product(ean = "000000000000000"))
         profileRepository.save(Profile(email = "this@exists.com", name = "this", surname = "exists"))
@@ -73,13 +76,16 @@ class MassiApplicationTests {
 
         //Verify request succeed
         Assertions.assertEquals(expectedStatus, result.statusCode)
+        if(expectedErrorMessage != "")
+            Assertions.assertEquals(expectedErrorMessage, JSONObject(result.body).get("detail"))
     }
 
     fun updateTicketStatusOrPriorityLevelOrExpertIdTest(
         ticketId: Int = 1,
         operationUrl: String,
         body: Map<String, Any?>,
-        expectedStatus: HttpStatus
+        expectedStatus: HttpStatus,
+        expectedErrorMessage: String = ""
     ) {
         val product = Product(ean = "000000000000000")
         val profile = Profile(email = "this@exists.com", name = "this", surname = "exists")
@@ -104,6 +110,8 @@ class MassiApplicationTests {
 
         //Verify request succeed
         Assertions.assertEquals(expectedStatus, result.statusCode)
+        if(expectedErrorMessage != "")
+            Assertions.assertEquals(expectedErrorMessage, JSONObject(result.body).get("detail"))
     }
 
     @Test
@@ -113,22 +121,38 @@ class MassiApplicationTests {
 
     @Test
     fun creationTicketInvalidEanTest() {
-        creationTicketTest(ean = "", expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY)
+        creationTicketTest(
+            ean = "",
+            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            expectedErrorMessage = "createTicket.ticketPostDTO.ean: The inserted input is not valid!"
+        )
     }
 
     @Test
     fun creationTicketBlankProfileIdTest() {
-        creationTicketTest(profileId = "", expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY)
+        creationTicketTest(
+            profileId = "",
+            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            expectedErrorMessage = "createTicket.ticketPostDTO.profileId: The inserted input is not valid!"
+        )
     }
 
     @Test
     fun creationTicketNonExistingProfileIdTest() {
-        creationTicketTest(profileId = "doesnt@exist.com", expectedStatus = HttpStatus.NOT_FOUND)
+        creationTicketTest(
+            profileId = "doesnt@exist.com",
+            expectedStatus = HttpStatus.NOT_FOUND,
+            expectedErrorMessage = "Profile Not Found!"
+        )
     }
 
     @Test
     fun creationTicketNonExistingEanTest() {
-        creationTicketTest(ean = "000000000000001", expectedStatus = HttpStatus.NOT_FOUND)
+        creationTicketTest(
+            ean = "000000000000001",
+            expectedStatus = HttpStatus.NOT_FOUND,
+            expectedErrorMessage = "Product Not Found!"
+        )
     }
 
     @Test
@@ -145,7 +169,8 @@ class MassiApplicationTests {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             operationUrl = "changeStatus",
             body = mapOf("status" to null),
-            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY
+            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            expectedErrorMessage = "The inserted input is not valid!"
         )
     }
 
@@ -154,7 +179,8 @@ class MassiApplicationTests {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             operationUrl = "changeStatus",
             body = mapOf("status" to 0),
-            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY
+            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            expectedErrorMessage = "The inserted input is not valid!"
         )
     }
 
@@ -163,7 +189,8 @@ class MassiApplicationTests {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             operationUrl = "changeStatus",
             body = mapOf("status" to "pending"),
-            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY
+            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            expectedErrorMessage = "The inserted input is not valid!"
         )
     }
 
@@ -173,7 +200,8 @@ class MassiApplicationTests {
             ticketId = 1000,
             operationUrl = "changeStatus",
             body = mapOf("status" to "in_progress"),
-            expectedStatus = HttpStatus.NOT_FOUND
+            expectedStatus = HttpStatus.NOT_FOUND,
+            expectedErrorMessage = "Ticket Not Found!"
         )
     }
 
@@ -182,7 +210,8 @@ class MassiApplicationTests {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             operationUrl = "changeStatus",
             body = mapOf("status" to "reopened"),
-            expectedStatus = HttpStatus.CONFLICT
+            expectedStatus = HttpStatus.CONFLICT,
+            expectedErrorMessage = "Ticket state change not allowed!"
         )
     }
 
@@ -200,7 +229,8 @@ class MassiApplicationTests {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             operationUrl = "changePriority",
             body = mapOf("priorityLevel" to null),
-            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY
+            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            expectedErrorMessage = "The inserted input is not valid!"
         )
     }
 
@@ -209,7 +239,8 @@ class MassiApplicationTests {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             operationUrl = "changePriority",
             body = mapOf("priorityLevel" to ""),
-            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY
+            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            expectedErrorMessage = "The inserted input is not valid!"
         )
     }
 
@@ -218,7 +249,8 @@ class MassiApplicationTests {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             operationUrl = "changePriority",
             body = mapOf("priorityLevel" to 5),
-            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY
+            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            expectedErrorMessage = "The inserted input is not valid!"
         )
     }
 
@@ -228,7 +260,8 @@ class MassiApplicationTests {
             ticketId = 1000,
             operationUrl = "changePriority",
             body = mapOf("priorityLevel" to 0),
-            expectedStatus = HttpStatus.NOT_FOUND
+            expectedStatus = HttpStatus.NOT_FOUND,
+            expectedErrorMessage = "Ticket Not Found!"
         )
     }
 
@@ -246,7 +279,8 @@ class MassiApplicationTests {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             operationUrl = "changeExpert",
             body = mapOf("expertId" to null),
-            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY
+            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            expectedErrorMessage = "The inserted input is not valid!"
         )
     }
 
@@ -255,7 +289,8 @@ class MassiApplicationTests {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             operationUrl = "changeExpert",
             body = mapOf("expertId" to ""),
-            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY
+            expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            expectedErrorMessage = "The inserted input is not valid!"
         )
     }
 
@@ -265,7 +300,8 @@ class MassiApplicationTests {
             ticketId = 1000,
             operationUrl = "changeExpert",
             body = mapOf("expertId" to 1),
-            expectedStatus = HttpStatus.NOT_FOUND
+            expectedStatus = HttpStatus.NOT_FOUND,
+            expectedErrorMessage = "Ticket Not Found!"
         )
     }
 
@@ -275,7 +311,8 @@ class MassiApplicationTests {
             ticketId = 1,
             operationUrl = "changeExpert",
             body = mapOf("expertId" to 0),
-            expectedStatus = HttpStatus.NOT_FOUND
+            expectedStatus = HttpStatus.NOT_FOUND,
+            expectedErrorMessage = "Expert Not Found!"
         )
     }
 }
