@@ -2,6 +2,7 @@ package it.polito.wa2.g13.server.ticketing.messages
 
 import it.polito.wa2.g13.server.ticketing.attachments.AttachmentService
 import it.polito.wa2.g13.server.ticketing.tickets.TicketNotFoundException
+import it.polito.wa2.g13.server.ticketing.tickets.TicketRepository
 import it.polito.wa2.g13.server.ticketing.tickets.TicketService
 import it.polito.wa2.g13.server.ticketing.tickets.toTicket
 import jakarta.transaction.Transactional
@@ -13,12 +14,13 @@ import java.util.*
 class MessageServiceImpl(
     private val messageRepository: MessageRepository,
     private val attachmentService: AttachmentService,
-    private val ticketService: TicketService
+    private val ticketService: TicketService,
+    private val ticketRepository: TicketRepository
 ) : MessageService {
 
     override fun getMessages(ticketId: Long): List<MessageDTO> {
         val ticket= ticketService.getTicket(ticketId) ?: throw TicketNotFoundException()
-        return messageRepository.findByTicket(ticket.toTicket()).map { it.toDTO() }
+        return messageRepository.findByTicket(ticketRepository.getReferenceById(ticketId)).map { it.toDTO() }
     }
     @Transactional
     override fun sendMessage(fromUser: Boolean,text: String, atts: List<MultipartFile>,ticketId: Long): Long? {

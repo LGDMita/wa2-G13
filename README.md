@@ -71,6 +71,12 @@ GitHub Repository: https://github.com/MolinengoLuigi/wa2-G13
         - body: `true` if ticket exist and modify succeeds
     - status: `422` if ticket validation fails
     - status: `404` if no ticket are found with the passed ticketId
+- GET `/API/experts`
+- Request parameters: none
+- Request body: none
+- Result:
+  - status: `200`
+    - body: `List<ExpertDTO>`
 - POST `/API/experts/`
   - Request parameters: none
   - Request body: `ExpertDTO` expert to create
@@ -138,7 +144,30 @@ GitHub Repository: https://github.com/MolinengoLuigi/wa2-G13
     - status: `200`
       - body: `1`
     - status: `404`  if no expert is found with the passed expertId or there are currently no sectors in the DB or the selected sector does not exist or there are no sectors associated with the selected expert or the selected sector is not linked with the selected expert
+- POST `/API/tickets/{ticketId}/messages`
+  - Request parameters: none
+  - Request body: 'multipart/form-data' request like {attachments: [list of files], fromUser : ['False' or 'True'], text: 'string...'}
+  - Result:
+    - status: `201`
+      - body: `Long`
+    - status: `404`
+      - body: `Ticket non existant`
+    - status: `405`
+      - body: `Media entity not processable`
 
-
-
-    
+- GET `/API/tickets/{ticketId}/messages`
+  - Request parameters: none
+  - Request body: none
+  - Result:
+    - status: `200`
+      - body: `List<MessageDTO>`
+    - status: `404`
+      - body: `Ticket non existant`
+- GET `/API/tickets/{ticketId}/history`
+  - Request parameters: none
+  - Request body: none
+  - Result:
+    - status: `200`
+      - body: `List<TicketHistoryDTO>`
+    - status: `404`
+      - body: `Ticket non existant`
