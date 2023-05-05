@@ -29,7 +29,7 @@ import java.net.URI
 @Testcontainers
 @SpringBootTest(webEnvironment=SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase(replace=AutoConfigureTestDatabase.Replace.NONE)
-class GiovanniApplicationTests {
+class ExpertAndSectorTests {
 
 	companion object {
 		@Container
