@@ -9,6 +9,7 @@ import it.polito.wa2.g13.server.profiles.ProfileRepository
 import it.polito.wa2.g13.server.ticketing.attachments.Attachment
 import it.polito.wa2.g13.server.ticketing.attachments.AttachmentRepository
 import it.polito.wa2.g13.server.ticketing.experts.Expert
+import it.polito.wa2.g13.server.ticketing.experts.ExpertDTO
 import it.polito.wa2.g13.server.ticketing.experts.ExpertRepository
 import it.polito.wa2.g13.server.ticketing.messages.Message
 import it.polito.wa2.g13.server.ticketing.messages.MessageDTO
@@ -101,6 +102,27 @@ class ExpertTests {
         Assertions.assertEquals(HttpStatus.OK, result.statusCode)
 
         expertRepository.delete(myExpert)
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun t2TestGetExpertsMultiple(){
+        val baseUrl = "http://localhost:$port/API/experts"
+        val uri = URI(baseUrl)
+        val myExpert = Expert("Giovanni", "Malnati", "giovanni.malnati@polito.it")
+        val myExpert2= Expert("Piero","Lelu","pieroLelu@gmail.com")
+        expertRepository.save(myExpert)
+        expertRepository.save(myExpert2)
+        val result: ResponseEntity<String> = restTemplate.getForEntity(uri, String::class.java)
+        val gson = Gson()
+        val arrayExpertType = object : TypeToken<List<Expert>>() {}.type
+        val experts: List<ExpertDTO> = gson.fromJson(result.body, arrayExpertType)
+
+        Assertions.assertEquals(HttpStatus.OK, result.statusCode)
+        Assertions.assertEquals(experts.size,2)
+
+        expertRepository.delete(myExpert)
+        expertRepository.delete(myExpert2)
     }
 
 }
