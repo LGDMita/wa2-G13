@@ -38,3 +38,45 @@ GitHub Repository: https://github.com/MolinengoLuigi/wa2-G13
         - body: `true` if ticket exist and modify succeeds
     - status: `422` if ticket validation fails
     - status: `404` if no ticket are found with the passed ticketId
+
+## MESSAGE APIS
+
+- POST `/API/tickets/{ticketId}/messages`
+  - Request parameters: none
+  - Request body: 'multipart/form-data' request like {attachments: [list of files], fromUser : ['False' or 'True'], text: 'string...'}
+  - Result:
+    - status: `201`
+      - body: `Long`
+    - status: `404`
+      - body: `Ticket non existant`
+    - status: `405`
+      - body: `Media entity not processable`
+
+- GET `/API/tickets/{ticketId}/messages`
+  - Request parameters: none
+  - Request body: none
+  - Result:
+    - status: `200`
+      - body: `List<MessageDTO>`
+    - status: `404`
+      - body: `Ticket non existant`
+    
+## TicketHistory APIS
+
+- GET `/API/tickets/{ticketId}/history`
+  - Request parameters: none
+  - Request body: none
+  - Result:
+    - status: `200`
+      - body: `List<TicketHistoryDTO>`
+    - status: `404`
+      - body: `Ticket non existant`
+    
+## Expert apis
+
+- GET `/API/experts`
+  - Request parameters: none
+  - Request body: none
+  - Result:
+    - status: `200`
+      - body: `List<ExpertDTO>`
