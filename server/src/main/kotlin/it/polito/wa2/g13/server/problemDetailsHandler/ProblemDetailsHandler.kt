@@ -49,39 +49,39 @@ class ProblemDetailsHandler : ResponseEntityExceptionHandler() {
         .forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
 
     @ExceptionHandler(ExpertInvalidArgumentsException::class)
-    fun handleDuplicateProfile(e: ExpertInvalidArgumentsException) = ProblemDetail
+    fun handleExpertInvalidArguments(e: ExpertInvalidArgumentsException) = ProblemDetail
         .forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
 
     @ExceptionHandler(DuplicateExpertException::class)
-    fun handleDuplicateProduct(e: DuplicateExpertException) = ProblemDetail
+    fun handleDuplicateExpert(e: DuplicateExpertException) = ProblemDetail
         .forStatusAndDetail(HttpStatus.CONFLICT, e.message!!)
 
     @ExceptionHandler(ExpertNotFoundException::class)
-    fun handleProductNotFound(e: ExpertNotFoundException) = ProblemDetail
+    fun handleExpertNotFound(e: ExpertNotFoundException) = ProblemDetail
         .forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
 
     @ExceptionHandler(ExpertsOfSelectedSectorNotFoundException::class)
-    fun handleProductNotFound(e: ExpertsOfSelectedSectorNotFoundException) = ProblemDetail
+    fun handleExpertsOfSelectedSectorFound(e: ExpertsOfSelectedSectorNotFoundException) = ProblemDetail
         .forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
 
     @ExceptionHandler(SectorsNotFoundException::class)
-    fun handleProductNotFound(e: SectorsNotFoundException) = ProblemDetail
+    fun handleSectorsNotFound(e: SectorsNotFoundException) = ProblemDetail
         .forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
 
     @ExceptionHandler(SectorInvalidArgumentException::class)
-    fun handleDuplicateProfile(e: SectorInvalidArgumentException) = ProblemDetail
+    fun handleSectorInvalidArgument(e: SectorInvalidArgumentException) = ProblemDetail
         .forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
 
     @ExceptionHandler(ExpertSectorsNotFoundException::class)
-    fun handleTicketNotFound(e: ExpertSectorsNotFoundException) = ProblemDetail
+    fun handleExpertSectorsNotFound(e: ExpertSectorsNotFoundException) = ProblemDetail
         .forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
 
     @ExceptionHandler(SectorNotFoundException::class)
-    fun handleTicketNotFound(e: SectorNotFoundException) = ProblemDetail
+    fun handleSectorNotFound(e: SectorNotFoundException) = ProblemDetail
         .forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
 
     @ExceptionHandler(ExpertSectorNotFoundException::class)
-    fun handleTicketNotFound(e: ExpertSectorNotFoundException) = ProblemDetail
+    fun handleExpertSectorNotFound(e: ExpertSectorNotFoundException) = ProblemDetail
         .forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
 
     @ExceptionHandler(TicketNotFoundException::class)

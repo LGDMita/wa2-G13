@@ -71,3 +71,74 @@ GitHub Repository: https://github.com/MolinengoLuigi/wa2-G13
         - body: `true` if ticket exist and modify succeeds
     - status: `422` if ticket validation fails
     - status: `404` if no ticket are found with the passed ticketId
+- POST `/API/experts/`
+  - Request parameters: none
+  - Request body: `ExpertDTO` expert to create
+  - Result:
+    - status: `201`
+      - body: `true` if expert creation succeeds
+    - status: `422` if expert validation fails
+    - status: `409` if an expert with the selected email address already exists
+- GET `/API/experts/{id}`
+  - Request parameters: ID of the desired expert
+  - Request body: none
+  - Result:
+    - status: `200`
+      - body: `ExpertDTO`
+    - status: `404` if no expert is found with the passed expertId
+- PUT `/API/experts/{id}`
+  - Request parameters: ID of the desired expert
+  - Request body: ExpertDTO
+  - Result:
+    - status: `200`
+      - body: true
+    - status: `404` if no experts are found with the passed expertId
+    - status: `409` if an expert with the selected email address already exists
+    - status: `422` if expert validation fails
+- GET `/API/experts/?sectorName={sectorName}`
+  - Request parameters: sector name
+  - Request body: none
+  - Result:
+    - status: `200`
+      - body: `List<ExpertDTO>`
+    - status: `404` if there are currently no sectors in the DB or the selected sector does not exist or is not linked with the selected expert
+- DELETE `/API/experts/{id}`
+  - Request parameters: ID of the desired expert
+  - Request body: none
+  - Result:
+    - status: `200`
+      - body: `1`
+    - status: `404`  if no expert is found with the passed expertId
+- GET `/API/experts/sectors`
+  - Request parameters: none
+  - Request body: none
+  - Result:
+    - status: `200`
+      - body: `List<ExpertDTO>`
+    - status: `404`  if there are currently no sectors in the DB
+- GET `/API/experts/{id}/sectors`
+  - Request parameters: ID of the desired expert
+  - Request body: none
+  - Result:
+    - status: `200`
+      - body: `List<ExpertDTO>`
+    - status: `404`  if there are currently no sectors in the DB or there are no sectors associated with the selected expert
+- Post `/API/experts/{id}/sectors`
+  - Request parameters: ID of the desired expert
+  - Request body: sectorDTO
+  - Result:
+    - status: `200`
+      - body: true
+    - status: `404`  if no expert is found with the passed expertId
+    - status: `422` if the inserted input for the sector is not valid
+- DELETE `/API/experts/{expertId}/sectors/{sectorId}`
+  - Request parameters: ID of the desired expert, ID of the desired sector
+  - Request body: none
+  - Result:
+    - status: `200`
+      - body: `1`
+    - status: `404`  if no expert is found with the passed expertId or there are currently no sectors in the DB or the selected sector does not exist or there are no sectors associated with the selected expert or the selected sector is not linked with the selected expert
+
+
+
+    
