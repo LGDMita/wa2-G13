@@ -6,10 +6,11 @@ plugins {
 	kotlin("jvm") version "1.7.22"
 	kotlin("plugin.spring") version "1.7.22"
 	kotlin("plugin.jpa") version "1.7.22"
+	id("com.google.cloud.tools.jib") version "3.3.1"
 }
 
-group = "com.example"
-version = "0.0.1-SNAPSHOT"
+group = "it.polito.wa2.g13"
+version = "0.0.1"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
