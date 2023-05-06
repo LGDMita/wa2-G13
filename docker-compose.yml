@@ -5,7 +5,7 @@ services:
     image: 'wa2-g13-ticketing:0.0.1'
     container_name: app
     ports:
-      - 8080:8080
+      - "8080:8080"
     depends_on:
       - db
     environment:
@@ -20,7 +20,7 @@ services:
     image: 'postgres:latest'
     container_name: db
     ports:
-      - 5432:5432
+      - "5432:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
