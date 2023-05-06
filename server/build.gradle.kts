@@ -28,7 +28,9 @@ dependencies {
 	testImplementation ("org.testcontainers:junit-jupiter:1.16.3")
 	testImplementation("org.testcontainers:postgresql:1.16.3")
 	implementation ("com.google.code.gson:gson:2.8.9")
-
+	implementation("org.springframework.boot:spring-boot-starter-security")
+	testImplementation("org.springframework.security:spring-security-test")
+	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 }
 
 tasks.withType<KotlinCompile> {

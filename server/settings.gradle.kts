@@ -1,1 +1,1 @@
-rootProject.name = "wa2-G13"
+rootProject.name = "wa2-g13-ticketing"

@@ -1,0 +1,27 @@
+version: '2'
+
+services:
+  app:
+    image: 'wa2-g13-ticketing:0.0.1'
+    container_name: app
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/products
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=validate
+    volumes:
+      - C:\Users\luigi\Documents\Docker\product-db:/var/lib/postgresql/data
+
+  db:
+    image: 'postgres:latest'
+    container_name: db
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=products
