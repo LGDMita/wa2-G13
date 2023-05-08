@@ -13,9 +13,6 @@ services:
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=password
       - SPRING_JPA_HIBERNATE_DDL_AUTO=validate
-    volumes:
-      - C:\Users\luigi\Documents\Docker\product-db:/var/lib/postgresql/data
-
   db:
     image: 'postgres:latest'
     container_name: db
@@ -25,3 +22,5 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=products
+    volumes:
+      - C:\Users\luigi\Documents\Docker\product-db:/var/lib/postgresql/data
