@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 
 services:
   app:
@@ -23,4 +23,21 @@ services:
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=products
     volumes:
-      - C:\Users\luigi\Documents\Docker\product-db:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
+  keycloak:
+    image: 'quay.io/keycloak/keycloak:latest'
+    container_name: keycloak
+    ports:
+      - "8081:8080"
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    volumes:
+      - keycloak-data:/opt/keycloak/data
+    command:
+      - start-dev
+volumes:
+  postgres-data:
+    driver: local
+  keycloak-data:
+    driver: local
