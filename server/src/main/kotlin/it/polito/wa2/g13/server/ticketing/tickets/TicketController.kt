@@ -4,10 +4,14 @@ import jakarta.validation.Valid
 import jakarta.validation.constraints.*
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.validation.BindingResult
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
-import java.util.Date
+import java.security.Principal
+import java.util.*
+
 
 @RestController
 class TicketController(
@@ -47,6 +51,16 @@ class TicketController(
 class TicketControllerValidated(
     private val ticketService: TicketService
 ) {
+
+    @GetMapping("/API/tickets/test/")
+    fun getTest(principal: Principal): ResponseEntity<String?>? {
+        val token = principal as JwtAuthenticationToken
+        val userName = token.tokenAttributes["name"] as String?
+        val userEmail = token.tokenAttributes["email"] as String?
+        return ResponseEntity.ok("Hello! \nUser Name : $userName\nUser Email : $userEmail")
+    }
+
+
     @GetMapping("/API/tickets/")
     fun getFilteredTickets(
         @RequestParam("ean")
