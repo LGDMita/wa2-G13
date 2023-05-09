@@ -7,6 +7,8 @@ plugins {
 	kotlin("plugin.spring") version "1.7.22"
 	kotlin("plugin.jpa") version "1.7.22"
 	id("com.google.cloud.tools.jib") version "3.3.1"
+	id("org.jetbrains.kotlin.kapt") version "1.5.31"
+	id("io.freefair.lombok") version "6.2.0"
 }
 
 group = "it.polito.wa2.g13"
@@ -31,6 +33,9 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	testImplementation("org.springframework.security:spring-security-test")
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+	compileOnly("org.projectlombok:lombok:1.18.20")
+	annotationProcessor("org.projectlombok:lombok:1.18.20")
 }
 
 tasks.withType<KotlinCompile> {
