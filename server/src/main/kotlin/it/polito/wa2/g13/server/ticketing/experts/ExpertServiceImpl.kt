@@ -2,6 +2,7 @@ package it.polito.wa2.g13.server.ticketing.experts
 
 
 import it.polito.wa2.g13.server.ticketing.sectors.SectorRepository
+import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
@@ -15,6 +16,7 @@ class ExpertServiceImpl(
         return expertRepository.findAll().map{it.toDTO()}
     }
 
+    @Transactional
     override fun setExpert(expertDTO: ExpertDTO): Boolean {
 
         val expert= expertDTO.toExpert()
@@ -29,6 +31,7 @@ class ExpertServiceImpl(
         return expertRepository.findByIdOrNull(id)?.toDTO()
     }
 
+    @Transactional
     override fun modifyExpert(id: Long, expertDTO: ExpertDTO): Int {
         return if(expertRepository.existsById(id)){
             if(expertRepository.existsByEmailAndIdNot(expertDTO.email, id)){
@@ -53,6 +56,7 @@ class ExpertServiceImpl(
 
     }
 
+    @Transactional
     override fun deleteExpertById(id: Long){
         expertRepository.deleteById(id)
     }

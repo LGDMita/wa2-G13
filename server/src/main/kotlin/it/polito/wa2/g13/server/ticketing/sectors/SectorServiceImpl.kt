@@ -1,6 +1,7 @@
 package it.polito.wa2.g13.server.ticketing.sectors
 
 import it.polito.wa2.g13.server.ticketing.experts.ExpertRepository
+import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
@@ -26,6 +27,7 @@ class SectorServiceImpl(
         }
     }
 
+    @Transactional
     override fun setSectorForExpert(id: Long, sectorDTO: SectorDTO): Boolean {
         val expert= expertRepository.findByIdOrNull(id)
         return if(expert != null){
@@ -49,6 +51,7 @@ class SectorServiceImpl(
         }
     }
 
+    @Transactional
     override fun deleteSectorForExpert(expertId: Long, sectorId: Long) {
         val expert= expertRepository.findByIdOrNull(expertId)
         if (expert != null) {
