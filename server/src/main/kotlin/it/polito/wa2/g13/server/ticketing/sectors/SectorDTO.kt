@@ -4,12 +4,12 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 
 data class SectorDTO(
-    val sectorId: Long,
+    val sectorId: Long?,
     @field:Size(min=1, max=31, message = "Name MUST be a NON empty string of max 31 chars")
     @field:NotBlank(message="Name can NOT be blank")
     val name: String,
 )
 
 fun Sector.toDTO(): SectorDTO {
-    return SectorDTO(sectorId, name)
+    return SectorDTO(getId(), name)
 }

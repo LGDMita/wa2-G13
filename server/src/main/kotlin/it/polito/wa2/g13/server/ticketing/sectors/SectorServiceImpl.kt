@@ -56,7 +56,7 @@ class SectorServiceImpl(
         val expert= expertRepository.findByIdOrNull(expertId)
         if (expert != null) {
             val sectors= sectorRepository.findSectorsByExperts(expert)
-            val sector= sectors.find { s-> s.sectorId == sectorId }
+            val sector= sectors.find { s-> s.getId() == sectorId }
             if (sector != null) {
                 expert.removeSector(sector)
                 sector.removeExpert(expert)
