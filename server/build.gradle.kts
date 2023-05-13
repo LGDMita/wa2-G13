@@ -36,6 +36,8 @@ dependencies {
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 	compileOnly("org.projectlombok:lombok:1.18.20")
 	annotationProcessor("org.projectlombok:lombok:1.18.20")
+	implementation ("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.0")
+
 }
 
 tasks.withType<KotlinCompile> {

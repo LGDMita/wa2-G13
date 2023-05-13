@@ -1,5 +1,6 @@
 package it.polito.wa2.g13.server.problemDetailsHandler
 
+import it.polito.wa2.g13.server.jwtAuth.InvalidCredentialArgumentsException
 import it.polito.wa2.g13.server.products.DuplicateProductException
 import it.polito.wa2.g13.server.products.ProductNotFoundException
 import it.polito.wa2.g13.server.profiles.DuplicateProfileException
@@ -103,4 +104,8 @@ class ProblemDetailsHandler : ResponseEntityExceptionHandler() {
     @ExceptionHandler(InvalidTicketException::class)
     fun handleInvalidTicket(e: InvalidTicketException) = ProblemDetail
         .forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
+
+    @ExceptionHandler(InvalidCredentialArgumentsException::class)
+    fun handleInvalidTicket(e: InvalidCredentialArgumentsException) = ProblemDetail
+        .forStatusAndDetail(HttpStatus.FORBIDDEN, e.message!!)
 }
