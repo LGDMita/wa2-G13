@@ -22,6 +22,7 @@ class WebSecurityConfig(private val jwtAuthConverter: JwtAuthConverter) {
 
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+        http.csrf().disable()
         http.authorizeHttpRequests()
             .requestMatchers(HttpMethod.GET, "/API/tickets/*").hasAnyRole(MANAGER, EXPERT, CLIENT)
             .requestMatchers(HttpMethod.GET, "/API/experts/*").hasAnyRole(MANAGER, EXPERT)

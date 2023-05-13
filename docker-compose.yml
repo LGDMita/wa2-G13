@@ -1,18 +1,6 @@
 version: '3'
 
 services:
-  app:
-    image: 'wa2-g13-ticketing:0.0.1'
-    container_name: app
-    ports:
-      - "8080:8080"
-    depends_on:
-      - db
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/products
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=password
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=validate
   db:
     image: 'postgres:latest'
     container_name: db
@@ -36,6 +24,22 @@ services:
       - keycloak-data:/opt/keycloak/data
     command:
       - start-dev
+  app:
+    image: 'wa2-g13-ticketing:0.0.1'
+    container_name: app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+      - keycloak
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/products
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=validate
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:8080/realms/wa2-g13
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=http://keycloak:8080/realms/wa2-g13/protocol/openid-connect/certs
+      - KEYCLOAK_ADDRESS=keycloak:8080
 volumes:
   postgres-data:
     driver: local

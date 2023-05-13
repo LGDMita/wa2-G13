@@ -1,5 +1,6 @@
 package it.polito.wa2.g13.server.jwtAuth
 
+import org.springframework.context.annotation.Configuration
 import org.springframework.core.convert.converter.Converter
 import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.core.GrantedAuthority
@@ -14,6 +15,7 @@ import java.util.stream.Stream
 
 
 @Component
+@Configuration
 class JwtAuthConverter(private val properties: JwtAuthConverterProperties) :
     Converter<Jwt?, AbstractAuthenticationToken?> {
     private val jwtGrantedAuthoritiesConverter = JwtGrantedAuthoritiesConverter()
