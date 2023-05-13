@@ -2,20 +2,20 @@ package it.polito.wa2.g13.server.jwtAuth
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.client.RestTemplate
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 
 
 @RestController
@@ -41,26 +41,25 @@ class AuthController {
         body.add("password", loginDTO.password)
 
         val requestEntity = org.springframework.http.HttpEntity(body, headers)
-        val responseEntity: ResponseEntity<String> = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String::class.java)
-
-        val response = responseEntity.body
-
-        if (response != null) {
-            // Parse the JSON response
-            val objectMapper = ObjectMapper()
-            val jsonResponse: AccessTokenResponse = objectMapper.readValue(response)
-
-            /*// Access the parsed JSON data
-            println("Access Token: ${jsonResponse.access_token}")
-            println("Expires In: ${jsonResponse.expires_in}")
-            println("Refresh Token: ${jsonResponse.refresh_token}")*/
-
-            val jwtResponse = JwtResponse(jsonResponse.access_token)
-            return jwtResponse
-        }
-        else {
+        val responseEntity: ResponseEntity<String>
+        try {
+            responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String::class.java)
+        } catch (e: Exception) {
             throw InvalidCredentialArgumentsException()
         }
+
+        val response = responseEntity.body!!
+
+        // Parse the JSON response
+        val objectMapper = ObjectMapper()
+        val jsonResponse: AccessTokenResponse = objectMapper.readValue(response)
+
+        /*// Access the parsed JSON data
+        println("Access Token: ${jsonResponse.access_token}")
+        println("Expires In: ${jsonResponse.expires_in}")
+        println("Refresh Token: ${jsonResponse.refresh_token}")*/
+
+        return JwtResponse(jsonResponse.access_token)
     }
 }
 
