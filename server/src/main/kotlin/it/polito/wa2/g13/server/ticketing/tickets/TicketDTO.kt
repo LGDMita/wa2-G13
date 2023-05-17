@@ -15,7 +15,7 @@ import java.util.*
 
 data class TicketDTO(
     @field:NotNull
-    var ticketId: Long,
+    var ticketId: Long?,
     @Valid
     var profile: ProfileDTO,
     @Valid
@@ -35,6 +35,6 @@ data class TicketDTO(
 )
 
 fun Ticket.toDTO(): TicketDTO {
-    return TicketDTO(ticketId, profile.toDTO(), product.toDTO(), priorityLevel, expert?.toDTO(), status, creationDate,
+    return TicketDTO(getId(), profile.toDTO(), product.toDTO(), priorityLevel, expert?.toDTO(), status, creationDate,
         messages.map { m -> m.toDTO() }.toMutableSet())
 }

@@ -33,7 +33,7 @@ class TicketController(
         br: BindingResult
     ): Boolean {
         if (!br.hasErrors()) {
-            if (ticketService.getTicket(ticketDTO.ticketId) != null) {
+            if (ticketService.getTicket(ticketDTO.ticketId!!) != null) {
                 return ticketService.modifyTicket(ticketDTO)
             }
             else {

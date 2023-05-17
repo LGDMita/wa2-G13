@@ -34,7 +34,7 @@ class TicketServiceImpl(
     }
 
     override fun modifyTicket(ticket: TicketDTO): Boolean {
-        return if (ticketRepository.existsById(ticket.ticketId)) {
+        return if (ticketRepository.existsById(ticket.ticketId!!)) {
             ticketRepository.save(ticket.toTicket())
             true
         } else {
@@ -105,7 +105,6 @@ class TicketServiceImpl(
 
         // Updates the ticket with the new state, all th other values remain the same
         val updatedTicket = ticketRepository.save(Ticket(
-            ticketId = ticketId,
             profile = ticket.profile,
             product = ticket.product,
             priorityLevel = ticket.priorityLevel,
@@ -137,7 +136,6 @@ class TicketServiceImpl(
 
         // Updates the ticket with the new priority level, all the other values remain the same
         ticketRepository.save(Ticket(
-            ticketId = ticketId,
             profile = ticket.profile,
             product = ticket.product,
             priorityLevel = priorityLevel,
@@ -164,7 +162,6 @@ class TicketServiceImpl(
 
         // Updates the ticket with the new priority level, all the other values remain the same
         ticketRepository.save(Ticket(
-            ticketId = ticketId,
             profile = ticket.profile,
             product = ticket.product,
             priorityLevel = ticket.priorityLevel,

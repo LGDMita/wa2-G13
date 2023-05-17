@@ -1,24 +1,24 @@
 package it.polito.wa2.g13.server.ticketing.ticketsHistory
 
+import it.polito.wa2.g13.server.EntityBase
 import it.polito.wa2.g13.server.ticketing.tickets.Ticket
+import it.polito.wa2.g13.server.ticketing.tickets.TicketDTO
+import it.polito.wa2.g13.server.ticketing.tickets.toTicket
 import jakarta.persistence.*
 import java.util.*
 
 @Entity
 @Table(name= "tickets_history")
 class TicketHistory(
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tickets_history_generator")
-    @SequenceGenerator(name = "tickets_history_generator", sequenceName = "tickets_history_seq", allocationSize = 1)
-    var historyId: Long? = 0,
     @ManyToOne
     @JoinColumn(name = "ticketId")
     var ticket: Ticket,
     var oldStatus: String,
     var newStatus: String,
-    var dateTime: Date
-)
+    var dateTime: Date,
+    setId: Long?=null) : EntityBase<Long>(setId) {
+}
 
-fun TicketHistory.toDTO(): TicketHistoryDTO {
-    return TicketHistoryDTO(historyId, ticket.ticketId, oldStatus, newStatus, dateTime)
+fun TicketHistoryDTO.toTicket(ticket: TicketDTO): TicketHistory {
+    return TicketHistory(ticket.toTicket(), oldStatus, newStatus, dateTime, historyId)
 }

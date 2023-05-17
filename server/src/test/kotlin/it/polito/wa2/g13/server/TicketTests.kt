@@ -143,8 +143,8 @@ class TicketTests {
         val result: ResponseEntity<String> = restTemplate.getForEntity(uri, String::class.java)
 
         val gson = Gson()
-        val ticketType = object : TypeToken<Ticket>() {}.type
-        val ticket: Ticket = gson.fromJson(result.body, ticketType)
+        val ticketType = object : TypeToken<TicketDTO>() {}.type
+        val ticket: TicketDTO = gson.fromJson(result.body, ticketType)
 
         Assertions.assertEquals(HttpStatus.OK, result.statusCode)
         Assertions.assertEquals(2, ticket.ticketId)
@@ -352,9 +352,9 @@ class TicketTests {
         expertRepository.save(myExpert)
         ticketRepository.save(myTicket)
 
-        myTicket.status = "closed"
-        myTicket.ticketId = 5
-        val request = HttpEntity(myTicket.toDTO())
+        val t = myTicket.toDTO()
+        t.ticketId = 5000
+        val request = HttpEntity(t)
 
         val result = restTemplate.exchange(uri, HttpMethod.PUT, request, String::class.java)
 

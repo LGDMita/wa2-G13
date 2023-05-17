@@ -103,7 +103,7 @@ class MessagesTests {
             status = "open", creationDate = Date(), messages = mutableSetOf()
         )
         val myMessage = Message(
-            myTicket,true,"Hey I'm Test Profile, I'm having issues with my new prdocut!",
+            myTicket,true,"Hey I'm Test Profile, I'm having issues with my new product!",
             Date(), mutableSetOf()
         )
 
@@ -143,7 +143,7 @@ class MessagesTests {
             status = "open", creationDate = Date(), messages = mutableSetOf()
         )
         val myMessage = Message(
-            myTicket,true,"Hey I'm Test Profile, I'm having issues with my new prdocut!",
+            myTicket,true,"Hey I'm Test Profile, I'm having issues with my new product!",
             Date(), mutableSetOf()
         )
         val myMessage2 = Message(
@@ -191,7 +191,7 @@ class MessagesTests {
         )
         val myAttachment=Attachment(null,"image/png",1, byteArrayOf(3),Date())
         val myMessage = Message(
-            myTicket,true,"Hey I'm Test Profile, I'm having issues with my new prdocut!",
+            myTicket,true,"Hey I'm Test Profile, I'm having issues with my new product!",
             Date(), mutableSetOf(myAttachment)
 
         )

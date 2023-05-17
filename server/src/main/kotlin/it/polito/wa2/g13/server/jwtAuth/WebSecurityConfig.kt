@@ -23,10 +23,7 @@ class WebSecurityConfig(private val jwtAuthConverter: JwtAuthConverter) {
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http.csrf().disable()
-        http.authorizeHttpRequests()
-            .requestMatchers(HttpMethod.GET, "/API/tickets/*").hasAnyRole(MANAGER, EXPERT, CLIENT)
-            .requestMatchers(HttpMethod.GET, "/API/experts/*").hasAnyRole(MANAGER, EXPERT)
-            .anyRequest().permitAll()
+        http.authorizeHttpRequests().anyRequest().permitAll()
         http.oauth2ResourceServer()
             .jwt()
             .jwtAuthenticationConverter(jwtAuthConverter)
@@ -34,3 +31,10 @@ class WebSecurityConfig(private val jwtAuthConverter: JwtAuthConverter) {
         return http.build()
     }
 }
+
+
+/*
+http.authorizeHttpRequests()
+.requestMatchers(HttpMethod.GET, "/API/tickets/*").hasAnyRole(MANAGER, EXPERT, CLIENT)
+.requestMatchers(HttpMethod.GET, "/API/experts/*").hasAnyRole(MANAGER, EXPERT)
+*/

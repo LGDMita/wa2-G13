@@ -1,18 +1,19 @@
 package it.polito.wa2.g13.server.profiles
 
+import it.polito.wa2.g13.server.EntityBase
 import jakarta.persistence.Entity
-import jakarta.persistence.Id
 import jakarta.persistence.Table
 
 @Entity
 @Table(name= "profiles")
-class Profile(@Id var email: String, var name: String, var surname: String) {
+class Profile(
+    var email: String,
+    var name: String,
+    var surname: String,
+    setId: Long?=null) : EntityBase<Long>(setId) {
 
-    /*override fun toString(): String {
-        return "email=${email} name=${name} surname=${surname}"
-    }*/
 }
 
 fun ProfileDTO.toProfile(): Profile {
-    return Profile(email, name, surname)
+    return Profile(email, name, surname, id)
 }

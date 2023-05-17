@@ -1,6 +1,7 @@
 package it.polito.wa2.g13.server.ticketing.tickets
 
 
+import it.polito.wa2.g13.server.EntityBase
 import it.polito.wa2.g13.server.products.Product
 import it.polito.wa2.g13.server.products.toProduct
 import it.polito.wa2.g13.server.profiles.Profile
@@ -15,25 +16,21 @@ import java.util.Date
 @Entity
 @Table(name= "tickets")
 class Ticket(
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tickets_generator")
-    @SequenceGenerator(name = "tickets_generator", sequenceName = "tickets_seq", allocationSize = 1)
-    var ticketId: Long = 0,
     @ManyToOne
-    @JoinColumn(name = "profileId")
+    @JoinColumn(name = "profile_id")
     var profile: Profile,
     @ManyToOne
     @JoinColumn(name = "ean")
     var product: Product,
     var priorityLevel: Int?,
     @ManyToOne
-    @JoinColumn(name = "expertId")
+    @JoinColumn(name = "expert_id")
     var expert: Expert?,
     var status: String,
     var creationDate: Date,
     @OneToMany(mappedBy = "ticket")
-    var messages : MutableSet<Message> = mutableSetOf()
-) {
+    var messages : MutableSet<Message> = mutableSetOf(),
+    setId: Long?=null) : EntityBase<Long>(setId) {
     fun addMessage(message: Message){
         message.ticket=this
         messages.add(message)
@@ -41,6 +38,6 @@ class Ticket(
 }
 
 fun TicketDTO.toTicket(): Ticket {
-    return Ticket(ticketId, profile.toProfile(), product.toProduct(), priorityLevel, expert?.toExpert(), status,
-        creationDate, messages.map { m -> m.toMessage(this) }.toMutableSet())
+    return Ticket(profile.toProfile(), product.toProduct(), priorityLevel, expert?.toExpert(), status,
+        creationDate, messages.map { m -> m.toMessage(this) }.toMutableSet(), ticketId)
 }

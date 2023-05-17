@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/client.iml" filepath="$PROJECT_DIR$/client.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ticketing.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ticketing.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/wa2-G13.iml" filepath="$PROJECT_DIR$/.idea/wa2-G13.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/wa2-g13-ticketing.main.iml" filepath="$PROJECT_DIR$/.idea/modules/wa2-g13-ticketing.main.iml" />
     </modules>
   </component>
 </project>
