@@ -19,7 +19,7 @@ import org.springframework.web.client.RestTemplate
 
 
 @RestController
-class AuthController {
+class AuthController() {
 
     @Value("\${keycloak.address}")
     private lateinit var keycloak: String

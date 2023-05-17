@@ -2,6 +2,8 @@ package it.polito.wa2.g13.server
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import it.polito.wa2.g13.server.jwtAuth.AuthController
+import it.polito.wa2.g13.server.jwtAuth.LoginDTO
 import it.polito.wa2.g13.server.products.Product
 import it.polito.wa2.g13.server.products.ProductRepository
 import it.polito.wa2.g13.server.profiles.Profile
@@ -19,10 +21,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.server.LocalServerPort
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
+import org.springframework.http.*
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
@@ -70,6 +69,9 @@ class TicketTests {
     @Autowired
     lateinit var ticketRepository: TicketRepository
 
+    @Autowired
+    lateinit var authController: AuthController
+
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun t1TestGetAllTickets() {
@@ -97,7 +99,13 @@ class TicketTests {
         ticketRepository.save(myTicket)
         ticketRepository.save(myTicket2)
 
-        val result: ResponseEntity<String> = restTemplate.getForEntity(uri, String::class.java)
+        val loginDTO= LoginDTO(username = "expert", password = "password")
+        val token= authController.login(loginDTO).jwtAccessToken
+        val headers = HttpHeaders()
+        headers.setBearerAuth(token)
+        headers.set("X-COM-PERSIST", "true")
+        val request = HttpEntity(null, headers)
+        val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
 
         val gson = Gson()
         val arrayTicketType = object : TypeToken<List<Ticket>>() {}.type
@@ -105,6 +113,47 @@ class TicketTests {
 
         Assertions.assertEquals(HttpStatus.OK, result.statusCode)
         Assertions.assertEquals(2, tickets.size)
+
+        ticketRepository.delete(myTicket)
+        ticketRepository.delete(myTicket2)
+        profileRepository.delete(myProfile)
+        productRepository.delete(myProduct)
+        expertRepository.delete(myExpert)
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun t1BTestGetAllTicketsUnAuthenticated() {
+        val baseUrl = "http://localhost:$port/API/tickets/"
+        val uri = URI(baseUrl)
+        val myProfile = Profile("luigimolinengo@gmail.com", "Luigi", "Molinengo")
+        val myProduct = Product(
+            "4935531465706",
+            "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
+            "JMT"
+        )
+        val myExpert = Expert("Giovanni", "Malnati", "giovanni.malnati@polito.it")
+        val myTicket = Ticket(
+            profile = myProfile, product = myProduct, priorityLevel = 1, expert = myExpert,
+            status = "open", creationDate = Date(), messages = mutableSetOf()
+        )
+        val myTicket2 = Ticket(
+            profile = myProfile, product = myProduct, priorityLevel = 2, expert = myExpert,
+            status = "closed", creationDate = Date(), messages = mutableSetOf()
+        )
+
+        profileRepository.save(myProfile)
+        productRepository.save(myProduct)
+        expertRepository.save(myExpert)
+        ticketRepository.save(myTicket)
+        ticketRepository.save(myTicket2)
+
+        val headers = HttpHeaders()
+        headers.set("X-COM-PERSIST", "true")
+        val request = HttpEntity(null, headers)
+        val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
+
+        Assertions.assertEquals(HttpStatus.UNAUTHORIZED, result.statusCode)
 
         ticketRepository.delete(myTicket)
         ticketRepository.delete(myTicket2)
@@ -140,7 +189,13 @@ class TicketTests {
         ticketRepository.save(myTicket)
         ticketRepository.save(myTicket2)
 
-        val result: ResponseEntity<String> = restTemplate.getForEntity(uri, String::class.java)
+        val loginDTO= LoginDTO(username = "expert", password = "password")
+        val token= authController.login(loginDTO).jwtAccessToken
+        val headers = HttpHeaders()
+        headers.setBearerAuth(token)
+        headers.set("X-COM-PERSIST", "true")
+        val request = HttpEntity(null, headers)
+        val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
 
         val gson = Gson()
         val ticketType = object : TypeToken<TicketDTO>() {}.type
@@ -183,7 +238,13 @@ class TicketTests {
         ticketRepository.save(myTicket)
         ticketRepository.save(myTicket2)
 
-        val result: ResponseEntity<String> = restTemplate.getForEntity(uri, String::class.java)
+        val loginDTO= LoginDTO(username = "expert", password = "password")
+        val token= authController.login(loginDTO).jwtAccessToken
+        val headers = HttpHeaders()
+        headers.setBearerAuth(token)
+        headers.set("X-COM-PERSIST", "true")
+        val request = HttpEntity(null, headers)
+        val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
 
         Assertions.assertEquals(HttpStatus.NOT_FOUND, result.statusCode)
 
@@ -222,7 +283,13 @@ class TicketTests {
         ticketRepository.save(myTicket)
         ticketRepository.save(myTicket2)
 
-        val result: ResponseEntity<String> = restTemplate.getForEntity(uri, String::class.java)
+        val loginDTO= LoginDTO(username = "expert", password = "password")
+        val token= authController.login(loginDTO).jwtAccessToken
+        val headers = HttpHeaders()
+        headers.setBearerAuth(token)
+        headers.set("X-COM-PERSIST", "true")
+        val request = HttpEntity(null, headers)
+        val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
 
         val gson = Gson()
         val arrayTicketType = object : TypeToken<List<Ticket>>() {}.type
@@ -266,7 +333,13 @@ class TicketTests {
         ticketRepository.save(myTicket)
         ticketRepository.save(myTicket2)
 
-        val result: ResponseEntity<String> = restTemplate.getForEntity(uri, String::class.java)
+        val loginDTO= LoginDTO(username = "expert", password = "password")
+        val token= authController.login(loginDTO).jwtAccessToken
+        val headers = HttpHeaders()
+        headers.setBearerAuth(token)
+        headers.set("X-COM-PERSIST", "true")
+        val request = HttpEntity(null, headers)
+        val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
 
         Assertions.assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, result.statusCode)
 
@@ -283,7 +356,13 @@ class TicketTests {
         val baseUrl = "http://localhost:$port/API/tickets/"
         val uri = URI(baseUrl)
 
-        val result: ResponseEntity<String> = restTemplate.getForEntity(uri, String::class.java)
+        val loginDTO= LoginDTO(username = "expert", password = "password")
+        val token= authController.login(loginDTO).jwtAccessToken
+        val headers = HttpHeaders()
+        headers.setBearerAuth(token)
+        headers.set("X-COM-PERSIST", "true")
+        val request = HttpEntity(null, headers)
+        val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
 
         val gson = Gson()
         val ticketType = object : TypeToken<List<Ticket>>() {}.type
@@ -317,8 +396,12 @@ class TicketTests {
         ticketRepository.save(myTicket)
 
         myTicket.status = "closed"
-        val request = HttpEntity(myTicket.toDTO())
-
+        val loginDTO= LoginDTO(username = "expert", password = "password")
+        val token= authController.login(loginDTO).jwtAccessToken
+        val headers = HttpHeaders()
+        headers.setBearerAuth(token)
+        headers.set("X-COM-PERSIST", "true")
+        val request = HttpEntity(myTicket.toDTO(), headers)
         val result = restTemplate.exchange(uri, HttpMethod.PUT, request, String::class.java)
 
         Assertions.assertEquals(HttpStatus.OK, result.statusCode)
@@ -354,8 +437,13 @@ class TicketTests {
 
         val t = myTicket.toDTO()
         t.ticketId = 5000
-        val request = HttpEntity(t)
 
+        val loginDTO= LoginDTO(username = "expert", password = "password")
+        val token= authController.login(loginDTO).jwtAccessToken
+        val headers = HttpHeaders()
+        headers.setBearerAuth(token)
+        headers.set("X-COM-PERSIST", "true")
+        val request = HttpEntity(t, headers)
         val result = restTemplate.exchange(uri, HttpMethod.PUT, request, String::class.java)
 
         Assertions.assertEquals(HttpStatus.NOT_FOUND, result.statusCode)
@@ -390,8 +478,13 @@ class TicketTests {
         ticketRepository.save(myTicket)
 
         myTicket.status = "aa"
-        val request = HttpEntity(myTicket.toDTO())
 
+        val loginDTO= LoginDTO(username = "expert", password = "password")
+        val token= authController.login(loginDTO).jwtAccessToken
+        val headers = HttpHeaders()
+        headers.setBearerAuth(token)
+        headers.set("X-COM-PERSIST", "true")
+        val request = HttpEntity(myTicket.toDTO(), headers)
         val result = restTemplate.exchange(uri, HttpMethod.PUT, request, String::class.java)
 
         Assertions.assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, result.statusCode)
@@ -426,8 +519,13 @@ class TicketTests {
         ticketRepository.save(myTicket)
 
         myTicket.priorityLevel = 10
-        val request = HttpEntity(myTicket.toDTO())
 
+        val loginDTO= LoginDTO(username = "expert", password = "password")
+        val token= authController.login(loginDTO).jwtAccessToken
+        val headers = HttpHeaders()
+        headers.setBearerAuth(token)
+        headers.set("X-COM-PERSIST", "true")
+        val request = HttpEntity(myTicket.toDTO(), headers)
         val result = restTemplate.exchange(uri, HttpMethod.PUT, request, String::class.java)
 
         Assertions.assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, result.statusCode)
@@ -466,7 +564,13 @@ class TicketTests {
         ticketRepository.save(myTicket)
         ticketRepository.save(myTicket2)
 
-        val result: ResponseEntity<String> = restTemplate.getForEntity(uri, String::class.java)
+        val loginDTO= LoginDTO(username = "expert", password = "password")
+        val token= authController.login(loginDTO).jwtAccessToken
+        val headers = HttpHeaders()
+        headers.setBearerAuth(token)
+        headers.set("X-COM-PERSIST", "true")
+        val request = HttpEntity(null, headers)
+        val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
 
         Assertions.assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, result.statusCode)
 
@@ -505,7 +609,13 @@ class TicketTests {
         ticketRepository.save(myTicket)
         ticketRepository.save(myTicket2)
 
-        val result: ResponseEntity<String> = restTemplate.getForEntity(uri, String::class.java)
+        val loginDTO= LoginDTO(username = "expert", password = "password")
+        val token= authController.login(loginDTO).jwtAccessToken
+        val headers = HttpHeaders()
+        headers.setBearerAuth(token)
+        headers.set("X-COM-PERSIST", "true")
+        val request = HttpEntity(null, headers)
+        val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
 
         Assertions.assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, result.statusCode)
 
@@ -542,8 +652,12 @@ class TicketTests {
         val baseUrl = "http://localhost:$port/API/tickets/$ticketId/$operationUrl"
         val uri = URI(baseUrl)
 
-        val request = HttpEntity(body)
-
+        val loginDTO= LoginDTO(username = "expert", password = "password")
+        val token= authController.login(loginDTO).jwtAccessToken
+        val headers = HttpHeaders()
+        headers.setBearerAuth(token)
+        headers.set("X-COM-PERSIST", "true")
+        val request = HttpEntity(body, headers)
         val result = restTemplate.exchange(uri, HttpMethod.PUT, request, String::class.java)
 
         //Verify request succeed
@@ -591,8 +705,12 @@ class TicketTests {
 
         val ticketPost = TicketPostDTO(profileId, ean)
 
-        val request = HttpEntity(ticketPost)
-
+        val loginDTO= LoginDTO(username = "expert", password = "password")
+        val token= authController.login(loginDTO).jwtAccessToken
+        val headers = HttpHeaders()
+        headers.setBearerAuth(token)
+        headers.set("X-COM-PERSIST", "true")
+        val request = HttpEntity(ticketPost, headers)
         val result = restTemplate.postForEntity(uri, request, String::class.java)
 
         //Verify request succeed

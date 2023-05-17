@@ -2,6 +2,8 @@ package it.polito.wa2.g13.server
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import it.polito.wa2.g13.server.jwtAuth.AuthController
+import it.polito.wa2.g13.server.jwtAuth.LoginDTO
 import it.polito.wa2.g13.server.products.Product
 import it.polito.wa2.g13.server.products.ProductRepository
 import it.polito.wa2.g13.server.profiles.Profile
@@ -86,6 +88,9 @@ class MessagesTests {
     @Autowired
     lateinit var attachmentRepository: AttachmentRepository
 
+    @Autowired
+    lateinit var authController: AuthController
+
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun t1TestGetMessage(){
@@ -113,7 +118,13 @@ class MessagesTests {
         ticketRepository.save(myTicket)
         messageRepository.save(myMessage)
 
-        val result: ResponseEntity<String> = restTemplate.getForEntity(uri, String::class.java)
+        val loginDTO= LoginDTO(username = "expert", password = "password")
+        val token= authController.login(loginDTO).jwtAccessToken
+        val headers = HttpHeaders()
+        headers.setBearerAuth(token)
+        headers.set("X-COM-PERSIST", "true")
+        val request = HttpEntity(null, headers)
+        val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
 
 
         Assertions.assertEquals(HttpStatus.OK, result.statusCode)
@@ -157,7 +168,14 @@ class MessagesTests {
         messageRepository.save(myMessage)
         messageRepository.save(myMessage2)
 
-        val result: ResponseEntity<String> = restTemplate.getForEntity(uri, String::class.java)
+        val loginDTO= LoginDTO(username = "expert", password = "password")
+        val token= authController.login(loginDTO).jwtAccessToken
+        val headers = HttpHeaders()
+        headers.setBearerAuth(token)
+        headers.set("X-COM-PERSIST", "true")
+        val request = HttpEntity(null, headers)
+        val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
+
         val gson = Gson()
         val arrayMessagesType = object : TypeToken<List<Message>>() {}.type
         val messages: List<MessageDTO> = gson.fromJson(result.body, arrayMessagesType)
@@ -201,7 +219,13 @@ class MessagesTests {
         ticketRepository.save(myTicket)
         messageRepository.save(myMessage)
 
-        val result: ResponseEntity<String> = restTemplate.getForEntity(uri, String::class.java)
+        val loginDTO= LoginDTO(username = "expert", password = "password")
+        val token= authController.login(loginDTO).jwtAccessToken
+        val headers = HttpHeaders()
+        headers.setBearerAuth(token)
+        headers.set("X-COM-PERSIST", "true")
+        val request = HttpEntity(null, headers)
+        val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
 
         Assertions.assertEquals(HttpStatus.OK, result.statusCode)
         println("Body --> ${result.body}")
@@ -218,13 +242,19 @@ class MessagesTests {
     fun t4GetButTicketDoesntExist(){
         val baseUrl = "http://localhost:$port/API/tickets/100/messages"
         val uri = URI(baseUrl)
-        val result: ResponseEntity<String> = restTemplate.getForEntity(uri, String::class.java)
+        val loginDTO= LoginDTO(username = "expert", password = "password")
+        val token= authController.login(loginDTO).jwtAccessToken
+        val headers = HttpHeaders()
+        headers.setBearerAuth(token)
+        headers.set("X-COM-PERSIST", "true")
+        val request = HttpEntity(null, headers)
+        val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
         Assertions.assertEquals(result.statusCode,HttpStatus.NOT_FOUND)
     }
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    fun t5PostButTicketDoesntExist(){
+    fun t5PostButTicketDoesntExist() {
         val baseUrl = "http://localhost:$port/API/tickets/100/messages"
         val uri = URI(baseUrl)
         val file = MockMultipartFile(
@@ -235,11 +265,23 @@ class MessagesTests {
         )
 
         val mockMvc = webApplicationContext?.let { MockMvcBuilders.webAppContextSetup(it).build() }
-        mockMvc?.perform(multipart(uri).file(file).param("fromUser","False").param("text","...."))?.andExpect(status().isNotFound())
+
+        val loginDTO= LoginDTO(username = "expert", password = "password")
+        val token= authController.login(loginDTO).jwtAccessToken
+        val requestBuilder = multipart(uri)
+            .file(file)
+            .param("fromUser", "False")
+            .param("text", "....")
+            .header("Authorization", "Bearer $token")
+
+        mockMvc?.perform(requestBuilder)
+            ?.andExpect(status().isNotFound())
     }
+
+
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    fun t6PostMessage(){
+    fun t6PostMessage() {
         val baseUrl = "http://localhost:$port/API/tickets/1/messages"
         val uri = URI(baseUrl)
         val myProfile = Profile("moyne@gmail.com", "Mohamed Amine", "Hamdi")
@@ -266,6 +308,17 @@ class MessagesTests {
         )
 
         val mockMvc = webApplicationContext?.let { MockMvcBuilders.webAppContextSetup(it).build() }
-        mockMvc?.perform(multipart(uri).file(file).param("fromUser","False").param("text","...."))?.andExpect(status().isOk())
+
+        val loginDTO= LoginDTO(username = "expert", password = "password")
+        val token= authController.login(loginDTO).jwtAccessToken
+        val requestBuilder = multipart(uri)
+            .file(file)
+            .param("fromUser", "False")
+            .param("text", "....")
+            .header("Authorization", "Bearer $token")
+
+        mockMvc?.perform(requestBuilder)
+            ?.andExpect(status().isOk())
     }
+
 }

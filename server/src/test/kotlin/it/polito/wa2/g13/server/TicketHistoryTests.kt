@@ -1,5 +1,7 @@
 package it.polito.wa2.g13.server
 
+import it.polito.wa2.g13.server.jwtAuth.AuthController
+import it.polito.wa2.g13.server.jwtAuth.LoginDTO
 import it.polito.wa2.g13.server.products.Product
 import it.polito.wa2.g13.server.products.ProductRepository
 import it.polito.wa2.g13.server.profiles.Profile
@@ -71,6 +73,9 @@ class TicketHistoryTests {
     @Autowired
     lateinit var ticketHistoryRepository: TicketHistoryRepository
 
+    @Autowired
+    lateinit var authController: AuthController
+
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun t1TestGetTicketHistory(){
@@ -95,7 +100,13 @@ class TicketHistoryTests {
         ticketRepository.save(myTicket)
         ticketHistoryRepository.save(myHistory)
 
-        val result: ResponseEntity<String> = restTemplate.getForEntity(uri, String::class.java)
+        val loginDTO= LoginDTO(username = "expert", password = "password")
+        val token= authController.login(loginDTO).jwtAccessToken
+        val headers = HttpHeaders()
+        headers.setBearerAuth(token)
+        headers.set("X-COM-PERSIST", "true")
+        val request = HttpEntity(null, headers)
+        val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
 
 
         Assertions.assertEquals(HttpStatus.OK, result.statusCode)
@@ -113,7 +124,14 @@ class TicketHistoryTests {
     fun t2TestGetHistoryOfNotExistentTicket(){
         val baseUrl = "http://localhost:$port/API/tickets/1000/history"
         val uri = URI(baseUrl)
-        val result: ResponseEntity<String> = restTemplate.getForEntity(uri, String::class.java)
+
+        val loginDTO= LoginDTO(username = "expert", password = "password")
+        val token= authController.login(loginDTO).jwtAccessToken
+        val headers = HttpHeaders()
+        headers.setBearerAuth(token)
+        headers.set("X-COM-PERSIST", "true")
+        val request = HttpEntity(null, headers)
+        val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
 
         Assertions.assertEquals(result.statusCode,HttpStatus.NOT_FOUND)
     }

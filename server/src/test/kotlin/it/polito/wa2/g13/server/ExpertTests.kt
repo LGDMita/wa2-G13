@@ -2,6 +2,8 @@ package it.polito.wa2.g13.server
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import it.polito.wa2.g13.server.jwtAuth.AuthController
+import it.polito.wa2.g13.server.jwtAuth.LoginDTO
 import it.polito.wa2.g13.server.ticketing.experts.Expert
 import it.polito.wa2.g13.server.ticketing.experts.ExpertDTO
 import it.polito.wa2.g13.server.ticketing.experts.ExpertRepository
@@ -53,6 +55,9 @@ class ExpertTests {
     @Autowired
     lateinit var expertRepository: ExpertRepository
 
+    @Autowired
+    lateinit var authController: AuthController
+
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun t1TestGetExperts(){
@@ -62,13 +67,45 @@ class ExpertTests {
 
         expertRepository.save(myExpert)
 
-        val result: ResponseEntity<String> = restTemplate.getForEntity(uri, String::class.java)
+
+        val loginDTO= LoginDTO(username = "expert", password = "password")
+        val token= authController.login(loginDTO).jwtAccessToken
+        val headers = HttpHeaders()
+        headers.setBearerAuth(token)
+        headers.set("X-COM-PERSIST", "true")
+        val request = HttpEntity(null, headers)
+        val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
 
 
         Assertions.assertEquals(HttpStatus.OK, result.statusCode)
 
         expertRepository.delete(myExpert)
     }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun t1BTestGetExperts(){
+        val baseUrl = "http://localhost:$port/API/experts"
+        val uri = URI(baseUrl)
+        val myExpert = Expert("Giovanni", "Malnati", "giovanni.malnati@polito.it")
+
+        expertRepository.save(myExpert)
+
+
+        val loginDTO= LoginDTO(username = "client", password = "password")
+        val token= authController.login(loginDTO).jwtAccessToken
+        val headers = HttpHeaders()
+        headers.setBearerAuth(token)
+        headers.set("X-COM-PERSIST", "true")
+        val request = HttpEntity(null, headers)
+        val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
+
+
+        Assertions.assertEquals(HttpStatus.FORBIDDEN, result.statusCode)
+
+        expertRepository.delete(myExpert)
+    }
+
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
@@ -79,7 +116,17 @@ class ExpertTests {
         val myExpert2= Expert("Piero","Lelu","pieroLelu@gmail.com")
         expertRepository.save(myExpert)
         expertRepository.save(myExpert2)
-        val result: ResponseEntity<String> = restTemplate.getForEntity(uri, String::class.java)
+
+
+        val loginDTO= LoginDTO(username = "expert", password = "password")
+        val token= authController.login(loginDTO).jwtAccessToken
+        val headers = HttpHeaders()
+        headers.setBearerAuth(token)
+        headers.set("X-COM-PERSIST", "true")
+        val request = HttpEntity(null, headers)
+        val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
+
+
         val gson = Gson()
         val arrayExpertType = object : TypeToken<List<Expert>>() {}.type
         val experts: List<ExpertDTO> = gson.fromJson(result.body, arrayExpertType)
