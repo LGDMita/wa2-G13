@@ -55,8 +55,8 @@ class TicketServiceImpl(
     }
     override fun createTicket(ticketPostDTO: TicketPostDTO, br: BindingResult): TicketDTO? {
 
-        // If the profileId contained in the request doesn't exist throws exception
-        val profile = profileRepository.findByIdOrNull(ticketPostDTO.profileId) ?: throw ProfileNotFoundException()
+        // If the email contained in the request doesn't exist throws exception
+        val profile = profileRepository.findProfileByEmail(ticketPostDTO.email) ?: throw ProfileNotFoundException()
 
         // If the productId contained in the request doesn't exist throws exception
         val product = productRepository.findByIdOrNull(ticketPostDTO.ean) ?: throw ProductNotFoundException()
@@ -103,16 +103,9 @@ class TicketServiceImpl(
         if(!stateChangeChecker(oldStatus, newStatus))
                 throw StateChangeNotAllowedException()
 
-        // Updates the ticket with the new state, all th other values remain the same
-        val updatedTicket = ticketRepository.save(Ticket(
-            profile = ticket.profile,
-            product = ticket.product,
-            priorityLevel = ticket.priorityLevel,
-            expert = ticket.expert,
-            status = newStatus,
-            creationDate = ticket.creationDate,
-            messages = ticket.messages
-        ))
+        // Updates the ticket with the new state and saves it
+        ticket.status = newStatus
+        val updatedTicket = ticketRepository.save(ticket)
 
         // Saves the state change in the repository
         ticketHistoryRepository.save(TicketHistory(
@@ -134,16 +127,9 @@ class TicketServiceImpl(
         if(ticket.priorityLevel == priorityLevel)
             return true
 
-        // Updates the ticket with the new priority level, all the other values remain the same
-        ticketRepository.save(Ticket(
-            profile = ticket.profile,
-            product = ticket.product,
-            priorityLevel = priorityLevel,
-            expert = ticket.expert,
-            status = ticket.status,
-            creationDate = ticket.creationDate,
-            messages = ticket.messages
-        ))
+        // Updates the ticket with the new priority level and saves it
+        ticket.priorityLevel = priorityLevel
+        ticketRepository.save(ticket)
 
         return true
     }
@@ -160,16 +146,9 @@ class TicketServiceImpl(
         if(ticket.expert?.getId() == expertId)
             return true
 
-        // Updates the ticket with the new priority level, all the other values remain the same
-        ticketRepository.save(Ticket(
-            profile = ticket.profile,
-            product = ticket.product,
-            priorityLevel = ticket.priorityLevel,
-            expert = expert,
-            status = ticket.status,
-            creationDate = ticket.creationDate,
-            messages = ticket.messages
-        ))
+        // Updates the ticket with the new priority level and saves it.
+        ticket.expert = expert
+        ticketRepository.save(ticket)
 
         return true
     }

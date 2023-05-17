@@ -574,7 +574,7 @@ class TicketTests {
         creationTicketTest(
             profileId = "",
             expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-            expectedErrorMessage = "createTicket.ticketPostDTO.profileId: The inserted input is not valid!"
+            expectedErrorMessage = "createTicket.ticketPostDTO.email: The inserted input is not valid!"
         )
     }
 
