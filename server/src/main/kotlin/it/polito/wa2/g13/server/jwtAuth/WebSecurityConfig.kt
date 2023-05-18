@@ -24,8 +24,18 @@ class WebSecurityConfig(private val jwtAuthConverter: JwtAuthConverter) {
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http.csrf().disable()
         http.authorizeHttpRequests()
+            .requestMatchers(HttpMethod.GET, "/API/tickets").hasAnyRole(MANAGER, EXPERT, CLIENT)
+
             .requestMatchers(HttpMethod.GET, "/API/tickets/*").hasAnyRole(MANAGER, EXPERT, CLIENT)
-            .requestMatchers(HttpMethod.GET, "/API/experts/*").hasAnyRole(MANAGER, EXPERT)
+            //add the other constraints for tickets API...
+
+            .requestMatchers(HttpMethod.GET, "/API/experts").hasAnyRole(MANAGER, EXPERT, CLIENT)
+            .requestMatchers(HttpMethod.GET, "/API/experts/*").hasAnyRole(MANAGER, EXPERT, CLIENT)
+            .requestMatchers(HttpMethod.POST, "/API/experts").hasAnyRole(MANAGER)
+            .requestMatchers(HttpMethod.POST, "/API/experts/*").hasAnyRole(MANAGER)
+            .requestMatchers(HttpMethod.PUT, "/API/experts/*").hasAnyRole(MANAGER)
+            .requestMatchers(HttpMethod.DELETE, "/API/experts/*").hasAnyRole(MANAGER)
+
             .anyRequest().permitAll()
         http.oauth2ResourceServer()
             .jwt()
