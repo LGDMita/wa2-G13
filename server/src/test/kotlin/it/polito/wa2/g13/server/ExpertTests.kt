@@ -92,16 +92,14 @@ class ExpertTests {
         expertRepository.save(myExpert)
 
 
-        val loginDTO= LoginDTO(username = "client", password = "password")
-        val token= authController.login(loginDTO).jwtAccessToken
+
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
         headers.set("X-COM-PERSIST", "true")
         val request = HttpEntity(null, headers)
         val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
 
 
-        Assertions.assertEquals(HttpStatus.FORBIDDEN, result.statusCode)
+        Assertions.assertEquals(HttpStatus.UNAUTHORIZED, result.statusCode)
 
         expertRepository.delete(myExpert)
     }

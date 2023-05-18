@@ -8,7 +8,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 
 @Configuration
 @EnableWebSecurity
@@ -25,10 +24,17 @@ class WebSecurityConfig(private val jwtAuthConverter: JwtAuthConverter) {
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http.csrf().disable()
         http.authorizeHttpRequests()
-            .requestMatchers(AntPathRequestMatcher("/API/tickets/**")).hasAnyRole(MANAGER, EXPERT, CLIENT)
-            .requestMatchers(AntPathRequestMatcher("/API/tickets")).hasAnyRole(MANAGER, EXPERT, CLIENT)
-            .requestMatchers(AntPathRequestMatcher("/API/experts/**")).hasAnyRole(MANAGER, EXPERT)
-            .requestMatchers(AntPathRequestMatcher("/API/experts")).hasAnyRole(MANAGER, EXPERT)
+            .requestMatchers(HttpMethod.GET, "/API/tickets").hasAnyRole(MANAGER, EXPERT, CLIENT)
+            .requestMatchers(HttpMethod.GET, "/API/tickets/**").hasAnyRole(MANAGER, EXPERT, CLIENT)
+            .requestMatchers(HttpMethod.PUT, "/API/tickets/**").hasAnyRole(MANAGER, EXPERT, CLIENT)
+            .requestMatchers(HttpMethod.PUT, "/API/ticket").hasAnyRole(MANAGER, EXPERT, CLIENT)
+            .requestMatchers(HttpMethod.POST, "/API/tickets").hasAnyRole(MANAGER, EXPERT, CLIENT)
+            .requestMatchers(HttpMethod.GET, "/API/experts").hasAnyRole(MANAGER, EXPERT, CLIENT)
+            .requestMatchers(HttpMethod.GET, "/API/experts/**").hasAnyRole(MANAGER, EXPERT, CLIENT)
+            .requestMatchers(HttpMethod.POST, "/API/experts").hasAnyRole(MANAGER)
+            .requestMatchers(HttpMethod.POST, "/API/experts/**").hasAnyRole(MANAGER)
+            .requestMatchers(HttpMethod.PUT, "/API/experts/**").hasAnyRole(MANAGER)
+            .requestMatchers(HttpMethod.DELETE, "/API/experts/**").hasAnyRole(MANAGER)
             .anyRequest().permitAll()
         http.oauth2ResourceServer()
             .jwt()
