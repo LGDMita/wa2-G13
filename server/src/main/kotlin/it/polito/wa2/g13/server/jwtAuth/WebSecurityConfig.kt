@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 
 @Configuration
 @EnableWebSecurity
@@ -24,9 +25,10 @@ class WebSecurityConfig(private val jwtAuthConverter: JwtAuthConverter) {
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http.csrf().disable()
         http.authorizeHttpRequests()
-            .requestMatchers(HttpMethod.GET, "/API/tickets/*").hasAnyRole(MANAGER, EXPERT, CLIENT)
-            .requestMatchers(HttpMethod.GET, "/API/experts/*").hasAnyRole(MANAGER, EXPERT)
-            .requestMatchers(HttpMethod.GET, "/API/experts").hasAnyRole(MANAGER, EXPERT)
+            .requestMatchers(AntPathRequestMatcher("/API/tickets/**")).hasAnyRole(MANAGER, EXPERT, CLIENT)
+            .requestMatchers(AntPathRequestMatcher("/API/tickets")).hasAnyRole(MANAGER, EXPERT, CLIENT)
+            .requestMatchers(AntPathRequestMatcher("/API/experts/**")).hasAnyRole(MANAGER, EXPERT)
+            .requestMatchers(AntPathRequestMatcher("/API/experts")).hasAnyRole(MANAGER, EXPERT)
             .anyRequest().permitAll()
         http.oauth2ResourceServer()
             .jwt()
