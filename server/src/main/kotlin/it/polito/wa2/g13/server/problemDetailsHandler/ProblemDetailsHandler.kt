@@ -15,6 +15,7 @@ import it.polito.wa2.g13.server.ticketing.tickets.StateChangeNotAllowedException
 import it.polito.wa2.g13.server.ticketing.tickets.TicketNotFoundException
 import it.polito.wa2.g13.server.ticketing.experts.ExpertsOfSelectedSectorNotFoundException
 import it.polito.wa2.g13.server.ticketing.sectors.*
+import it.polito.wa2.g13.server.warranty.WarrantyNotBoughtException
 import jakarta.validation.ConstraintViolationException
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
@@ -108,4 +109,8 @@ class ProblemDetailsHandler : ResponseEntityExceptionHandler() {
     @ExceptionHandler(InvalidCredentialArgumentsException::class)
     fun handleInvalidTicket(e: InvalidCredentialArgumentsException) = ProblemDetail
         .forStatusAndDetail(HttpStatus.FORBIDDEN, e.message!!)
+
+    @ExceptionHandler(WarrantyNotBoughtException::class)
+    fun handleWarrantyNotBought(e: WarrantyNotBoughtException) = ProblemDetail
+        .forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
 }

@@ -8,9 +8,13 @@ import it.polito.wa2.g13.server.products.Product
 import it.polito.wa2.g13.server.products.ProductRepository
 import it.polito.wa2.g13.server.profiles.Profile
 import it.polito.wa2.g13.server.profiles.ProfileRepository
+import it.polito.wa2.g13.server.purchase.Purchase
+import it.polito.wa2.g13.server.purchase.PurchaseRepository
 import it.polito.wa2.g13.server.ticketing.experts.Expert
 import it.polito.wa2.g13.server.ticketing.experts.ExpertRepository
 import it.polito.wa2.g13.server.ticketing.tickets.*
+import it.polito.wa2.g13.server.warranty.Warranty
+import it.polito.wa2.g13.server.warranty.WarrantyRepository
 import org.json.JSONObject
 import org.junit.FixMethodOrder
 import org.junit.jupiter.api.Assertions
@@ -71,6 +75,12 @@ class TicketTests {
 
     @Autowired
     lateinit var authController: AuthController
+
+    @Autowired
+    lateinit var warrantyRepository: WarrantyRepository
+
+    @Autowired
+    lateinit var purchaseRepository: PurchaseRepository
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
@@ -695,12 +705,18 @@ class TicketTests {
     fun creationTicketTest(
         baseUrl: String = "http://localhost:$port/API/tickets",
         profileId: String = "this@exists.com",
-        ean: String = "000000000000000",
+        ean: String = "0000000000000",
         expectedStatus: HttpStatus,
         expectedErrorMessage: String = ""
     ) {
-        productRepository.save(Product(ean = "000000000000000"))
-        profileRepository.save(Profile(email = "this@exists.com", name = "this", surname = "exists"))
+        val myProduct=Product(ean = "0000000000000")
+        productRepository.save(myProduct)
+        val myProfile=Profile(email = "this@exists.com", name = "this", surname = "exists")
+        profileRepository.save(myProfile)
+        val myPurchase = Purchase(myProduct,myProfile,Date(),1)
+        purchaseRepository.save(myPurchase)
+        val myWarranty = Warranty(myPurchase,Date(),Date(2999,12,1),"type",1)
+        warrantyRepository.save(myWarranty)
         val uri = URI(baseUrl)
 
         val ticketPost = TicketPostDTO(profileId, ean)
@@ -733,7 +749,7 @@ class TicketTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun creationTicketNonExistingEanTest() {
         creationTicketTest(
-            ean = "000000000000001",
+            ean = "0000000000001",
             expectedStatus = HttpStatus.NOT_FOUND,
             expectedErrorMessage = "Product Not Found!"
         )
