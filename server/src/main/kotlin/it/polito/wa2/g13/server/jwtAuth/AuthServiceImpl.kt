@@ -1,72 +1,83 @@
 package it.polito.wa2.g13.server.jwtAuth
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import it.polito.wa2.g13.server.profiles.*
+import org.keycloak.admin.client.Keycloak
+import org.keycloak.admin.client.KeycloakBuilder
+import org.keycloak.representations.idm.CredentialRepresentation
+import org.keycloak.representations.idm.UserRepresentation
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpMethod
-import org.springframework.http.MediaType
-import org.springframework.http.ResponseEntity
+import org.springframework.http.*
 import org.springframework.stereotype.Service
-import org.springframework.util.LinkedMultiValueMap
-import org.springframework.util.MultiValueMap
-import org.springframework.web.client.RestTemplate
+import javax.ws.rs.core.Response
+import javax.ws.rs.core.Response.status
 
 @Service
-class AuthServiceImpl() :AuthService {
+class AuthServiceImpl : AuthService {
 
     @Value("\${keycloak.address}")
-    private lateinit var keycloak: String
+    private lateinit var keycloakPath: String
 
     override fun login(loginDTO: LoginDTO): JwtResponse {
-        val url = "http://${keycloak}/realms/wa2-g13/protocol/openid-connect/token"
-        val restTemplate = RestTemplate()
+        val keycloak = KeycloakBuilder.builder()
+            .serverUrl("http://${keycloakPath}") // Replace with your Keycloak server URL
+            .realm("wa2-g13") // Replace with your realm name
+            .clientId("spring-client") // Replace with your client ID
+            .username(loginDTO.username) // Replace with the username of the user to authenticate
+            .password(loginDTO.password) // Replace with the password of the user to authenticate
+            .build()
 
-        val headers = HttpHeaders()
-        headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
+        return JwtResponse(keycloak.tokenManager().grantToken().token)
+    }
 
-        val body: MultiValueMap<String, String> = LinkedMultiValueMap()
-        body.add("grant_type", "password")
-        body.add("client_id", "spring-client")
-        body.add("username", loginDTO.username)
-        body.add("password", loginDTO.password)
+    override fun register(registerDTO: RegisterDTO): Response {
+        val keycloak = KeycloakBuilder.builder()
+            .serverUrl("http://${keycloakPath}") // Replace with your Keycloak server URL
+            .realm("wa2-g13") // Replace with your realm name
+            .clientId("spring-client")
+            .username("admin") // Replace with your admin username
+            .password("admin") // Replace with your admin password
+            .build()
 
-        val requestEntity = org.springframework.http.HttpEntity(body, headers)
-        val responseEntity: ResponseEntity<String>
-        try {
-            responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String::class.java)
-        } catch (e: Exception) {
-            throw InvalidCredentialArgumentsException()
+        val existingUser = findUserByUsernameOrEmail(keycloak, registerDTO.username, registerDTO.email)
+        if (existingUser != null) {
+            return status(Response.Status.CONFLICT)
+                .entity("User with the same username or email already exists.")
+                .build()
         }
 
-        val response = responseEntity.body!!
+        val user = UserRepresentation()
+        user.username = registerDTO.username
+        user.email = registerDTO.email
+        user.firstName = registerDTO.name
+        user.lastName = registerDTO.surname
+        user.isEnabled = true
+        user.isEmailVerified = true
 
-        // Parse the JSON response
-        val objectMapper = ObjectMapper()
-        val jsonResponse: AccessTokenResponse = objectMapper.readValue(response)
+        val credential = CredentialRepresentation()
+        credential.isTemporary = false
+        credential.type = CredentialRepresentation.PASSWORD
+        credential.value = registerDTO.password
 
-        /*// Access the parsed JSON data
-        println("Access Token: ${jsonResponse.access_token}")
-        println("Expires In: ${jsonResponse.expires_in}")
-        println("Refresh Token: ${jsonResponse.refresh_token}")*/
+        user.credentials = listOf(credential)
 
-        return JwtResponse(jsonResponse.access_token)
+        keycloak.realm("wa2-g13") // Replace with your realm name
+            .users()
+            .create(user)
+
+        return status(Response.Status.CREATED)
+            .entity("User successfully created")
+            .build()
     }
-}
 
-data class AccessTokenResponse @JsonCreator constructor(
-    @JsonProperty("access_token") val access_token: String,
-    @JsonProperty("expires_in") val expires_in: Int,
-    @JsonProperty("refresh_expires_in") val refresh_expires_in: Int,
-    @JsonProperty("refresh_token") val refresh_token: String,
-    @JsonProperty("token_type") val token_type: String,
-    @JsonProperty("not-before-policy") val not_before_policy: Int,
-    @JsonProperty("session_state") val session_state: String,
-    @JsonProperty("scope") val scope: String
-) {
-    @JsonCreator
-    constructor() : this("", 0, 0, "", "", 0, "", "")
+    fun findUserByUsernameOrEmail(
+        keycloak: Keycloak,
+        username: String,
+        email: String
+    ): UserRepresentation? {
+        val users = keycloak.realm("wa2-g13") // Replace with your realm name
+            .users()
+            .search(username)
+
+        return users.firstOrNull { it.email == email }
+    }
 }

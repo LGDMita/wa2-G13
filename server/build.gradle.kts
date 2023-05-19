@@ -37,7 +37,8 @@ dependencies {
 	compileOnly("org.projectlombok:lombok:1.18.20")
 	annotationProcessor("org.projectlombok:lombok:1.18.20")
 	implementation ("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.0")
-
+	implementation ("org.keycloak:keycloak-admin-client:21.1.1")
+	implementation ("org.keycloak:keycloak-core:21.1.1")
 }
 
 tasks.withType<KotlinCompile> {
