@@ -1,9 +1,6 @@
 package it.polito.wa2.g13.server
 
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.Id
-import jakarta.persistence.MappedSuperclass
+import jakarta.persistence.*
 import org.springframework.data.util.ProxyUtils
 import java.io.Serializable
 
@@ -13,7 +10,7 @@ abstract class EntityBase<T: Serializable> (setId:T?=null) {
         private const val serialVersionUID = -43869754L
     }
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private var id:T? = setId
     fun getId(): T? = id
     override fun toString(): String {

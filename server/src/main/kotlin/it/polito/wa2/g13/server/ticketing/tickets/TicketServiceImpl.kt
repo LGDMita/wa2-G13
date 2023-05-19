@@ -8,6 +8,7 @@ import it.polito.wa2.g13.server.ticketing.experts.ExpertNotFoundException
 import it.polito.wa2.g13.server.ticketing.experts.ExpertRepository
 import it.polito.wa2.g13.server.ticketing.ticketsHistory.TicketHistory
 import it.polito.wa2.g13.server.ticketing.ticketsHistory.TicketHistoryRepository
+import it.polito.wa2.g13.server.warranty.WarrantyNotBoughtException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.validation.BindingResult
@@ -60,6 +61,9 @@ class TicketServiceImpl(
 
         // If the productId contained in the request doesn't exist throws exception
         val product = productRepository.findByIdOrNull(ticketPostDTO.ean) ?: throw ProductNotFoundException()
+
+        // If warranty not present can't open ticket
+        if(!product.purchases.filter { it.profile==profile && it.warranty!=null }.any { it.warranty?.datetimeExpire?.after(Date()) == true }) throw WarrantyNotBoughtException()
 
         // Contains the current date and time, that will be associated to the ticket
         val date = Date()
