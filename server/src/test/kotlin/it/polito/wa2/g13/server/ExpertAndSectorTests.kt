@@ -1,6 +1,6 @@
 package it.polito.wa2.g13.server
 
-import it.polito.wa2.g13.server.jwtAuth.AuthController
+import it.polito.wa2.g13.server.jwtAuth.AuthService
 import it.polito.wa2.g13.server.jwtAuth.LoginDTO
 import it.polito.wa2.g13.server.ticketing.experts.Expert
 import it.polito.wa2.g13.server.ticketing.experts.ExpertDTO
@@ -63,13 +63,13 @@ class ExpertAndSectorTests {
     lateinit var sectorRepository: SectorRepository
 
     @Autowired
-    lateinit var authController: AuthController
+    lateinit var authService: AuthService
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertSetSuccessTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         val baseUrl = "http://localhost:$port/API/experts"
         val uri = URI(baseUrl)
@@ -91,7 +91,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertSetConflictTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         expertRepository.save(Expert(name = "William", surname = "Hunt", email = "will@gmail.com"))
         val baseUrl = "http://localhost:$port/API/experts"
@@ -117,7 +117,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertSetUnprocessableEntityTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         val baseUrl = "http://localhost:$port/API/experts"
         val uri = URI(baseUrl)
@@ -142,7 +142,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertSetUnauthorizedTest1() {
         val loginDTO = LoginDTO(username = "expert", password = "password") //it is an expert
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         val baseUrl = "http://localhost:$port/API/experts"
         val uri = URI(baseUrl)
@@ -163,7 +163,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertSetUnauthorizedTest2() {
         val loginDTO = LoginDTO(username = "client", password = "password") //it is a client
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         val baseUrl = "http://localhost:$port/API/experts"
         val uri = URI(baseUrl)
@@ -201,7 +201,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertGetSuccess() {
         val loginDTO = LoginDTO(username = "expert", password = "password") //it is an expert
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         expertRepository.save(Expert(name = "William", surname = "Hunt", email = "will@gmail.com"))
         val baseUrl = "http://localhost:$port/API/experts/1"
@@ -226,7 +226,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertGetNotFound() {
         val loginDTO = LoginDTO(username = "expert", password = "password") //it is an expert
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         val baseUrl = "http://localhost:$port/API/experts/1"
         val uri = URI(baseUrl)
@@ -250,7 +250,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertModifySuccessTest1() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //It is a manager
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         expertRepository.save(Expert(name = "William", surname = "Hunt", email = "will@gmail.com"))
         val baseUrl = "http://localhost:$port/API/experts/1"
@@ -275,7 +275,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertModifySuccessTest2() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //It is a manager
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         expertRepository.save(Expert(name = "William", surname = "Hunt", email = "will@gmail.com"))
         val baseUrl = "http://localhost:$port/API/experts/1"
@@ -298,7 +298,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertModifyUnprocessableEntityTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //It is a manager
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         expertRepository.save(Expert(name = "William", surname = "Hunt", email = "will@gmail.com"))
         val baseUrl = "http://localhost:$port/API/experts/1"
@@ -324,7 +324,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertModifyNotFoundTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //It is a manager
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         expertRepository.save(Expert(name = "William", surname = "Hunt", email = "will@gmail.com"))
         val baseUrl = "http://localhost:$port/API/experts/2"
@@ -350,7 +350,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertModifyConflictTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //It is a manager
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         expertRepository.save(Expert(name = "William", surname = "Hunt", email = "will@gmail.com"))
         expertRepository.save(Expert(name = "Will", surname = "Hunting", email = "william@gmail.com"))
@@ -377,7 +377,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertModifyUnauthorizedTest1() {
         val loginDTO = LoginDTO(username = "expert", password = "password") //It is an expert
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         expertRepository.save(Expert(name = "William", surname = "Hunt", email = "will@gmail.com"))
         val baseUrl = "http://localhost:$port/API/experts/1"
@@ -399,7 +399,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertModifyUnauthorizedTest2() {
         val loginDTO = LoginDTO(username = "client", password = "password") //It is a client
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         expertRepository.save(Expert(name = "William", surname = "Hunt", email = "will@gmail.com"))
         val baseUrl = "http://localhost:$port/API/experts/1"
@@ -439,7 +439,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertDeleteSuccessTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //It is a manager
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         expertRepository.save(Expert(name = "William", surname = "Hunt", email = "will@gmail.com"))
         val baseUrl = "http://localhost:$port/API/experts/1"
@@ -462,7 +462,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertDeleteNotFoundTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //It is a manager
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         val baseUrl = "http://localhost:$port/API/experts/1"
         val uri = URI(baseUrl)
@@ -486,7 +486,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertDeleteUnauthorizedTest1() {
         val loginDTO = LoginDTO(username = "expert", password = "password") //It is an expert
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         expertRepository.save(Expert(name = "William", surname = "Hunt", email = "will@gmail.com"))
         val baseUrl = "http://localhost:$port/API/experts/1"
@@ -507,7 +507,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertDeleteUnauthorizedTest2() {
         val loginDTO = LoginDTO(username = "client", password = "password") //It is a client
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         expertRepository.save(Expert(name = "William", surname = "Hunt", email = "will@gmail.com"))
         val baseUrl = "http://localhost:$port/API/experts/1"
@@ -545,7 +545,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertsBySectorGetSuccessTest() {
         val loginDTO = LoginDTO(username = "expert", password = "password") //It is an expert
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
         val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
@@ -582,7 +582,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertsBySectorGetSectorsNotFoundTest() {
         val loginDTO = LoginDTO(username = "client", password = "password") //It is a client
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
         val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
@@ -612,7 +612,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertsBySectorGetSectorNotFoundTest() {
         val loginDTO = LoginDTO(username = "client", password = "password") //It is a client
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
         val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
@@ -646,7 +646,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertsBySectorGetExpertOfSelectedSectorNotFoundTest() {
         val loginDTO = LoginDTO(username = "client", password = "password") //It is a client
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
         val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
@@ -677,7 +677,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorsAllGetSuccessTest() {
         val loginDTO = LoginDTO(username = "client", password = "password") //It is a client
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
         val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
@@ -716,7 +716,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorsAllGetNotFoundTest() {
         val loginDTO = LoginDTO(username = "client", password = "password") //It is a client
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
         val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
@@ -745,7 +745,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorsOfExpertGetSuccessTest() {
         val loginDTO = LoginDTO(username = "client", password = "password") //It is a client
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
         val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
@@ -783,7 +783,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorsOfExpertGetExpertNotFoundTest() {
         val loginDTO = LoginDTO(username = "client", password = "password") //It is a client
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
         val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
@@ -821,7 +821,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorsOfExpertGetExpertSectorsNotFoundTest() {
         val loginDTO = LoginDTO(username = "client", password = "password") //It is a client
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
         val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
@@ -859,7 +859,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorForExpertSetSuccessTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
         expertRepository.save(expert1)
@@ -884,7 +884,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorForExpertSetUnprocessableEntityTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
         expertRepository.save(expert1)
@@ -911,7 +911,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorForExpertSetExpertNotFoundTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
         expertRepository.save(expert1)
@@ -938,7 +938,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorForExpertSetExpertUnauthorizedTest1() {
         val loginDTO = LoginDTO(username = "client", password = "password")
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
         expertRepository.save(expert1)
@@ -961,7 +961,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorForExpertSetExpertUnauthorizedTest2() {
         val loginDTO = LoginDTO(username = "client", password = "password") //it is a client
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
         expertRepository.save(expert1)
@@ -1003,7 +1003,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorForExpertDeleteSuccessTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
         val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
@@ -1036,7 +1036,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorForExpertDeleteExpertNotFoundTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
         val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
@@ -1073,7 +1073,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorForExpertDeleteSectorsNotFoundTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
         val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
@@ -1102,7 +1102,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorForExpertDeleteSectorNotFoundTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
         val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
@@ -1137,7 +1137,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorForExpertDeleteExpertSectorsNotFoundTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
         val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
@@ -1172,7 +1172,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorForExpertDeleteExpertSectorNotFoundTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
         val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
@@ -1207,7 +1207,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorForExpertDeleteUnauthorizedTest1() {
         val loginDTO = LoginDTO(username = "expert", password = "password") //it is an expert
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
         val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
@@ -1240,7 +1240,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorForExpertDeleteUnauthorizedTest2() {
         val loginDTO = LoginDTO(username = "client", password = "password") //it is a client
-        val token = authController.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO).jwtAccessToken
 
         val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
         val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")

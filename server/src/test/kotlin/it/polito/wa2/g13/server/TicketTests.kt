@@ -2,7 +2,7 @@ package it.polito.wa2.g13.server
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import it.polito.wa2.g13.server.jwtAuth.AuthController
+import it.polito.wa2.g13.server.jwtAuth.AuthService
 import it.polito.wa2.g13.server.jwtAuth.LoginDTO
 import it.polito.wa2.g13.server.products.Product
 import it.polito.wa2.g13.server.products.ProductRepository
@@ -70,7 +70,7 @@ class TicketTests {
     lateinit var ticketRepository: TicketRepository
 
     @Autowired
-    lateinit var authController: AuthController
+    lateinit var authService: AuthService
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
@@ -100,7 +100,7 @@ class TicketTests {
         ticketRepository.save(myTicket2)
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authController.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO).jwtAccessToken
         val headers = HttpHeaders()
         headers.setBearerAuth(token)
         headers.set("X-COM-PERSIST", "true")
@@ -190,7 +190,7 @@ class TicketTests {
         ticketRepository.save(myTicket2)
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authController.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO).jwtAccessToken
         val headers = HttpHeaders()
         headers.setBearerAuth(token)
         headers.set("X-COM-PERSIST", "true")
@@ -239,7 +239,7 @@ class TicketTests {
         ticketRepository.save(myTicket2)
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authController.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO).jwtAccessToken
         val headers = HttpHeaders()
         headers.setBearerAuth(token)
         headers.set("X-COM-PERSIST", "true")
@@ -284,7 +284,7 @@ class TicketTests {
         ticketRepository.save(myTicket2)
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authController.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO).jwtAccessToken
         val headers = HttpHeaders()
         headers.setBearerAuth(token)
         headers.set("X-COM-PERSIST", "true")
@@ -334,7 +334,7 @@ class TicketTests {
         ticketRepository.save(myTicket2)
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authController.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO).jwtAccessToken
         val headers = HttpHeaders()
         headers.setBearerAuth(token)
         headers.set("X-COM-PERSIST", "true")
@@ -357,7 +357,7 @@ class TicketTests {
         val uri = URI(baseUrl)
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authController.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO).jwtAccessToken
         val headers = HttpHeaders()
         headers.setBearerAuth(token)
         headers.set("X-COM-PERSIST", "true")
@@ -397,7 +397,7 @@ class TicketTests {
 
         myTicket.status = "closed"
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authController.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO).jwtAccessToken
         val headers = HttpHeaders()
         headers.setBearerAuth(token)
         headers.set("X-COM-PERSIST", "true")
@@ -439,7 +439,7 @@ class TicketTests {
         t.ticketId = 5000
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authController.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO).jwtAccessToken
         val headers = HttpHeaders()
         headers.setBearerAuth(token)
         headers.set("X-COM-PERSIST", "true")
@@ -480,7 +480,7 @@ class TicketTests {
         myTicket.status = "aa"
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authController.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO).jwtAccessToken
         val headers = HttpHeaders()
         headers.setBearerAuth(token)
         headers.set("X-COM-PERSIST", "true")
@@ -521,7 +521,7 @@ class TicketTests {
         myTicket.priorityLevel = 10
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authController.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO).jwtAccessToken
         val headers = HttpHeaders()
         headers.setBearerAuth(token)
         headers.set("X-COM-PERSIST", "true")
@@ -565,7 +565,7 @@ class TicketTests {
         ticketRepository.save(myTicket2)
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authController.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO).jwtAccessToken
         val headers = HttpHeaders()
         headers.setBearerAuth(token)
         headers.set("X-COM-PERSIST", "true")
@@ -610,7 +610,7 @@ class TicketTests {
         ticketRepository.save(myTicket2)
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authController.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO).jwtAccessToken
         val headers = HttpHeaders()
         headers.setBearerAuth(token)
         headers.set("X-COM-PERSIST", "true")
@@ -653,7 +653,7 @@ class TicketTests {
         val uri = URI(baseUrl)
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authController.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO).jwtAccessToken
         val headers = HttpHeaders()
         headers.setBearerAuth(token)
         headers.set("X-COM-PERSIST", "true")
@@ -706,7 +706,7 @@ class TicketTests {
         val ticketPost = TicketPostDTO(profileId, ean)
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authController.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO).jwtAccessToken
         val headers = HttpHeaders()
         headers.setBearerAuth(token)
         headers.set("X-COM-PERSIST", "true")

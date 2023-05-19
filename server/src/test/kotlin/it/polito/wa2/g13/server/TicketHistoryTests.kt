@@ -1,6 +1,6 @@
 package it.polito.wa2.g13.server
 
-import it.polito.wa2.g13.server.jwtAuth.AuthController
+import it.polito.wa2.g13.server.jwtAuth.AuthService
 import it.polito.wa2.g13.server.jwtAuth.LoginDTO
 import it.polito.wa2.g13.server.products.Product
 import it.polito.wa2.g13.server.products.ProductRepository
@@ -74,7 +74,7 @@ class TicketHistoryTests {
     lateinit var ticketHistoryRepository: TicketHistoryRepository
 
     @Autowired
-    lateinit var authController: AuthController
+    lateinit var authService: AuthService
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
@@ -101,7 +101,7 @@ class TicketHistoryTests {
         ticketHistoryRepository.save(myHistory)
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authController.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO).jwtAccessToken
         val headers = HttpHeaders()
         headers.setBearerAuth(token)
         headers.set("X-COM-PERSIST", "true")
@@ -126,7 +126,7 @@ class TicketHistoryTests {
         val uri = URI(baseUrl)
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authController.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO).jwtAccessToken
         val headers = HttpHeaders()
         headers.setBearerAuth(token)
         headers.set("X-COM-PERSIST", "true")

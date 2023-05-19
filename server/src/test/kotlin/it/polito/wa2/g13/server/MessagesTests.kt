@@ -2,7 +2,7 @@ package it.polito.wa2.g13.server
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import it.polito.wa2.g13.server.jwtAuth.AuthController
+import it.polito.wa2.g13.server.jwtAuth.AuthService
 import it.polito.wa2.g13.server.jwtAuth.LoginDTO
 import it.polito.wa2.g13.server.products.Product
 import it.polito.wa2.g13.server.products.ProductRepository
@@ -89,7 +89,7 @@ class MessagesTests {
     lateinit var attachmentRepository: AttachmentRepository
 
     @Autowired
-    lateinit var authController: AuthController
+    lateinit var authService: AuthService
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
@@ -119,7 +119,7 @@ class MessagesTests {
         messageRepository.save(myMessage)
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authController.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO).jwtAccessToken
         val headers = HttpHeaders()
         headers.setBearerAuth(token)
         headers.set("X-COM-PERSIST", "true")
@@ -169,7 +169,7 @@ class MessagesTests {
         messageRepository.save(myMessage2)
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authController.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO).jwtAccessToken
         val headers = HttpHeaders()
         headers.setBearerAuth(token)
         headers.set("X-COM-PERSIST", "true")
@@ -220,7 +220,7 @@ class MessagesTests {
         messageRepository.save(myMessage)
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authController.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO).jwtAccessToken
         val headers = HttpHeaders()
         headers.setBearerAuth(token)
         headers.set("X-COM-PERSIST", "true")
@@ -243,7 +243,7 @@ class MessagesTests {
         val baseUrl = "http://localhost:$port/API/tickets/100/messages"
         val uri = URI(baseUrl)
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authController.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO).jwtAccessToken
         val headers = HttpHeaders()
         headers.setBearerAuth(token)
         headers.set("X-COM-PERSIST", "true")
@@ -267,7 +267,7 @@ class MessagesTests {
         val mockMvc = webApplicationContext?.let { MockMvcBuilders.webAppContextSetup(it).build() }
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authController.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO).jwtAccessToken
         val requestBuilder = multipart(uri)
             .file(file)
             .param("fromUser", "False")
@@ -310,7 +310,7 @@ class MessagesTests {
         val mockMvc = webApplicationContext?.let { MockMvcBuilders.webAppContextSetup(it).build() }
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authController.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO).jwtAccessToken
         val requestBuilder = multipart(uri)
             .file(file)
             .param("fromUser", "False")
