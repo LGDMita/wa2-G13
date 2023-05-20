@@ -108,7 +108,7 @@ class ProblemDetailsHandler : ResponseEntityExceptionHandler() {
 
     @ExceptionHandler(InvalidCredentialArgumentsException::class)
     fun handleInvalidTicket(e: InvalidCredentialArgumentsException) = ProblemDetail
-        .forStatusAndDetail(HttpStatus.FORBIDDEN, e.message!!)
+        .forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.message!!)
 
     @ExceptionHandler(WarrantyNotBoughtException::class)
     fun handleWarrantyNotBought(e: WarrantyNotBoughtException) = ProblemDetail

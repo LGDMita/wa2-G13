@@ -5,7 +5,9 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 
 data class ProfileDTO(
-    val id: Long?,
+    @field:Size(min=1, max=255, message = "Username MUST be a NON empty string of max 255 chars")
+    @field:NotBlank(message="Username can NOT be blank")
+    val username: String,
     @field:Email(message="The email MUST be in a valid email format ")
     @field:NotBlank(message="Email can NOT be blank")
     val email: String,
@@ -18,5 +20,5 @@ data class ProfileDTO(
 )
 
 fun Profile.toDTO(): ProfileDTO {
-    return ProfileDTO(getId(), email, name, surname)
+    return ProfileDTO(username, email, name, surname)
 }

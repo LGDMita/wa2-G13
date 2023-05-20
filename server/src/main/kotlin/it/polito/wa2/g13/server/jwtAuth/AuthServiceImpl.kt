@@ -1,6 +1,5 @@
 package it.polito.wa2.g13.server.jwtAuth
 
-import it.polito.wa2.g13.server.profiles.*
 import org.keycloak.admin.client.Keycloak
 import org.keycloak.admin.client.KeycloakBuilder
 import org.keycloak.representations.idm.CredentialRepresentation
@@ -10,6 +9,8 @@ import org.springframework.http.*
 import org.springframework.stereotype.Service
 import javax.ws.rs.core.Response
 import javax.ws.rs.core.Response.status
+import javax.ws.rs.NotAuthorizedException
+
 
 @Service
 class AuthServiceImpl : AuthService {
@@ -17,32 +18,35 @@ class AuthServiceImpl : AuthService {
     @Value("\${keycloak.address}")
     private lateinit var keycloakPath: String
 
-    override fun login(loginDTO: LoginDTO): JwtResponse {
+    override fun login(loginDTO: LoginDTO): JwtResponse? {
+
         val keycloak = KeycloakBuilder.builder()
-            .serverUrl("http://${keycloakPath}") // Replace with your Keycloak server URL
-            .realm("wa2-g13") // Replace with your realm name
-            .clientId("spring-client") // Replace with your client ID
-            .username(loginDTO.username) // Replace with the username of the user to authenticate
-            .password(loginDTO.password) // Replace with the password of the user to authenticate
+            .serverUrl("http://${keycloakPath}")
+            .realm("wa2-g13")
+            .clientId("spring-client")
+            .username(loginDTO.username)
+            .password(loginDTO.password)
             .build()
 
-        return JwtResponse(keycloak.tokenManager().grantToken().token)
+        return try {
+            JwtResponse(keycloak.tokenManager().grantToken().token)
+        }catch(e: NotAuthorizedException){
+            null
+        }
     }
 
-    override fun register(registerDTO: RegisterDTO): Response {
+    override fun register(registerDTO: RegisterDTO): Response? {
         val keycloak = KeycloakBuilder.builder()
-            .serverUrl("http://${keycloakPath}") // Replace with your Keycloak server URL
-            .realm("wa2-g13") // Replace with your realm name
+            .serverUrl("http://${keycloakPath}")
+            .realm("wa2-g13")
             .clientId("spring-client")
-            .username("admin") // Replace with your admin username
-            .password("admin") // Replace with your admin password
+            .username("admin")
+            .password("admin")
             .build()
 
         val existingUser = findUserByUsernameOrEmail(keycloak, registerDTO.username, registerDTO.email)
         if (existingUser != null) {
-            return status(Response.Status.CONFLICT)
-                .entity("User with the same username or email already exists.")
-                .build()
+            return null
         }
 
         val user = UserRepresentation()
@@ -59,8 +63,7 @@ class AuthServiceImpl : AuthService {
         credential.value = registerDTO.password
 
         user.credentials = listOf(credential)
-
-        keycloak.realm("wa2-g13") // Replace with your realm name
+        keycloak.realm("wa2-g13")
             .users()
             .create(user)
 
@@ -80,4 +83,5 @@ class AuthServiceImpl : AuthService {
 
         return users.firstOrNull { it.email == email }
     }
+
 }

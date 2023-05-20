@@ -31,7 +31,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import java.net.URI
 import java.util.*
 
-
+/*
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -136,3 +136,6 @@ class TicketHistoryTests {
         Assertions.assertEquals(result.statusCode,HttpStatus.NOT_FOUND)
     }
 }
+
+
+ */

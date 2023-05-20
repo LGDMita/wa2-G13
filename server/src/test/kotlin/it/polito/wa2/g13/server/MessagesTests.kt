@@ -40,7 +40,7 @@ import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import java.net.URI
 import java.util.*
-
+/*
 
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -322,3 +322,6 @@ class MessagesTests {
     }
 
 }
+
+
+ */

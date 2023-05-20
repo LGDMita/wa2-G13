@@ -8,12 +8,12 @@ import org.springframework.validation.BindingResult
 class ProfileServiceImpl(
     private val profileRepository: ProfileRepository
 ) : ProfileService {
-    override fun getProfile(email: String): ProfileDTO? {
-        return profileRepository.findByIdOrNull(email)?.toDTO()
+    override fun getProfile(username: String): ProfileDTO? {
+        return profileRepository.findByIdOrNull(username)?.toDTO()
     }
 
-    override fun setProfile(profileDTO: ProfileDTO,  br: BindingResult): Boolean{
-        return if(!profileRepository.existsById(profileDTO.toProfile().email)){
+    override fun setProfile(profileDTO: ProfileDTO): Boolean{
+        return if(!profileRepository.existsById(profileDTO.username)){
             profileRepository.save(profileDTO.toProfile())
             true
         }else{
@@ -21,9 +21,8 @@ class ProfileServiceImpl(
         }
     }
 
-    override fun modifyProfile(email: String, profileDTO: ProfileDTO, br: BindingResult): Boolean {
-        return if(profileRepository.existsById(email)){
-            profileRepository.deleteById(email)
+    override fun modifyProfile(username: String, profileDTO: ProfileDTO): Boolean {
+        return if(profileRepository.existsById(username)){
             profileRepository.save(profileDTO.toProfile())
             true
         }else{

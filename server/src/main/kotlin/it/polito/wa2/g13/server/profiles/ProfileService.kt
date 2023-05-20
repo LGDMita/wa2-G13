@@ -5,9 +5,9 @@ import org.springframework.validation.BindingResult
 
 @Service
 interface ProfileService {
-    fun getProfile(email: String): ProfileDTO?
+    fun getProfile(username: String): ProfileDTO?
 
-    fun setProfile(profileDTO: ProfileDTO, br: BindingResult): Boolean
+    fun setProfile(profileDTO: ProfileDTO): Boolean
 
-    fun modifyProfile(email: String, profileDTO: ProfileDTO, br: BindingResult): Boolean
+    fun modifyProfile(username: String, profileDTO: ProfileDTO): Boolean
 }
