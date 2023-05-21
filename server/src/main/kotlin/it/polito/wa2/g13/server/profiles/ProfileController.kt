@@ -29,6 +29,9 @@ class ProfileController(
     }
 }
 
+
+//No longer necessary as subscription managed with keycloak
+
 /*
 @RestController
 class ProfileControllerBR(

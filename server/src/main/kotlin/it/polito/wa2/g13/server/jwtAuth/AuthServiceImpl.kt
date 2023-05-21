@@ -48,24 +48,45 @@ class AuthServiceImpl : AuthService {
         if (existingUser != null) {
             return null
         }
+        val realmResource= keycloak.realm("wa2-g13")
 
-        val user = UserRepresentation()
-        user.username = registerDTO.username
-        user.email = registerDTO.email
-        user.firstName = registerDTO.name
-        user.lastName = registerDTO.surname
-        user.isEnabled = true
-        user.isEmailVerified = true
+        val newUser = UserRepresentation()
+        newUser.username = registerDTO.username
+        newUser.email = registerDTO.email
+        newUser.firstName = registerDTO.name
+        newUser.lastName = registerDTO.surname
+        newUser.isEnabled = true
+        newUser.isEmailVerified = true
 
         val credential = CredentialRepresentation()
         credential.isTemporary = false
         credential.type = CredentialRepresentation.PASSWORD
         credential.value = registerDTO.password
 
-        user.credentials = listOf(credential)
-        keycloak.realm("wa2-g13")
+        newUser.credentials = listOf(credential)
+
+       realmResource
             .users()
-            .create(user)
+            .create(newUser)
+
+        //In the following, several steps to set the role of the created
+        //user as "app_client"
+        val userRepresentation = realmResource
+            .users()
+            .search(newUser.username)
+            .first()
+        val userResource= realmResource
+            .users()
+            .get(userRepresentation.id)
+
+        val roleRepresentation= realmResource
+            .roles()
+            .get("app_client")
+            .toRepresentation()
+
+        userResource.roles().realmLevel().add(mutableListOf(roleRepresentation))
+        realmResource.users().get(userRepresentation.id).update(userResource.toRepresentation())
+
 
         return status(Response.Status.CREATED)
             .entity("User successfully created")
