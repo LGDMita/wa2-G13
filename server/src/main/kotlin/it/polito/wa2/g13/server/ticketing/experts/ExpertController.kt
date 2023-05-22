@@ -37,12 +37,12 @@ class ExpertController(
     }
 
     @GetMapping("/API/experts/{id}")
-    fun getExpertById(@PathVariable id: Long): ExpertDTO? {
+    fun getExpertById(@PathVariable id: String): ExpertDTO? {
         return expertService.getExpertById(id) ?: throw ExpertNotFoundException()
     }
 
     @PutMapping("/API/experts/{id}")
-    fun modifyExpert(@PathVariable id: Long,
+    fun modifyExpert(@PathVariable id: String,
                      @RequestBody @Valid expertDTO: ExpertDTO,
                      br: BindingResult) : Boolean{
 
@@ -63,11 +63,11 @@ class ExpertController(
 
     @GetMapping("/API/experts/")
     fun getExpertsBySector(@RequestParam sectorName: String) : List<ExpertDTO>?{
-        val sectorName= sectorName.lowercase()
+        val sectorNameLower= sectorName.lowercase()
         val sectors= sectorService.getAllSectors()
         if(sectors!= null){
-            if(sectors.find { s -> s.name== sectorName } != null){
-                return expertService.getExpertsBySector(sectorName) ?: throw ExpertsOfSelectedSectorNotFoundException()
+            if(sectors.find { s -> s.name== sectorNameLower } != null){
+                return expertService.getExpertsBySector(sectorNameLower) ?: throw ExpertsOfSelectedSectorNotFoundException()
             }else{
                 throw SectorNotFoundException()
             }
@@ -77,7 +77,7 @@ class ExpertController(
     }
 
     @DeleteMapping("/API/experts/{id}")
-    fun deleteExpertById(@PathVariable id: Long) {
+    fun deleteExpertById(@PathVariable id: String) {
         if (expertService.getExpertById(id)!= null){
             return expertService.deleteExpertById(id)
         }else{

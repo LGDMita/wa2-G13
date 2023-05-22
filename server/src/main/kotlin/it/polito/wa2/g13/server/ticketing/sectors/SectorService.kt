@@ -7,9 +7,9 @@ import org.springframework.stereotype.Service
 interface SectorService {
     fun getAllSectors() : List<SectorDTO>?
 
-    fun getSectorsOfExpert(id: Long) : List<SectorDTO>?
+    fun getSectorsOfExpert(id: String) : List<SectorDTO>?
 
-    fun setSectorForExpert(id: Long, sectorDTO: SectorDTO) : Boolean
+    fun setSectorForExpert(id: String, sectorDTO: SectorDTO) : Boolean
 
-    fun deleteSectorForExpert(expertId: Long, sectorId: Long)
+    fun deleteSectorForExpert(expertId: String, sectorId: Long)
 }

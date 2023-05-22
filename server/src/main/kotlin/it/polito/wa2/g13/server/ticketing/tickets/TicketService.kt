@@ -42,5 +42,5 @@ interface TicketService {
     /**
      * Changes the expert that is responsible for an existing ticket
      */
-    fun changeExpert(ticketId: Long, expertId: Long): Boolean
+    fun changeExpert(ticketId: Long, expertId: String): Boolean
 }

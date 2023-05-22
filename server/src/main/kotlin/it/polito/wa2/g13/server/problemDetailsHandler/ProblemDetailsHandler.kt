@@ -1,5 +1,6 @@
 package it.polito.wa2.g13.server.problemDetailsHandler
 
+import it.polito.wa2.g13.server.jwtAuth.ImpossibleSaveNewUserException
 import it.polito.wa2.g13.server.jwtAuth.InvalidCredentialArgumentsException
 import it.polito.wa2.g13.server.products.DuplicateProductException
 import it.polito.wa2.g13.server.products.ProductNotFoundException
@@ -112,5 +113,13 @@ class ProblemDetailsHandler : ResponseEntityExceptionHandler() {
 
     @ExceptionHandler(WarrantyNotBoughtException::class)
     fun handleWarrantyNotBought(e: WarrantyNotBoughtException) = ProblemDetail
+        .forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
+
+    @ExceptionHandler(DuplicateExpertException::class)
+    fun handleDuplicateExpertException(e: DuplicateExpertException) = ProblemDetail
+        .forStatusAndDetail(HttpStatus.CONFLICT, e.message!!)
+
+    @ExceptionHandler(ImpossibleSaveNewUserException::class)
+    fun handleImpossibleSaveNewUserException(e: ImpossibleSaveNewUserException) = ProblemDetail
         .forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
 }

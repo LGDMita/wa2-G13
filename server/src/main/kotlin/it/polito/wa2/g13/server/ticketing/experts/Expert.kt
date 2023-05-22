@@ -1,16 +1,16 @@
 package it.polito.wa2.g13.server.ticketing.experts
 
-import it.polito.wa2.g13.server.EntityBase
 import it.polito.wa2.g13.server.ticketing.sectors.Sector
 import jakarta.persistence.*
 
 @Entity
 @Table(name= "experts")
 class Expert(
+    @Id
+    var id: String,
     var name: String,
     var surname: String,
-    var email: String,
-    setId: Long?=null) : EntityBase<Long>(setId) {
+    var email: String) {
 
     @ManyToMany
     @JoinTable(name="expert_sector",
@@ -32,9 +32,9 @@ class Expert(
 }
 
 fun ExpertDTO.toExpert(): Expert {
-    return Expert(name, surname, email, expertId)
+    return Expert(expertId, name, surname, email)
 }
 
-fun ExpertDTO.toExpertWithId(id: Long) : Expert{
-    return Expert(name, surname, email, id)
+fun ExpertDTO.toExpertWithId(id: String) : Expert{
+    return Expert(id, name, surname, email)
 }

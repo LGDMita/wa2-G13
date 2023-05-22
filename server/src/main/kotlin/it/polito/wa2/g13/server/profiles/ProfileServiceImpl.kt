@@ -2,7 +2,6 @@ package it.polito.wa2.g13.server.profiles
 
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
-import org.springframework.validation.BindingResult
 
 @Service
 class ProfileServiceImpl(
@@ -23,6 +22,15 @@ class ProfileServiceImpl(
 
     override fun modifyProfile(username: String, profileDTO: ProfileDTO): Boolean {
         return if(profileRepository.existsById(username)){
+            profileRepository.save(profileDTO.toProfile())
+            true
+        }else{
+            false
+        }
+    }
+
+    override fun saveNewProfile(profileDTO: ProfileDTO): Boolean {
+        return if(!profileRepository.existsById(profileDTO.id)){
             profileRepository.save(profileDTO.toProfile())
             true
         }else{

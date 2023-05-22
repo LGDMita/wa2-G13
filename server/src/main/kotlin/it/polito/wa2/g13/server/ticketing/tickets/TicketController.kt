@@ -146,11 +146,11 @@ class TicketControllerValidated(
     ): Boolean {
         val expertId = req["expertId"] ?: throw InvalidTicketArgumentsException()
 
-        if(expertId !is Int)
+        if(expertId !is String)
             throw InvalidTicketArgumentsException()
 
         println("Changing expert assigned to ticket $ticketId to $expertId")
 
-        return ticketService.changeExpert(ticketId.toLong(), expertId.toLong())
+        return ticketService.changeExpert(ticketId.toLong(), expertId)
     }
 }

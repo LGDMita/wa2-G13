@@ -1,10 +1,11 @@
 package it.polito.wa2.g13.server.jwtAuth
 
-import it.polito.wa2.g13.server.profiles.DuplicateProfileException
+import io.micrometer.observation.annotation.Observed
 import it.polito.wa2.g13.server.profiles.InvalidArgumentsException
-import it.polito.wa2.g13.server.profiles.ProfileDTO
 import it.polito.wa2.g13.server.profiles.ProfileService
 import jakarta.validation.Valid
+import lombok.extern.slf4j.Slf4j
+import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.BindingResult
@@ -16,30 +17,28 @@ import javax.ws.rs.core.Response
 
 
 @RestController
+@Observed
+@Slf4j
 class AuthController(
-    private val authService: AuthService,
-    private val profileService: ProfileService
+    private val authService: AuthService
 ) {
+
+    private val log = KotlinLogging.logger {}
 
     @PostMapping("/API/login")
     fun login(
         @Valid @RequestBody loginDTO: LoginDTO
     ): JwtResponse {
-        return authService.login(loginDTO)?: throw InvalidCredentialArgumentsException()
+        log.info("recieve create order command, order = {}.", loginDTO)
+        return authService.login(loginDTO) ?: throw InvalidCredentialArgumentsException()
     }
 
     @PostMapping("/API/signup")
     fun registerUser(@RequestBody @Valid registerDTO: RegisterDTO, br: BindingResult): ResponseEntity<Any> {
-
-        return if (!br.hasErrors()){
-            val register= authService.register(registerDTO)
-            if (register == null)
-                throw DuplicateProfileException()
-            else{
-                profileService.setProfile(ProfileDTO(registerDTO.username, registerDTO.email, registerDTO.name, registerDTO.surname))
-                transformResponse(register)
-            }
-        }else
+        return if (!br.hasErrors()) {
+            val register = authService.register(registerDTO)
+            transformResponse(register!!)
+        } else
             throw InvalidArgumentsException()
     }
 

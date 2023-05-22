@@ -18,7 +18,7 @@ class SectorServiceImpl(
         }
     }
 
-    override fun getSectorsOfExpert(id: Long): List<SectorDTO>? {
+    override fun getSectorsOfExpert(id: String): List<SectorDTO>? {
         val expert= expertRepository.findByIdOrNull(id)
         val listOfSectorDTOs =
             expert?.let { sectorRepository.findSectorsByExperts(it).map { s -> s.toDTO() } }
@@ -28,7 +28,7 @@ class SectorServiceImpl(
     }
 
     @Transactional
-    override fun setSectorForExpert(id: Long, sectorDTO: SectorDTO): Boolean {
+    override fun setSectorForExpert(id: String, sectorDTO: SectorDTO): Boolean {
         val expert= expertRepository.findByIdOrNull(id)
         return if(expert != null){
             if(sectorRepository.existsByName(sectorDTO.name.lowercase())){
@@ -52,7 +52,7 @@ class SectorServiceImpl(
     }
 
     @Transactional
-    override fun deleteSectorForExpert(expertId: Long, sectorId: Long) {
+    override fun deleteSectorForExpert(expertId: String, sectorId: Long) {
         val expert= expertRepository.findByIdOrNull(expertId)
         if (expert != null) {
             val sectors= sectorRepository.findSectorsByExperts(expert)

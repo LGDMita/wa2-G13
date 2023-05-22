@@ -39,6 +39,17 @@ dependencies {
 	implementation ("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.0")
 	implementation ("org.keycloak:keycloak-admin-client:21.1.1")
 	implementation ("org.keycloak:keycloak-core:21.1.1")
+
+	implementation ("org.springframework.boot:spring-boot-starter-aop")
+	implementation ("org.springframework.boot:spring-boot-starter-actuator")
+	implementation ("io.micrometer:micrometer-registry-prometheus")
+	implementation ("io.micrometer:micrometer-tracing-bridge-brave")
+	implementation ("io.zipkin.reporter2:zipkin-reporter-brave")
+	implementation ("com.github.loki4j:loki-logback-appender:1.4.0-rc2")
+
+	implementation("io.github.microutils:kotlin-logging:2.0.11")
+	implementation("org.slf4j:slf4j-api:1.7.32")
+	implementation("ch.qos.logback:logback-classic:1.2.9")
 }
 
 tasks.withType<KotlinCompile> {

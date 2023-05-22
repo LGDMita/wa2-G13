@@ -27,12 +27,12 @@ class ExpertServiceImpl(
 
     }
 
-    override fun getExpertById(id: Long): ExpertDTO?{
+    override fun getExpertById(id: String): ExpertDTO?{
         return expertRepository.findByIdOrNull(id)?.toDTO()
     }
 
     @Transactional
-    override fun modifyExpert(id: Long, expertDTO: ExpertDTO): Int {
+    override fun modifyExpert(id: String, expertDTO: ExpertDTO): Int {
         return if(expertRepository.existsById(id)){
             if(expertRepository.existsByEmailAndIdNot(expertDTO.email, id)){
                 0 // DuplicateExpertException
@@ -57,7 +57,7 @@ class ExpertServiceImpl(
     }
 
     @Transactional
-    override fun deleteExpertById(id: Long){
+    override fun deleteExpertById(id: String){
         expertRepository.deleteById(id)
     }
 

@@ -18,7 +18,7 @@ class SectorController (
     }
 
     @GetMapping("/API/experts/{id}/sectors")
-    fun getSectorsOfExpert(@PathVariable id: Long) : List<SectorDTO>?{
+    fun getSectorsOfExpert(@PathVariable id: String) : List<SectorDTO>?{
         if(expertService.getExpertById(id)!= null)
             return sectorService.getSectorsOfExpert(id) ?: throw ExpertSectorsNotFoundException()
         else
@@ -26,7 +26,7 @@ class SectorController (
     }
 
     @PostMapping("/API/experts/{id}/sectors")
-    fun setSectorForExpert(@PathVariable id: Long,
+    fun setSectorForExpert(@PathVariable id: String,
                            @RequestBody @Valid sectorDTO: SectorDTO,
                            br: BindingResult) : Boolean
     {
@@ -40,7 +40,7 @@ class SectorController (
     }
 
     @DeleteMapping("/API/experts/{expertId}/sectors/{sectorId}")
-    fun deleteSectorForExpert(@PathVariable expertId: Long,
+    fun deleteSectorForExpert(@PathVariable expertId: String,
                               @PathVariable sectorId: Long){
 
         if(expertService.getExpertById(expertId)!= null){

@@ -138,7 +138,7 @@ class TicketServiceImpl(
         return true
     }
 
-    override fun changeExpert(ticketId: Long, expertId: Long): Boolean {
+    override fun changeExpert(ticketId: Long, expertId: String): Boolean {
 
         // If the ticketId contained in the URI doesn't exist throws an exception
         val ticket = ticketRepository.findByIdOrNull(ticketId) ?: throw TicketNotFoundException()
@@ -147,7 +147,7 @@ class TicketServiceImpl(
         val expert = expertRepository.findByIdOrNull((expertId)) ?: throw ExpertNotFoundException()
 
         // If the ticket is already managed by the expert whose id is contained in the request, just return true
-        if(ticket.expert?.getId() == expertId)
+        if(ticket.expert?.id == expertId)
             return true
 
         // Updates the ticket with the new priority level and saves it.

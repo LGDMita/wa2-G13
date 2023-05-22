@@ -1,5 +1,8 @@
 package it.polito.wa2.g13.server.jwtAuth
 
+import it.polito.wa2.g13.server.profiles.DuplicateProfileException
+import it.polito.wa2.g13.server.profiles.ProfileDTO
+import it.polito.wa2.g13.server.profiles.ProfileService
 import org.keycloak.admin.client.Keycloak
 import org.keycloak.admin.client.KeycloakBuilder
 import org.keycloak.representations.idm.CredentialRepresentation
@@ -17,6 +20,8 @@ class AuthServiceImpl : AuthService {
 
     @Value("\${keycloak.address}")
     private lateinit var keycloakPath: String
+
+    private lateinit var profileService: ProfileService
 
     override fun login(loginDTO: LoginDTO): JwtResponse? {
 
@@ -46,7 +51,7 @@ class AuthServiceImpl : AuthService {
 
         val existingUser = findUserByUsernameOrEmail(keycloak, registerDTO.username, registerDTO.email)
         if (existingUser != null) {
-            return null
+            throw DuplicateProfileException()
         }
         val realmResource= keycloak.realm("wa2-g13")
 
@@ -87,10 +92,16 @@ class AuthServiceImpl : AuthService {
         userResource.roles().realmLevel().add(mutableListOf(roleRepresentation))
         realmResource.users().get(userRepresentation.id).update(userResource.toRepresentation())
 
-
-        return status(Response.Status.CREATED)
-            .entity("User successfully created")
-            .build()
+        if (profileService.saveNewProfile(ProfileDTO(userRepresentation.id, registerDTO.username, registerDTO.email,
+                registerDTO.name, registerDTO.surname))) {
+            return status(Response.Status.CREATED)
+                .entity("User successfully created")
+                .build()
+        }
+        else {
+            keycloak.realm("wa2-g13").users().delete(userRepresentation.id)
+            throw ImpossibleSaveNewUserException()
+        }
     }
 
     fun findUserByUsernameOrEmail(

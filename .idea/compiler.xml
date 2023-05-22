@@ -16,7 +16,7 @@
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-configuration-processor/3.0.5/a042112791600faeb5c7d65d71277a9c9dd9996c/spring-boot-configuration-processor-3.0.5.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.20/18bcea7d5df4d49227b4a0743a536208ce4825bb/lombok-1.18.20.jar" />
         </processorPath>
-        <module name="wa2-g13-ticketing.main" />
+        <module name="it.polito.wa2.g13.wa2-g13-ticketing.main" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
