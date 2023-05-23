@@ -3,8 +3,8 @@ package it.polito.wa2.g13.server.jwtAuth
 import it.polito.wa2.g13.server.profiles.DuplicateProfileException
 import it.polito.wa2.g13.server.profiles.ProfileDTO
 import it.polito.wa2.g13.server.profiles.ProfileService
-import org.keycloak.admin.client.Keycloak
 import org.keycloak.admin.client.KeycloakBuilder
+import org.keycloak.admin.client.resource.RealmResource
 import org.keycloak.representations.idm.CredentialRepresentation
 import org.keycloak.representations.idm.UserRepresentation
 import org.springframework.beans.factory.annotation.Value
@@ -21,7 +21,7 @@ class AuthServiceImpl : AuthService {
     @Value("\${keycloak.address}")
     private lateinit var keycloakPath: String
 
-    private lateinit var profileService: ProfileService
+    //private lateinit var profileService: ProfileService // cause kotlin.UninitializedPropertyAccessException: lateinit property profileService has not been initialized
 
     override fun login(loginDTO: LoginDTO): JwtResponse? {
 
@@ -40,20 +40,22 @@ class AuthServiceImpl : AuthService {
         }
     }
 
-    override fun register(registerDTO: RegisterDTO): Response? {
+    override fun register(registerDTO: RegisterDTO): String? {
         val keycloak = KeycloakBuilder.builder()
             .serverUrl("http://${keycloakPath}")
             .realm("wa2-g13")
             .clientId("spring-client")
-            .username("admin")
+            .username("admin") //in keycloak it is necessary to create a user with 'realm-admin' role
             .password("admin")
             .build()
 
-        val existingUser = findUserByUsernameOrEmail(keycloak, registerDTO.username, registerDTO.email)
-        if (existingUser != null) {
-            throw DuplicateProfileException()
-        }
         val realmResource= keycloak.realm("wa2-g13")
+
+        val existingUser = findUserByUsernameOrEmail(realmResource, registerDTO.username, registerDTO.email)
+        if (existingUser != null) {
+            return null
+            //throw DuplicateProfileException() //usually we throw exception in the controller
+        }
 
         val newUser = UserRepresentation()
         newUser.username = registerDTO.username
@@ -70,7 +72,7 @@ class AuthServiceImpl : AuthService {
 
         newUser.credentials = listOf(credential)
 
-       realmResource
+        realmResource
             .users()
             .create(newUser)
 
@@ -80,9 +82,10 @@ class AuthServiceImpl : AuthService {
             .users()
             .search(newUser.username)
             .first()
+        val id= userRepresentation.id
         val userResource= realmResource
             .users()
-            .get(userRepresentation.id)
+            .get(id)
 
         val roleRepresentation= realmResource
             .roles()
@@ -90,30 +93,35 @@ class AuthServiceImpl : AuthService {
             .toRepresentation()
 
         userResource.roles().realmLevel().add(mutableListOf(roleRepresentation))
-        realmResource.users().get(userRepresentation.id).update(userResource.toRepresentation())
+        realmResource.users().get(id).update(userResource.toRepresentation())
 
-        if (profileService.saveNewProfile(ProfileDTO(userRepresentation.id, registerDTO.username, registerDTO.email,
+        return id
+
+        /*if (profileService.saveNewProfile(ProfileDTO(userRepresentation.id, registerDTO.username, registerDTO.email,
                 registerDTO.name, registerDTO.surname))) {
             return status(Response.Status.CREATED)
                 .entity("User successfully created")
                 .build()
         }
         else {
-            keycloak.realm("wa2-g13").users().delete(userRepresentation.id)
+            realmResource.users().delete(userRepresentation.id)
             throw ImpossibleSaveNewUserException()
-        }
+        }*/
     }
 
     fun findUserByUsernameOrEmail(
-        keycloak: Keycloak,
+        realmResource: RealmResource,
         username: String,
         email: String
     ): UserRepresentation? {
-        val users = keycloak.realm("wa2-g13") // Replace with your realm name
+        val users = realmResource
             .users()
             .search(username)
 
         return users.firstOrNull { it.email == email }
     }
 
+    override fun createExpert(registerDTO: RegisterDTO): String? {
+        TODO("Not yet implemented")
+    }
 }

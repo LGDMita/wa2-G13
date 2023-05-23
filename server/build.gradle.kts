@@ -28,7 +28,7 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	implementation("org.hibernate.validator:hibernate-validator")
 	testImplementation ("org.testcontainers:junit-jupiter:1.16.3")
-	testImplementation("org.testcontainers:postgresql:1.16.3")
+	testImplementation("org.testcontainers:postgresql:1.17.6")
 	implementation ("com.google.code.gson:gson:2.8.9")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	testImplementation("org.springframework.security:spring-security-test")
@@ -44,12 +44,12 @@ dependencies {
 	implementation ("org.springframework.boot:spring-boot-starter-actuator")
 	implementation ("io.micrometer:micrometer-registry-prometheus")
 	implementation ("io.micrometer:micrometer-tracing-bridge-brave")
-	implementation ("io.zipkin.reporter2:zipkin-reporter-brave")
+	implementation ("io.zipkin.reporter2:zipkin-reporter-brave:2.16.3")
 	implementation ("com.github.loki4j:loki-logback-appender:1.4.0-rc2")
 
-	implementation("io.github.microutils:kotlin-logging:2.0.11")
-	implementation("org.slf4j:slf4j-api:1.7.32")
-	implementation("ch.qos.logback:logback-classic:1.2.9")
+	implementation("io.github.microutils:kotlin-logging:3.0.5")
+	implementation("org.slf4j:slf4j-api:2.0.5")
+	implementation("ch.qos.logback:logback-classic:1.4.6")
 }
 
 tasks.withType<KotlinCompile> {

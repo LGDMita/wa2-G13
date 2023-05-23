@@ -8,9 +8,11 @@ import jakarta.persistence.*
 class Expert(
     @Id
     var id: String,
+    var username: String,
+    var email: String,
     var name: String,
     var surname: String,
-    var email: String) {
+    ) {
 
     @ManyToMany
     @JoinTable(name="expert_sector",
@@ -32,9 +34,9 @@ class Expert(
 }
 
 fun ExpertDTO.toExpert(): Expert {
-    return Expert(expertId, name, surname, email)
+    return Expert(id, username, email, name, surname)
 }
 
 fun ExpertDTO.toExpertWithId(id: String) : Expert{
-    return Expert(id, name, surname, email)
+    return Expert(id, username, email, name, surname)
 }

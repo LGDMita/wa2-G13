@@ -1,7 +1,9 @@
 package it.polito.wa2.g13.server.jwtAuth
 
 import io.micrometer.observation.annotation.Observed
+import it.polito.wa2.g13.server.profiles.DuplicateProfileException
 import it.polito.wa2.g13.server.profiles.InvalidArgumentsException
+import it.polito.wa2.g13.server.profiles.ProfileDTO
 import it.polito.wa2.g13.server.profiles.ProfileService
 import jakarta.validation.Valid
 import lombok.extern.slf4j.Slf4j
@@ -14,13 +16,15 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.bind.annotation.*
 import javax.ws.rs.core.Response
+import javax.ws.rs.core.Response.status
 
 
 @RestController
 @Observed
 @Slf4j
 class AuthController(
-    private val authService: AuthService
+    private val authService: AuthService,
+    private val profileService: ProfileService
 ) {
 
     private val log = KotlinLogging.logger {}
@@ -29,17 +33,30 @@ class AuthController(
     fun login(
         @Valid @RequestBody loginDTO: LoginDTO
     ): JwtResponse {
-        log.info("recieve create order command, order = {}.", loginDTO)
+        log.info("receive create order command, order = {}.", loginDTO)
         return authService.login(loginDTO) ?: throw InvalidCredentialArgumentsException()
     }
 
     @PostMapping("/API/signup")
     fun registerUser(@RequestBody @Valid registerDTO: RegisterDTO, br: BindingResult): ResponseEntity<Any> {
         return if (!br.hasErrors()) {
-            val register = authService.register(registerDTO)
-            transformResponse(register!!)
+            val id= authService.register(registerDTO)
+            if (id == null)
+                throw DuplicateProfileException()
+            else{
+                profileService.setProfile(ProfileDTO(id, registerDTO.username, registerDTO.email, registerDTO.name, registerDTO.surname))
+                transformResponse(status(Response.Status.CREATED)
+                    .entity("User successfully created")
+                    .build())
+            }
         } else
             throw InvalidArgumentsException()
+    }
+
+    @PostMapping("/API/signup")
+    fun createExpert(@RequestBody @Valid registerDTO: RegisterDTO, br: BindingResult): ResponseEntity<Any> {
+
+        TODO("Not yet implemented")
     }
 
     fun transformResponse(response: Response): ResponseEntity<Any> {

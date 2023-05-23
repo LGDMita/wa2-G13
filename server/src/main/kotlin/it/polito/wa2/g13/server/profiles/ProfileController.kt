@@ -12,19 +12,19 @@ class ProfileController(
     private val profileService: ProfileService
 ) {
 
-    @GetMapping("/API/profiles/{username}")
-    fun getProfile(@PathVariable  username: String): ProfileDTO? {
-        return profileService.getProfile(username) ?: throw ProfileNotFoundException()
+    @GetMapping("/API/profiles/{id}")
+    fun getProfile(@PathVariable  id: String): ProfileDTO? {
+        return profileService.getProfile(id) ?: throw ProfileNotFoundException()
     }
 
-    @PutMapping("/API/profiles/{username}")
+    @PutMapping("/API/profiles/{id}")
     fun modifyProfile(
-        @PathVariable username: String,
+        @PathVariable id: String,
         @RequestBody @Valid profileDTO: ProfileDTO,
         br: BindingResult
     ): Boolean {
         return if (!br.hasErrors()) {
-            if (profileService.modifyProfile(username, profileDTO)) true else throw ProfileNotFoundException()
+            if (profileService.modifyProfile(id, profileDTO)) true else throw ProfileNotFoundException()
         } else throw InvalidArgumentsException()
     }
 }

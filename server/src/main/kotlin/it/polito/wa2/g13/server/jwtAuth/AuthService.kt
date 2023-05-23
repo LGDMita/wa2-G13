@@ -7,5 +7,7 @@ import javax.ws.rs.core.Response
 interface AuthService {
     fun login(loginDTO: LoginDTO): JwtResponse?
 
-    fun register(registerDTO: RegisterDTO): Response?
+    fun register(registerDTO: RegisterDTO): String?
+
+    fun createExpert(registerDTO: RegisterDTO): String?
 }

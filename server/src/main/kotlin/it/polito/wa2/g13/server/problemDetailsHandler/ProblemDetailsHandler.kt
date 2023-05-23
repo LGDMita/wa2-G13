@@ -115,10 +115,6 @@ class ProblemDetailsHandler : ResponseEntityExceptionHandler() {
     fun handleWarrantyNotBought(e: WarrantyNotBoughtException) = ProblemDetail
         .forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
 
-    @ExceptionHandler(DuplicateExpertException::class)
-    fun handleDuplicateExpertException(e: DuplicateExpertException) = ProblemDetail
-        .forStatusAndDetail(HttpStatus.CONFLICT, e.message!!)
-
     @ExceptionHandler(ImpossibleSaveNewUserException::class)
     fun handleImpossibleSaveNewUserException(e: ImpossibleSaveNewUserException) = ProblemDetail
         .forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)

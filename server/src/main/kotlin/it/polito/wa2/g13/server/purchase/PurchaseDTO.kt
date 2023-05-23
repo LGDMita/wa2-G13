@@ -10,5 +10,5 @@ data class PurchaseDTO (
 )
 
 fun Purchase.toDTO(): PurchaseDTO {
-    return PurchaseDTO(getId(), product.ean, profile?.username, datetime)
+    return PurchaseDTO(getId(), product.ean, profile?.id, datetime)
 }

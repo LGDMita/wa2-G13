@@ -17,9 +17,10 @@ class ExpertController(
 
     //get: /API/experts
     @GetMapping("/API/experts")
-    fun getMessages() : List<ExpertDTO>{
+    fun getExperts() : List<ExpertDTO>{
         return expertService.getExperts()
     }
+
     @PostMapping("/API/experts")
     @ResponseStatus(HttpStatus.CREATED)
     fun setExpert(@RequestBody @Valid expertDTO: ExpertDTO,
