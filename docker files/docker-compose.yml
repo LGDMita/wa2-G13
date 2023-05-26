@@ -42,22 +42,7 @@ services:
       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:8080/realms/wa2-g13
       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=http://keycloak:8080/realms/wa2-g13/protocol/openid-connect/certs
       - KEYCLOAK_ADDRESS=keycloak:8080
-  prometheus:
-    image: 'prom/prometheus'
-    container_name: prometheus
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    command:
-      - --config.file=/etc/prometheus/prometheus.yml
-  grafana:
-    image: grafana/grafana
-    container_name: grafana
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+
 volumes:
   postgres-data:
     driver: local
