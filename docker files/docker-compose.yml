@@ -12,6 +12,7 @@ services:
       - POSTGRES_DB=products
     volumes:
       - postgres-data:/var/lib/postgresql/data
+
   keycloak:
     image: 'quay.io/keycloak/keycloak:latest'
     container_name: keycloak
@@ -26,6 +27,7 @@ services:
     command:
       - start-dev
       - --import-realm
+
   app:
     image: 'wa2-g13-ticketing:0.0.1'
     container_name: app
@@ -42,24 +44,63 @@ services:
       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:8080/realms/wa2-g13
       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=http://keycloak:8080/realms/wa2-g13/protocol/openid-connect/certs
       - KEYCLOAK_ADDRESS=keycloak:8080
+
+  tempo:
+    image: grafana/tempo
+    extra_hosts: ['host.docker.internal:host-gateway']
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./tempo/tempo-local.yaml:/etc/tempo.yaml:ro
+      - tempo-data:/tmp/tempo
+    ports:
+      - "14268"  # jaeger ingest
+      - "9411:9411" # zipkin
+
+  loki:
+    depends_on:
+      - tempo
+    image: grafana/loki
+    extra_hosts: ['host.docker.internal:host-gateway']
+    command: [ "-config.file=/etc/loki/local-config.yaml" ]
+    ports:
+      - "3100:3100"                                   # loki needs to be exposed so it receives logs
+    environment:
+      - JAEGER_AGENT_HOST=tempo
+      - JAEGER_ENDPOINT=http://tempo:14268/api/traces # send traces to Tempo
+      - JAEGER_SAMPLER_TYPE=const
+      - JAEGER_SAMPLER_PARAM=1
+
   prometheus:
-    image: 'prom/prometheus'
-    container_name: prometheus
+    image: prom/prometheus
+    extra_hosts: ['host.docker.internal:host-gateway']
+    command:
+      - --enable-feature=exemplar-storage
+      - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/etc/prometheus/data
     ports:
       - "9090:9090"
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    command:
-      - --config.file=/etc/prometheus/prometheus.yml
+
   grafana:
     image: grafana/grafana
-    container_name: grafana
+    extra_hosts: ['host.docker.internal:host-gateway']
+    volumes:
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
     ports:
       - "3000:3000"
-    volumes:
-      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+
 volumes:
   postgres-data:
     driver: local
   keycloak-data:
+    driver: local
+  tempo-data:
+    driver: local
+  prometheus-data:
     driver: local

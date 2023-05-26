@@ -9,4 +9,4 @@ scrape_configs:
       - targets: [ 'host.docker.internal:8081' ]
         labels:
           namespace: 'event-sourcing'
-          app: 'order-command'
+          app: 'server'

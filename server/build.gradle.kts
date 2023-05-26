@@ -37,8 +37,12 @@ dependencies {
 	compileOnly("org.projectlombok:lombok:1.18.20")
 	annotationProcessor("org.projectlombok:lombok:1.18.20")
 	implementation ("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.0")
-	implementation ("org.keycloak:keycloak-admin-client:21.1.1")
+
 	implementation ("org.keycloak:keycloak-core:21.1.1")
+	implementation("org.keycloak:keycloak-admin-client:21.1.1") {
+		exclude(group = "org.jboss.resteasy", module = "resteasy-multipart-provider")
+	}
+
 
 	implementation ("org.springframework.boot:spring-boot-starter-aop")
 	implementation ("org.springframework.boot:spring-boot-starter-actuator")
@@ -48,7 +52,6 @@ dependencies {
 	implementation ("com.github.loki4j:loki-logback-appender:1.4.0-rc2")
 
 	implementation("io.github.microutils:kotlin-logging:3.0.5")
-	implementation("org.slf4j:slf4j-api:2.0.5")
 	implementation("ch.qos.logback:logback-classic:1.4.6")
 }
 
