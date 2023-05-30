@@ -3,6 +3,9 @@ package it.polito.wa2.g13.server.jwtAuth
 import it.polito.wa2.g13.server.profiles.DuplicateProfileException
 import it.polito.wa2.g13.server.profiles.ProfileDTO
 import it.polito.wa2.g13.server.profiles.ProfileService
+import it.polito.wa2.g13.server.ticketing.experts.ExpertDTO
+import it.polito.wa2.g13.server.ticketing.experts.ExpertNotFoundException
+import jakarta.transaction.Transactional
 import org.keycloak.admin.client.KeycloakBuilder
 import org.keycloak.admin.client.resource.RealmResource
 import org.keycloak.representations.idm.CredentialRepresentation
@@ -49,10 +52,7 @@ class AuthServiceImpl : AuthService {
 
         val realmResource= keycloak.realm("wa2-g13")
 
-        val existingUser = findUserByUsernameOrEmail(realmResource, registerDTO.username, registerDTO.email)
-        if (existingUser != null) {
-            return null
-        }
+        existsByUsernameOrEmail(realmResource, registerDTO.username, registerDTO.email)
 
         val newUser = UserRepresentation()
         newUser.username = registerDTO.username
@@ -106,10 +106,7 @@ class AuthServiceImpl : AuthService {
 
         val realmResource= keycloak.realm("wa2-g13")
 
-        val existingUser = findUserByUsernameOrEmail(realmResource, registerDTO.username, registerDTO.email)
-        if (existingUser != null) {
-            return null
-        }
+        existsByUsernameOrEmail(realmResource, registerDTO.username, registerDTO.email)
 
         val newUser = UserRepresentation()
         newUser.username = registerDTO.username
@@ -152,7 +149,7 @@ class AuthServiceImpl : AuthService {
         return id
     }
 
-    fun findUserByUsernameOrEmail(
+    fun findUserByUsernameAndEmail(
         realmResource: RealmResource,
         username: String,
         email: String
@@ -160,7 +157,72 @@ class AuthServiceImpl : AuthService {
         val users = realmResource
             .users()
             .search(username)
-
         return users.firstOrNull { it.email == email }
+    }
+
+    fun existsByUsername(
+        realmResource: RealmResource,
+        username: String
+    ): Unit {
+        if(realmResource.users().searchByUsername(username,true).size>0)    throw DuplicateUsernameException()
+    }
+
+    fun existsByEmail(realmResource: RealmResource,
+                      email: String): Unit {
+        if(realmResource.users().searchByEmail(email,true).size>0)  throw DuplicateEmailException()
+    }
+
+    fun existsByUsernameOrEmail(realmResource: RealmResource,
+                                username: String,
+                                email: String): Unit {
+        existsByUsername(realmResource,username)
+        existsByEmail(realmResource,email)
+    }
+
+    @Transactional
+    override fun updateUser(id: String,oldRegisterDTO: RegisterDTO,registerDTO: RegisterDTO): Boolean{
+        val keycloak = KeycloakBuilder.builder()
+            .serverUrl("http://${keycloakPath}")
+            .realm("wa2-g13")
+            .clientId("spring-client")
+            .username("admin") //in keycloak it is necessary to create a user with 'realm-admin' role
+            .password("admin")
+            .build()
+
+        val realmResource= keycloak.realm("wa2-g13")
+
+        val existingUser = findUserByUsernameAndEmail(realmResource, oldRegisterDTO.username, oldRegisterDTO.email)
+            ?: throw UserNotFoundException()
+
+        if (existingUser.email!=registerDTO.email) existsByEmail(realmResource,registerDTO.email)
+
+        if (existingUser.username!=registerDTO.username) existsByUsername(realmResource,registerDTO.username)
+
+        existingUser.username = registerDTO.username
+        existingUser.email = registerDTO.email
+        existingUser.firstName = registerDTO.name
+        existingUser.lastName = registerDTO.surname
+
+        realmResource
+            .users()
+            .get(existingUser.id)
+            .update(existingUser)
+
+        return true
+    }
+
+    @Transactional
+    override fun deleteUser(id: String): Unit {
+        val keycloak = KeycloakBuilder.builder()
+            .serverUrl("http://${keycloakPath}")
+            .realm("wa2-g13")
+            .clientId("spring-client")
+            .username("admin") //in keycloak it is necessary to create a user with 'realm-admin' role
+            .password("admin")
+            .build()
+
+        val realmResource= keycloak.realm("wa2-g13")
+
+        realmResource.users().delete(id)
     }
 }

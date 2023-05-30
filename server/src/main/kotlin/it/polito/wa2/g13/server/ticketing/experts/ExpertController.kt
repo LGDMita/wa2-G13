@@ -1,9 +1,12 @@
 package it.polito.wa2.g13.server.ticketing.experts
 
 
+import it.polito.wa2.g13.server.jwtAuth.AuthService
+import it.polito.wa2.g13.server.profiles.ProfileNotFoundException
 import it.polito.wa2.g13.server.ticketing.sectors.SectorNotFoundException
 import it.polito.wa2.g13.server.ticketing.sectors.SectorService
 import it.polito.wa2.g13.server.ticketing.sectors.SectorsNotFoundException
+import jakarta.transaction.Transactional
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.validation.BindingResult
@@ -12,7 +15,8 @@ import org.springframework.web.bind.annotation.*
 @RestController
 class ExpertController(
     private val expertService: ExpertService,
-    private val sectorService: SectorService
+    private val sectorService: SectorService,
+    private val authService: AuthService
 ) {
 
     //get: /API/experts
@@ -46,21 +50,17 @@ class ExpertController(
     }
 
     //Must be modified or moved to pass the changes to keycloak as well
+    @Transactional
     @PutMapping("/API/experts/{id}")
     fun modifyExpert(@PathVariable id: String,
                      @RequestBody @Valid expertDTO: ExpertDTO,
                      br: BindingResult) : Boolean{
 
         return if(!br.hasErrors()){
-            val result= expertService.modifyExpert(id, expertDTO)
-            if(result== 1)
-                true
-            else{
-                if(result== 2)
-                    throw ExpertNotFoundException()
-                else
-                    throw DuplicateExpertException()
-            }
+            val oldExpert= expertService.getExpertById(id)?.toRegisterDTO()?:throw ExpertNotFoundException()
+            authService.updateUser(id,oldExpert,expertDTO.toRegisterDTO())
+            expertService.modifyExpert(id, expertDTO)
+            true
         }else
             throw ExpertInvalidArgumentsException()
 
@@ -80,16 +80,11 @@ class ExpertController(
             throw SectorsNotFoundException()
         }
     }
-
-    //If necessary, implement this functionality passing through keycloak
-    /*
+    @Transactional
     @DeleteMapping("/API/experts/{id}")
     fun deleteExpertById(@PathVariable id: String) {
-        if (expertService.getExpertById(id)!= null){
-            return expertService.deleteExpertById(id)
-        }else{
-            throw ExpertNotFoundException()
-        }
+        expertService.getExpertById(id)?:throw ExpertNotFoundException()
+        authService.deleteUser(id)
+        expertService.deleteExpertById(id)
     }
-     */
 }

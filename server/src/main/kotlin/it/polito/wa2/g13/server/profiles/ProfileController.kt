@@ -1,5 +1,7 @@
 package it.polito.wa2.g13.server.profiles
 
+import it.polito.wa2.g13.server.jwtAuth.AuthService
+import jakarta.transaction.Transactional
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Email
 import org.springframework.validation.BindingResult
@@ -9,7 +11,8 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @Validated
 class ProfileController(
-    private val profileService: ProfileService
+    private val profileService: ProfileService,
+    private val authService: AuthService
 ) {
 
     @GetMapping("/API/profiles/{id}")
@@ -18,6 +21,7 @@ class ProfileController(
     }
 
     //Must be modified or moved to pass the changes to keycloak as well
+    @Transactional
     @PutMapping("/API/profiles/{id}")
     fun modifyProfile(
         @PathVariable id: String,
@@ -25,8 +29,20 @@ class ProfileController(
         br: BindingResult
     ): Boolean {
         return if (!br.hasErrors()) {
-            if (profileService.modifyProfile(id, profileDTO)) true else throw ProfileNotFoundException()
+            val oldProfile=profileService.getProfile(id)?.toRegisterDTO()?:throw ProfileNotFoundException()
+            authService.updateUser(id,oldProfile,profileDTO.toRegisterDTO())
+            profileService.modifyProfile(id, profileDTO)
+            true
         } else throw InvalidArgumentsException()
+    }
+    @Transactional
+    @DeleteMapping("/API/profiles/{id}")
+    fun deleteProfile(
+        @PathVariable id: String
+    ): Unit {
+        profileService.getProfile(id)?:throw ProfileNotFoundException()
+        authService.deleteUser(id)
+        profileService.deleteProfile(id)
     }
 }
 
