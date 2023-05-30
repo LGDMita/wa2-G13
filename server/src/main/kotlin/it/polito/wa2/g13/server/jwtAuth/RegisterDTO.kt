@@ -18,4 +18,8 @@ data class RegisterDTO (
     @field:Size(min=1, max=255, message = "Surname MUST be a NON empty string of max 255 chars")
     @field:NotBlank(message="Surname can NOT be blank")
     var surname: String
-)
+){
+    override fun toString(): String {
+        return "Username=${username}&Password=${password}&Email=${email}&Name=${name}&Surname=${surname}"
+    }
+}

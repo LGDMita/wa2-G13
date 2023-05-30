@@ -61,7 +61,6 @@ services:
 
   tempo:
     image: grafana/tempo
-    extra_hosts: [ 'host.docker.internal:host-gateway' ]
     command: [ "-config.file=/etc/tempo.yaml" ]
     volumes:
       - ./tempo/tempo-local.yaml:/etc/tempo.yaml:ro
@@ -76,7 +75,6 @@ services:
     depends_on:
       - tempo
     image: grafana/loki
-    extra_hosts: ['host.docker.internal:host-gateway']
     command: [ "-config.file=/etc/loki/local-config.yaml" ]
     ports:
       - "3100:3100"                                   # loki needs to be exposed so it receives logs
@@ -90,7 +88,6 @@ services:
 
   prometheus:
     image: prom/prometheus
-    extra_hosts: ['host.docker.internal:host-gateway']
     command:
       - --enable-feature=exemplar-storage
       - --config.file=/etc/prometheus/prometheus.yml
@@ -103,8 +100,11 @@ services:
       - mynetwork
 
   grafana:
+    depends_on:
+      - loki
+      - tempo
+      - prometheus
     image: grafana/grafana
-    extra_hosts: ['host.docker.internal:host-gateway']
     volumes:
       - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
       - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
