@@ -1,5 +1,8 @@
 version: '3'
 
+networks:
+  mynetwork:
+
 services:
   db:
     image: 'postgres:latest'
@@ -12,6 +15,8 @@ services:
       - POSTGRES_DB=products
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    networks:
+      - mynetwork
 
   keycloak:
     image: 'quay.io/keycloak/keycloak:latest'
@@ -27,6 +32,8 @@ services:
     command:
       - start-dev
       - --import-realm
+    networks:
+      - mynetwork
 
   app:
     image: 'wa2-g13-ticketing:0.0.1'
@@ -36,6 +43,9 @@ services:
     depends_on:
       - db
       - keycloak
+      - loki
+      - tempo
+      - prometheus
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/products
       - SPRING_DATASOURCE_USERNAME=postgres
@@ -44,17 +54,23 @@ services:
       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:8080/realms/wa2-g13
       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=http://keycloak:8080/realms/wa2-g13/protocol/openid-connect/certs
       - KEYCLOAK_ADDRESS=keycloak:8080
+      - LOKI_HOST=loki
+      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://tempo:9411/api/v2/spans
+    networks:
+      - mynetwork
 
   tempo:
     image: grafana/tempo
-    extra_hosts: ['host.docker.internal:host-gateway']
+    extra_hosts: [ 'host.docker.internal:host-gateway' ]
     command: [ "-config.file=/etc/tempo.yaml" ]
     volumes:
       - ./tempo/tempo-local.yaml:/etc/tempo.yaml:ro
       - tempo-data:/tmp/tempo
     ports:
-      - "14268"  # jaeger ingest
+      - "14268:14268"  # jaeger ingest
       - "9411:9411" # zipkin
+    networks:
+      - mynetwork
 
   loki:
     depends_on:
@@ -69,6 +85,8 @@ services:
       - JAEGER_ENDPOINT=http://tempo:14268/api/traces # send traces to Tempo
       - JAEGER_SAMPLER_TYPE=const
       - JAEGER_SAMPLER_PARAM=1
+    networks:
+      - mynetwork
 
   prometheus:
     image: prom/prometheus
@@ -81,6 +99,8 @@ services:
       - prometheus-data:/etc/prometheus/data
     ports:
       - "9090:9090"
+    networks:
+      - mynetwork
 
   grafana:
     image: grafana/grafana
@@ -94,6 +114,8 @@ services:
       - GF_AUTH_DISABLE_LOGIN_FORM=true
     ports:
       - "3000:3000"
+    networks:
+      - mynetwork
 
 volumes:
   postgres-data:

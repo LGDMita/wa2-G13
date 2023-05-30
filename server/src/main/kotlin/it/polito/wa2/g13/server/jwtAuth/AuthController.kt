@@ -1,11 +1,12 @@
 package it.polito.wa2.g13.server.jwtAuth
 
-import it.polito.wa2.g13.server.observer.annotation.LogInfo
+import io.micrometer.observation.annotation.Observed
 import it.polito.wa2.g13.server.profiles.DuplicateProfileException
 import it.polito.wa2.g13.server.profiles.InvalidArgumentsException
 import it.polito.wa2.g13.server.profiles.ProfileDTO
 import it.polito.wa2.g13.server.profiles.ProfileService
 import jakarta.validation.Valid
+import lombok.extern.slf4j.Slf4j
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -19,7 +20,8 @@ import javax.ws.rs.core.Response.status
 
 
 @RestController
-@LogInfo
+@Observed
+@Slf4j
 class AuthController(
     private val authService: AuthService,
     private val profileService: ProfileService
@@ -31,7 +33,7 @@ class AuthController(
     fun login(
         @Valid @RequestBody loginDTO: LoginDTO
     ): JwtResponse {
-        log.info("User tried to login = {}", loginDTO)
+        log.info("User tried to login: {}", loginDTO.toString())
         return authService.login(loginDTO) ?: throw InvalidCredentialArgumentsException()
     }
 

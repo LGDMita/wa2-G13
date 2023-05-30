@@ -7,4 +7,8 @@ data class LoginDTO (
     var username: String,
     @NotBlank
     var password: String
-)
+){
+    override fun toString(): String {
+        return "Username=${username}&Password=${password}"
+    }
+}

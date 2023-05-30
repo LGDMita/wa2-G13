@@ -6,7 +6,9 @@ scrape_configs:
   - job_name: 'cluster-api'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: [ 'host.docker.internal:8081' ]
+      - targets:
+          - app:8080
+          - host.docker.internal:8080
         labels:
           namespace: 'event-sourcing'
-          app: 'server'
+          app: 'wa2-g13'
