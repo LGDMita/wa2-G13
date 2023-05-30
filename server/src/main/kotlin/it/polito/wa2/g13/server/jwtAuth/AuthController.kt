@@ -56,7 +56,7 @@ class AuthController(
             throw InvalidArgumentsException()
     }
 
-    @PostMapping("/API/signup")
+    @PostMapping("/API/createExpert")
     fun createExpert(@RequestBody @Valid registerDTO: RegisterDTO, br: BindingResult): ResponseEntity<Any> {
         return if (!br.hasErrors()) {
             val id= authService.createExpert(registerDTO)
