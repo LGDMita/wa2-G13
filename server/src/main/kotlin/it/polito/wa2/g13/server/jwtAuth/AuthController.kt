@@ -5,6 +5,8 @@ import it.polito.wa2.g13.server.profiles.DuplicateProfileException
 import it.polito.wa2.g13.server.profiles.InvalidArgumentsException
 import it.polito.wa2.g13.server.profiles.ProfileDTO
 import it.polito.wa2.g13.server.profiles.ProfileService
+import it.polito.wa2.g13.server.ticketing.experts.ExpertDTO
+import it.polito.wa2.g13.server.ticketing.experts.ExpertService
 import jakarta.validation.Valid
 import lombok.extern.slf4j.Slf4j
 import org.slf4j.LoggerFactory
@@ -24,7 +26,8 @@ import javax.ws.rs.core.Response.status
 @Slf4j
 class AuthController(
     private val authService: AuthService,
-    private val profileService: ProfileService
+    private val profileService: ProfileService,
+    private val expertService: ExpertService
 ) {
 
     private val log = LoggerFactory.getLogger(AuthController::class.java)
@@ -46,17 +49,27 @@ class AuthController(
             else{
                 profileService.setProfile(ProfileDTO(id, registerDTO.username, registerDTO.email, registerDTO.name, registerDTO.surname))
                 transformResponse(status(Response.Status.CREATED)
-                    .entity("User successfully created")
+                    .entity("Customer successfully created")
                     .build())
             }
         } else
             throw InvalidArgumentsException()
     }
 
-    @PostMapping("/API/signupExpert")
+    @PostMapping("/API/signup")
     fun createExpert(@RequestBody @Valid registerDTO: RegisterDTO, br: BindingResult): ResponseEntity<Any> {
-
-        TODO("Not yet implemented")
+        return if (!br.hasErrors()) {
+            val id= authService.createExpert(registerDTO)
+            if (id == null)
+                throw DuplicateProfileException()
+            else{
+                expertService.setExpert(ExpertDTO(id, registerDTO.username, registerDTO.email, registerDTO.name, registerDTO.surname))
+                transformResponse(status(Response.Status.CREATED)
+                    .entity("Expert successfully created")
+                    .build())
+            }
+        } else
+            throw InvalidArgumentsException()
     }
 
     fun transformResponse(response: Response): ResponseEntity<Any> {

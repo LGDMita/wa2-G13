@@ -21,6 +21,8 @@ class ExpertController(
         return expertService.getExperts()
     }
 
+    //No longer necessary as creation managed with keycloak
+    /*
     @PostMapping("/API/experts")
     @ResponseStatus(HttpStatus.CREATED)
     fun setExpert(@RequestBody @Valid expertDTO: ExpertDTO,
@@ -36,12 +38,14 @@ class ExpertController(
             throw ExpertInvalidArgumentsException()
 
     }
+    */
 
     @GetMapping("/API/experts/{id}")
     fun getExpertById(@PathVariable id: String): ExpertDTO? {
         return expertService.getExpertById(id) ?: throw ExpertNotFoundException()
     }
 
+    //Must be modified or moved to pass the changes to keycloak as well
     @PutMapping("/API/experts/{id}")
     fun modifyExpert(@PathVariable id: String,
                      @RequestBody @Valid expertDTO: ExpertDTO,
@@ -77,6 +81,8 @@ class ExpertController(
         }
     }
 
+    //If necessary, implement this functionality passing through keycloak
+    /*
     @DeleteMapping("/API/experts/{id}")
     fun deleteExpertById(@PathVariable id: String) {
         if (expertService.getExpertById(id)!= null){
@@ -84,6 +90,6 @@ class ExpertController(
         }else{
             throw ExpertNotFoundException()
         }
-
     }
+     */
 }

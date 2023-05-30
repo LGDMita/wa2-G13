@@ -17,6 +17,7 @@ class ProfileController(
         return profileService.getProfile(id) ?: throw ProfileNotFoundException()
     }
 
+    //Must be modified or moved to pass the changes to keycloak as well
     @PutMapping("/API/profiles/{id}")
     fun modifyProfile(
         @PathVariable id: String,
@@ -31,7 +32,6 @@ class ProfileController(
 
 
 //No longer necessary as subscription managed with keycloak
-
 /*
 @RestController
 class ProfileControllerBR(
