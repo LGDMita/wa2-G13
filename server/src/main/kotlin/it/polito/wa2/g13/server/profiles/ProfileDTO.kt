@@ -19,7 +19,11 @@ data class ProfileDTO(
     @field:Size(min=1, max=255, message = "Surname MUST be a NON empty string of max 255 chars")
     @field:NotBlank(message="Surname can NOT be blank")
     val surname: String
-)
+) {
+    override fun toString(): String {
+        return "Id=$id&Username=$username&Email=$email&Name=$name&Surname=$surname"
+    }
+}
 
 fun Profile.toDTO(): ProfileDTO {
     return ProfileDTO(id, username, email, name, surname)

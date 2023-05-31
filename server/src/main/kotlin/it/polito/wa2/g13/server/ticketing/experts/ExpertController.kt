@@ -1,23 +1,31 @@
 package it.polito.wa2.g13.server.ticketing.experts
 
 
+import io.micrometer.observation.annotation.Observed
+import it.polito.wa2.g13.server.jwtAuth.AuthController
 import it.polito.wa2.g13.server.ticketing.sectors.SectorNotFoundException
 import it.polito.wa2.g13.server.ticketing.sectors.SectorService
 import it.polito.wa2.g13.server.ticketing.sectors.SectorsNotFoundException
 import jakarta.validation.Valid
-import org.springframework.http.HttpStatus
+import lombok.extern.slf4j.Slf4j
+import org.slf4j.LoggerFactory
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 
 @RestController
+@Observed
+@Slf4j
 class ExpertController(
     private val expertService: ExpertService,
     private val sectorService: SectorService
 ) {
 
+    private val log = LoggerFactory.getLogger(AuthController::class.java)
+
     //get: /API/experts
     @GetMapping("/API/experts")
     fun getExperts() : List<ExpertDTO>{
+        log.info("Getting all experts")
         return expertService.getExperts()
     }
 
@@ -42,6 +50,7 @@ class ExpertController(
 
     @GetMapping("/API/experts/{id}")
     fun getExpertById(@PathVariable id: String): ExpertDTO? {
+        log.info("Getting expert with id:{}", id)
         return expertService.getExpertById(id) ?: throw ExpertNotFoundException()
     }
 
@@ -53,16 +62,24 @@ class ExpertController(
 
         return if(!br.hasErrors()){
             val result= expertService.modifyExpert(id, expertDTO)
-            if(result== 1)
+            if(result== 1) {
+                log.info("Expert successfully modified with id:{} and DTO:{}", id, expertDTO)
                 true
-            else{
-                if(result== 2)
-                    throw ExpertNotFoundException()
-                else
-                    throw DuplicateExpertException()
             }
-        }else
+            else{
+                if(result== 2) {
+                    log.warn("Expert not found with id:{}", id)
+                    throw ExpertNotFoundException()
+                }
+                else {
+                    log.warn("Duplicate expert error with id:{} and DTO:{}", id, expertDTO)
+                    throw DuplicateExpertException()
+                }
+            }
+        }else {
+            log.warn("Filed constraint not satisfied for DTO: {}", expertDTO.toString())
             throw ExpertInvalidArgumentsException()
+        }
 
     }
 
@@ -72,11 +89,14 @@ class ExpertController(
         val sectors= sectorService.getAllSectors()
         if(sectors!= null){
             if(sectors.find { s -> s.name== sectorNameLower } != null){
+                log.info("Getting expert by sector name:{}", sectorName)
                 return expertService.getExpertsBySector(sectorNameLower) ?: throw ExpertsOfSelectedSectorNotFoundException()
             }else{
+                log.warn("No sector found with name:{}", sectorName)
                 throw SectorNotFoundException()
             }
         }else{
+            log.warn("No sector found with name:{}", sectorName)
             throw SectorsNotFoundException()
         }
     }

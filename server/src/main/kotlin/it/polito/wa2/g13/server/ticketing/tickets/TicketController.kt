@@ -1,7 +1,11 @@
 package it.polito.wa2.g13.server.ticketing.tickets
 
+import io.micrometer.observation.annotation.Observed
+import it.polito.wa2.g13.server.jwtAuth.AuthController
 import jakarta.validation.Valid
 import jakarta.validation.constraints.*
+import lombok.extern.slf4j.Slf4j
+import org.slf4j.LoggerFactory
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -14,16 +18,22 @@ import java.util.*
 
 
 @RestController
+@Observed
+@Slf4j
 class TicketController(
     private val ticketService: TicketService
 ) {
+    private val log = LoggerFactory.getLogger(AuthController::class.java)
+
     @GetMapping("/API/tickets")
     fun getTickets(): List<Ticket>? {
+        log.info("Request all tickets")
         return ticketService.getTickets()
     }
 
     @GetMapping("/API/tickets/{ticketId}")
     fun getTicket(@PathVariable("ticketId") ticketId: Long): TicketDTO? {
+        log.info("Request specific ticket with id: {}", ticketId)
         return ticketService.getTicket(ticketId) ?: throw TicketNotFoundException()
     }
 
@@ -34,13 +44,16 @@ class TicketController(
     ): Boolean {
         if (!br.hasErrors()) {
             if (ticketService.getTicket(ticketDTO.ticketId!!) != null) {
+                log.info("Editing ticket: {}", ticketDTO.toString())
                 return ticketService.modifyTicket(ticketDTO)
             }
             else {
+                log.info("Edit ticket, not ticket found with id: {}", ticketDTO.ticketId)
                 throw TicketNotFoundException()
             }
         }
         else {
+            log.warn("Filed constraint not satisfied for DTO: {}", ticketDTO.toString())
             throw InvalidTicketException()
         }
     }
@@ -48,9 +61,13 @@ class TicketController(
 
 @RestController
 @Validated
+@Observed
+@Slf4j
 class TicketControllerValidated(
     private val ticketService: TicketService
 ) {
+
+    private val log = LoggerFactory.getLogger(AuthController::class.java)
 
     @GetMapping("/API/tickets/test/")
     fun getTest(principal: Principal): ResponseEntity<String?>? {
@@ -86,6 +103,7 @@ class TicketControllerValidated(
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         creationDateStop: Date?,
     ): List<TicketDTO> {
+        log.info("Get ticket filtered by ean:{}, profileId:{}, priorityLevel:{}, expertId:{}, status:{}, creationDateStart:{}, creationDateStop:{}", ean, profileId, priorityLevel, expertId, status, creationDateStart, creationDateStop)
         return ticketService.getFilteredTickets(
             ean,
             profileId,
@@ -103,10 +121,13 @@ class TicketControllerValidated(
         br: BindingResult
     ): TicketDTO? {
         if (!br.hasErrors()) {
+            log.info("Creating ticket: {}", ticketPostDTO.toString())
             return ticketService.createTicket(ticketPostDTO, br)
         }
-        else
+        else {
+            log.warn("Filed constraint not satisfied for DTO: {}", ticketPostDTO.toString())
             throw InvalidTicketArgumentsException()
+        }
     }
 
     @PutMapping("/API/tickets/{ticketId}/changeStatus")
@@ -116,10 +137,12 @@ class TicketControllerValidated(
     ): Boolean {
         val status = req["status"] ?: throw InvalidTicketArgumentsException()
 
-        if(status !is String || !listOf("open", "in_progress", "reopened", "resolved", "closed").contains(status))
+        if(status !is String || !listOf("open", "in_progress", "reopened", "resolved", "closed").contains(status)) {
+            log.warn("Ticket status not valid")
             throw InvalidTicketArgumentsException()
+        }
 
-        println("Changing status of ticket $ticketId to $status")
+        log.info("Changing status of ticket $ticketId to $status")
 
         return ticketService.changeStatus(ticketId.toLong(), status)
     }
@@ -131,10 +154,12 @@ class TicketControllerValidated(
     ): Boolean {
         val priorityLevel = req["priorityLevel"] ?: throw InvalidTicketArgumentsException()
 
-        if(priorityLevel !is Int || priorityLevel > 4 || priorityLevel < 0)
+        if(priorityLevel !is Int || priorityLevel > 4 || priorityLevel < 0){
+            log.warn("Ticket priorityLevel not valid")
             throw InvalidTicketArgumentsException()
+        }
 
-        println("Changing priority level of ticket $ticketId to $priorityLevel")
+        log.info("Changing priority level of ticket $ticketId to $priorityLevel")
 
         return ticketService.changePriority(ticketId.toLong(), priorityLevel)
     }
@@ -146,10 +171,12 @@ class TicketControllerValidated(
     ): Boolean {
         val expertId = req["expertId"] ?: throw InvalidTicketArgumentsException()
 
-        if(expertId !is String)
+        if(expertId !is String){
+            log.warn("Ticket expertId not valid")
             throw InvalidTicketArgumentsException()
+        }
 
-        println("Changing expert assigned to ticket $ticketId to $expertId")
+        log.info("Changing expert assigned to ticket $ticketId to $expertId")
 
         return ticketService.changeExpert(ticketId.toLong(), expertId)
     }

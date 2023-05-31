@@ -1,19 +1,27 @@
 package it.polito.wa2.g13.server.profiles
 
+import io.micrometer.observation.annotation.Observed
+import it.polito.wa2.g13.server.jwtAuth.AuthController
 import jakarta.validation.Valid
-import jakarta.validation.constraints.Email
+import lombok.extern.slf4j.Slf4j
+import org.slf4j.LoggerFactory
 import org.springframework.validation.BindingResult
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @Validated
+@Observed
+@Slf4j
 class ProfileController(
     private val profileService: ProfileService
 ) {
 
+    private val log = LoggerFactory.getLogger(AuthController::class.java)
+
     @GetMapping("/API/profiles/{id}")
     fun getProfile(@PathVariable  id: String): ProfileDTO? {
+        log.info("Request profile with id: {}", id)
         return profileService.getProfile(id) ?: throw ProfileNotFoundException()
     }
 
@@ -24,9 +32,16 @@ class ProfileController(
         @RequestBody @Valid profileDTO: ProfileDTO,
         br: BindingResult
     ): Boolean {
+        log.info("Edited profile with id: {} and profileDTO: {}", id, profileDTO.toString())
         return if (!br.hasErrors()) {
-            if (profileService.modifyProfile(id, profileDTO)) true else throw ProfileNotFoundException()
-        } else throw InvalidArgumentsException()
+            if (profileService.modifyProfile(id, profileDTO)) true else {
+                log.info("No profile found with id: {}", id)
+                throw ProfileNotFoundException()
+            }
+        } else {
+            log.info("Filed constraint not satisfied for DTO: {}", profileDTO.toString())
+            throw InvalidArgumentsException()
+        }
     }
 }
 

@@ -32,7 +32,12 @@ data class TicketDTO(
     @field:NotNull
     var creationDate: Date,
     var messages: MutableSet<MessageDTO>
-)
+) {
+    override fun toString(): String {
+        val messagesNew = messages.joinToString(",", "[", "]") { it.toString() }
+        return "TicketId=$ticketId&Profile=$profile&Product=$product&PriorityLevel=$priorityLevel&Expert=$expert&Status=$status&CreationDate=$creationDate&Messages=$messagesNew"
+    }
+}
 
 fun Ticket.toDTO(): TicketDTO {
     return TicketDTO(getId(), profile.toDTO(), product.toDTO(), priorityLevel, expert?.toDTO(), status, creationDate,
