@@ -103,7 +103,7 @@ class TicketControllerValidated(
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         creationDateStop: Date?,
     ): List<TicketDTO> {
-        log.info("Get ticket filtered by ean:{}, profileId:{}, priorityLevel:{}, expertId:{}, status:{}, creationDateStart:{}, creationDateStop:{}", ean, profileId, priorityLevel, expertId, status, creationDateStart, creationDateStop)
+        log.info("Get ticket filtered by ean:{} profileId:{} priorityLevel:{} expertId:{} status:{} creationDateStart:{} creationDateStop:{}", ean, profileId, priorityLevel, expertId, status, creationDateStart, creationDateStop)
         return ticketService.getFilteredTickets(
             ean,
             profileId,

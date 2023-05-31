@@ -106,7 +106,7 @@ class TicketTests {
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun t1TestGetAllTickets() {
-        val baseUrl = "http://localhost:$port/API/tickets/"
+        val baseUrl = "http://localhost:$port/API/tickets"
         val uri = URI(baseUrl)
         val myProfile = quickProfile()
         val myProduct = Product(
@@ -157,7 +157,7 @@ class TicketTests {
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun t1BTestGetAllTicketsUnAuthenticated() {
-        val baseUrl = "http://localhost:$port/API/tickets/"
+        val baseUrl = "http://localhost:$port/API/tickets"
         val uri = URI(baseUrl)
         val myProfile = quickProfile()
         val myProduct = Product(

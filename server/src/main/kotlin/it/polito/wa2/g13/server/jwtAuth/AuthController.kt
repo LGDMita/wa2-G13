@@ -42,7 +42,7 @@ class AuthController(
             return jwt
         }
         else {
-            log.warn("Failed login, username or password not correct: {}", loginDTO.toString())
+            log.warn("Login - Username or password not correct: {}", loginDTO.toString())
             throw InvalidCredentialArgumentsException()
         }
     }
@@ -85,7 +85,7 @@ class AuthController(
                     .build())
             }
         } else {
-            log.error("Invalid arguments in registerDTO: field constraint NOT satisfied: {}", registerDTO.toString())
+            log.error("Invalid arguments in registerDTO -  field constraint NOT satisfied: {}", registerDTO.toString())
             throw InvalidArgumentsException()
         }
     }

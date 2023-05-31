@@ -52,6 +52,7 @@ class ProfileController(
     fun deleteProfile(
         @PathVariable id: String
     ) {
+        log.info("Deleting profile with id: {}", id)
         profileService.getProfile(id)?:throw ProfileNotFoundException()
         authService.deleteUser(id)
         profileService.deleteProfile(id)
