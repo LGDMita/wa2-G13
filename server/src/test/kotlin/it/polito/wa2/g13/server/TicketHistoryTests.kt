@@ -31,7 +31,6 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import java.net.URI
 import java.util.*
 
-/*
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -81,13 +80,25 @@ class TicketHistoryTests {
     fun t1TestGetTicketHistory(){
         val baseUrl = "http://localhost:$port/API/tickets/1/history"
         val uri = URI(baseUrl)
-        val myProfile = Profile("moyne@gmail.com", "Mohamed Amine", "Hamdi")
+        val myProfile = Profile(
+            id = "id",
+            username = "moyne",
+            email = "moyne@gmail.com",
+            name = "Mohamed Amine",
+            surname = "Hamdi"
+        )
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
             "JMT"
         )
-        val myExpert = Expert("Giovanni", "Malnati", "giovanni.malnati@polito.it")
+        val myExpert = Expert(
+            id = "id",
+            username = "giomalnati",
+            name = "Giovanni",
+            surname = "Malnati",
+            email = "giovanni.malnati@polito.it"
+        )
         val myTicket = Ticket(
             profile = myProfile, product = myProduct, priorityLevel = 1, expert = myExpert,
             status = "open", creationDate = Date(), messages = mutableSetOf()
@@ -101,9 +112,11 @@ class TicketHistoryTests {
         ticketHistoryRepository.save(myHistory)
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        if (token != null) {
+            headers.setBearerAuth(token)
+        }
         headers.set("X-COM-PERSIST", "true")
         val request = HttpEntity(null, headers)
         val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
@@ -126,9 +139,11 @@ class TicketHistoryTests {
         val uri = URI(baseUrl)
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        if (token != null) {
+            headers.setBearerAuth(token)
+        }
         headers.set("X-COM-PERSIST", "true")
         val request = HttpEntity(null, headers)
         val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
@@ -136,6 +151,3 @@ class TicketHistoryTests {
         Assertions.assertEquals(result.statusCode,HttpStatus.NOT_FOUND)
     }
 }
-
-
- */
