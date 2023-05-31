@@ -91,7 +91,7 @@ class TicketControllerValidated(
         @Max(value = 4, message = "Minimum value for priorityLevel is 4")
         priorityLevel: Int?,
         @RequestParam("expertId")
-        expertId: Long?,
+        expertId: String?,
         @RequestParam("status")
         @Size(min=1, max=15, message = "Status MUST be a NON empty string of max 15 chars")
         @Pattern(regexp = "(open|closed|resolved|in_progress|reopened)")

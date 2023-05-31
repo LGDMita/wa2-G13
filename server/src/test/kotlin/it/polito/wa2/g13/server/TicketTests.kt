@@ -35,7 +35,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import java.net.URI
 import java.util.*
 
-/*
+
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -82,18 +82,39 @@ class TicketTests {
     @Autowired
     lateinit var purchaseRepository: PurchaseRepository
 
+    fun quickProfile(): Profile {
+        return Profile(
+            id = "id",
+            username = "luigimoli",
+            email = "luigimolinengo@gmail.com",
+            name = "Luigi",
+            surname = "Molinengo"
+        )
+    }
+
+    fun quickExpert(): Expert {
+        return Expert(
+            id = "id",
+            username = "giomalnati",
+            name = "Giovanni",
+            surname = "Malnati",
+            email = "giovanni.malnati@polito.it"
+        )
+    }
+
+
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun t1TestGetAllTickets() {
         val baseUrl = "http://localhost:$port/API/tickets/"
         val uri = URI(baseUrl)
-        val myProfile = Profile("luigimolinengo@gmail.com", "Luigi", "Molinengo")
+        val myProfile = quickProfile()
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
             "JMT"
         )
-        val myExpert = Expert("Giovanni", "Malnati", "giovanni.malnati@polito.it")
+        val myExpert = quickExpert()
         val myTicket = Ticket(
             profile = myProfile, product = myProduct, priorityLevel = 1, expert = myExpert,
             status = "open", creationDate = Date(), messages = mutableSetOf()
@@ -110,9 +131,11 @@ class TicketTests {
         ticketRepository.save(myTicket2)
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        if (token != null) {
+            headers.setBearerAuth(token)
+        }
         headers.set("X-COM-PERSIST", "true")
         val request = HttpEntity(null, headers)
         val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
@@ -136,13 +159,13 @@ class TicketTests {
     fun t1BTestGetAllTicketsUnAuthenticated() {
         val baseUrl = "http://localhost:$port/API/tickets/"
         val uri = URI(baseUrl)
-        val myProfile = Profile("luigimolinengo@gmail.com", "Luigi", "Molinengo")
+        val myProfile = quickProfile()
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
             "JMT"
         )
-        val myExpert = Expert("Giovanni", "Malnati", "giovanni.malnati@polito.it")
+        val myExpert = quickExpert()
         val myTicket = Ticket(
             profile = myProfile, product = myProduct, priorityLevel = 1, expert = myExpert,
             status = "open", creationDate = Date(), messages = mutableSetOf()
@@ -177,13 +200,13 @@ class TicketTests {
     fun t2TestGetTicketById() {
         val baseUrl = "http://localhost:$port/API/tickets/2"
         val uri = URI(baseUrl)
-        val myProfile = Profile("luigimolinengo@gmail.com", "Luigi", "Molinengo")
+        val myProfile = quickProfile()
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
             "JMT"
         )
-        val myExpert = Expert("Giovanni", "Malnati", "giovanni.malnati@polito.it")
+        val myExpert = quickExpert()
         val myTicket = Ticket(
             profile = myProfile, product = myProduct, priorityLevel = 1, expert = myExpert,
             status = "open", creationDate = Date(), messages = mutableSetOf()
@@ -200,9 +223,11 @@ class TicketTests {
         ticketRepository.save(myTicket2)
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        if (token != null) {
+            headers.setBearerAuth(token)
+        }
         headers.set("X-COM-PERSIST", "true")
         val request = HttpEntity(null, headers)
         val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
@@ -226,13 +251,13 @@ class TicketTests {
     fun t3TestGetTicketByWrongId() {
         val baseUrl = "http://localhost:$port/API/tickets/5"
         val uri = URI(baseUrl)
-        val myProfile = Profile("luigimolinengo@gmail.com", "Luigi", "Molinengo")
+        val myProfile = quickProfile()
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
             "JMT"
         )
-        val myExpert = Expert("Giovanni", "Malnati", "giovanni.malnati@polito.it")
+        val myExpert = quickExpert()
         val myTicket = Ticket(
             profile = myProfile, product = myProduct, priorityLevel = 1, expert = myExpert,
             status = "open", creationDate = Date(), messages = mutableSetOf()
@@ -249,9 +274,11 @@ class TicketTests {
         ticketRepository.save(myTicket2)
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        if (token != null) {
+            headers.setBearerAuth(token)
+        }
         headers.set("X-COM-PERSIST", "true")
         val request = HttpEntity(null, headers)
         val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
@@ -271,13 +298,13 @@ class TicketTests {
         val baseUrl =
             "http://localhost:$port/API/tickets/?ean=4935531465706&profileId=luigimolinengo@gmail.com&priorityLevel=2"
         val uri = URI(baseUrl)
-        val myProfile = Profile("luigimolinengo@gmail.com", "Luigi", "Molinengo")
+        val myProfile = quickProfile()
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
             "JMT"
         )
-        val myExpert = Expert("Giovanni", "Malnati", "giovanni.malnati@polito.it")
+        val myExpert = quickExpert()
         val myTicket = Ticket(
             profile = myProfile, product = myProduct, priorityLevel = 1, expert = myExpert,
             status = "open", creationDate = Date(), messages = mutableSetOf()
@@ -294,9 +321,11 @@ class TicketTests {
         ticketRepository.save(myTicket2)
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        if (token != null) {
+            headers.setBearerAuth(token)
+        }
         headers.set("X-COM-PERSIST", "true")
         val request = HttpEntity(null, headers)
         val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
@@ -321,13 +350,13 @@ class TicketTests {
         val baseUrl =
             "http://localhost:$port/API/tickets/?ean=4935531465706&profileId=luigimolinengo@gmail.com&priorityLevel=5"
         val uri = URI(baseUrl)
-        val myProfile = Profile("luigimolinengo@gmail.com", "Luigi", "Molinengo")
+        val myProfile = quickProfile()
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
             "JMT"
         )
-        val myExpert = Expert("Giovanni", "Malnati", "giovanni.malnati@polito.it")
+        val myExpert = quickExpert()
         val myTicket = Ticket(
             profile = myProfile, product = myProduct, priorityLevel = 1, expert = myExpert,
             status = "open", creationDate = Date(), messages = mutableSetOf()
@@ -344,9 +373,11 @@ class TicketTests {
         ticketRepository.save(myTicket2)
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        if (token != null) {
+            headers.setBearerAuth(token)
+        }
         headers.set("X-COM-PERSIST", "true")
         val request = HttpEntity(null, headers)
         val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
@@ -367,9 +398,11 @@ class TicketTests {
         val uri = URI(baseUrl)
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        if (token != null) {
+            headers.setBearerAuth(token)
+        }
         headers.set("X-COM-PERSIST", "true")
         val request = HttpEntity(null, headers)
         val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
@@ -388,13 +421,13 @@ class TicketTests {
         val baseUrl = "http://localhost:$port/API/ticket/"
         val uri = URI(baseUrl)
 
-        val myProfile = Profile("luigimolinengo@gmail.com", "Luigi", "Molinengo")
+        val myProfile = quickProfile()
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
             "JMT"
         )
-        val myExpert = Expert("Giovanni", "Malnati", "giovanni.malnati@polito.it")
+        val myExpert = quickExpert()
         val myTicket = Ticket(
             profile = myProfile, product = myProduct, priorityLevel = 1, expert = myExpert,
             status = "open", creationDate = Date(), messages = mutableSetOf()
@@ -407,9 +440,11 @@ class TicketTests {
 
         myTicket.status = "closed"
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        if (token != null) {
+            headers.setBearerAuth(token)
+        }
         headers.set("X-COM-PERSIST", "true")
         val request = HttpEntity(myTicket.toDTO(), headers)
         val result = restTemplate.exchange(uri, HttpMethod.PUT, request, String::class.java)
@@ -428,13 +463,13 @@ class TicketTests {
     fun t8TestEditTicketNoTickedIdPassed() {
         val baseUrl = "http://localhost:$port/API/ticket/"
         val uri = URI(baseUrl)
-        val myProfile = Profile("luigimolinengo@gmail.com", "Luigi", "Molinengo")
+        val myProfile = quickProfile()
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
             "JMT"
         )
-        val myExpert = Expert("Giovanni", "Malnati", "giovanni.malnati@polito.it")
+        val myExpert = quickExpert()
         val myTicket = Ticket(
             profile = myProfile, product = myProduct, priorityLevel = 1, expert = myExpert,
             status = "open", creationDate = Date(), messages = mutableSetOf()
@@ -449,9 +484,11 @@ class TicketTests {
         t.ticketId = 5000
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        if (token != null) {
+            headers.setBearerAuth(token)
+        }
         headers.set("X-COM-PERSIST", "true")
         val request = HttpEntity(t, headers)
         val result = restTemplate.exchange(uri, HttpMethod.PUT, request, String::class.java)
@@ -470,13 +507,13 @@ class TicketTests {
         val baseUrl = "http://localhost:$port/API/ticket/"
         val uri = URI(baseUrl)
 
-        val myProfile = Profile("luigimolinengo@gmail.com", "Luigi", "Molinengo")
+        val myProfile = quickProfile()
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
             "JMT"
         )
-        val myExpert = Expert("Giovanni", "Malnati", "giovanni.malnati@polito.it")
+        val myExpert = quickExpert()
         val myTicket = Ticket(
             profile = myProfile, product = myProduct, priorityLevel = 1, expert = myExpert,
             status = "open", creationDate = Date(), messages = mutableSetOf()
@@ -490,9 +527,11 @@ class TicketTests {
         myTicket.status = "aa"
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        if (token != null) {
+            headers.setBearerAuth(token)
+        }
         headers.set("X-COM-PERSIST", "true")
         val request = HttpEntity(myTicket.toDTO(), headers)
         val result = restTemplate.exchange(uri, HttpMethod.PUT, request, String::class.java)
@@ -511,13 +550,13 @@ class TicketTests {
         val baseUrl = "http://localhost:$port/API/ticket/"
         val uri = URI(baseUrl)
 
-        val myProfile = Profile("luigimolinengo@gmail.com", "Luigi", "Molinengo")
+        val myProfile = quickProfile()
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
             "JMT"
         )
-        val myExpert = Expert("Giovanni", "Malnati", "giovanni.malnati@polito.it")
+        val myExpert = quickExpert()
         val myTicket = Ticket(
             profile = myProfile, product = myProduct, priorityLevel = 1, expert = myExpert,
             status = "open", creationDate = Date(), messages = mutableSetOf()
@@ -531,9 +570,11 @@ class TicketTests {
         myTicket.priorityLevel = 10
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        if (token != null) {
+            headers.setBearerAuth(token)
+        }
         headers.set("X-COM-PERSIST", "true")
         val request = HttpEntity(myTicket.toDTO(), headers)
         val result = restTemplate.exchange(uri, HttpMethod.PUT, request, String::class.java)
@@ -552,13 +593,13 @@ class TicketTests {
         val baseUrl =
             "http://localhost:$port/API/tickets/?ean=4935531465706&profileId=luigimolinengo&priorityLevel=2"
         val uri = URI(baseUrl)
-        val myProfile = Profile("luigimolinengo@gmail.com", "Luigi", "Molinengo")
+        val myProfile = quickProfile()
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
             "JMT"
         )
-        val myExpert = Expert("Giovanni", "Malnati", "giovanni.malnati@polito.it")
+        val myExpert = quickExpert()
         val myTicket = Ticket(
             profile = myProfile, product = myProduct, priorityLevel = 1, expert = myExpert,
             status = "open", creationDate = Date(), messages = mutableSetOf()
@@ -575,9 +616,11 @@ class TicketTests {
         ticketRepository.save(myTicket2)
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        if (token != null) {
+            headers.setBearerAuth(token)
+        }
         headers.set("X-COM-PERSIST", "true")
         val request = HttpEntity(null, headers)
         val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
@@ -597,13 +640,13 @@ class TicketTests {
         val baseUrl =
             "http://localhost:$port/API/tickets/?ean=4935531465706&profileId=luigimolinengo@gmail.com&priorityLevel=2&status=aaa"
         val uri = URI(baseUrl)
-        val myProfile = Profile("luigimolinengo@gmail.com", "Luigi", "Molinengo")
+        val myProfile = quickProfile()
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
             "JMT"
         )
-        val myExpert = Expert("Giovanni", "Malnati", "giovanni.malnati@polito.it")
+        val myExpert = quickExpert()
         val myTicket = Ticket(
             profile = myProfile, product = myProduct, priorityLevel = 1, expert = myExpert,
             status = "open", creationDate = Date(), messages = mutableSetOf()
@@ -620,9 +663,11 @@ class TicketTests {
         ticketRepository.save(myTicket2)
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        if (token != null) {
+            headers.setBearerAuth(token)
+        }
         headers.set("X-COM-PERSIST", "true")
         val request = HttpEntity(null, headers)
         val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
@@ -646,10 +691,22 @@ class TicketTests {
         expectedErrorMessage: String = ""
     ) {
         val product = Product(ean = "000000000000000")
-        val profile = Profile(email = "this@exists.com", name = "this", surname = "exists")
+        val profile = Profile(
+            id = "id",
+            username = "username",
+            email = "this@exists.com",
+            name = "this",
+            surname = "exists"
+        )
         productRepository.save(product)
         profileRepository.save(profile)
-        expertRepository.save(Expert(email = "expert@email.com", name = "super", surname = "expert"))
+        expertRepository.save(Expert(
+            id = "id",
+            username = "username",
+            email = "expert@email.com",
+            name = "super",
+            surname = "expert")
+        )
         ticketRepository.save(Ticket(
             creationDate = Date(),
             expert = null,
@@ -663,9 +720,11 @@ class TicketTests {
         val uri = URI(baseUrl)
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        if (token != null) {
+            headers.setBearerAuth(token)
+        }
         headers.set("X-COM-PERSIST", "true")
         val request = HttpEntity(body, headers)
         val result = restTemplate.exchange(uri, HttpMethod.PUT, request, String::class.java)
@@ -711,7 +770,13 @@ class TicketTests {
     ) {
         val myProduct=Product(ean = "0000000000000")
         productRepository.save(myProduct)
-        val myProfile=Profile(email = "this@exists.com", name = "this", surname = "exists")
+        val myProfile=Profile(
+            id = "id",
+            username = "username",
+            email = "this@exists.com",
+            name = "this",
+            surname = "exists"
+        )
         profileRepository.save(myProfile)
         val myPurchase = Purchase(myProduct,myProfile,Date(),1)
         purchaseRepository.save(myPurchase)
@@ -722,9 +787,11 @@ class TicketTests {
         val ticketPost = TicketPostDTO(profileId, ean)
 
         val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO).jwtAccessToken
+        val token= authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        if (token != null) {
+            headers.setBearerAuth(token)
+        }
         headers.set("X-COM-PERSIST", "true")
         val request = HttpEntity(ticketPost, headers)
         val result = restTemplate.postForEntity(uri, request, String::class.java)
@@ -881,7 +948,7 @@ class TicketTests {
     fun updateTicketExpertSuccessTest() {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             operationUrl = "changeExpert",
-            body = mapOf("expertId" to 1),
+            body = mapOf("expertId" to "id"),
             expectedStatus = HttpStatus.OK
         )
     }
@@ -899,10 +966,10 @@ class TicketTests {
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    fun updateTicketExpertNonIntExpertIdTest() {
+    fun updateTicketExpertNonStringExpertIdTest() {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             operationUrl = "changeExpert",
-            body = mapOf("expertId" to ""),
+            body = mapOf("expertId" to 1),
             expectedStatus = HttpStatus.UNPROCESSABLE_ENTITY,
             expectedErrorMessage = "The inserted input is not valid!"
         )
@@ -914,7 +981,7 @@ class TicketTests {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             ticketId = 1000,
             operationUrl = "changeExpert",
-            body = mapOf("expertId" to 1),
+            body = mapOf("expertId" to "id"),
             expectedStatus = HttpStatus.NOT_FOUND,
             expectedErrorMessage = "Ticket Not Found!"
         )
@@ -926,12 +993,9 @@ class TicketTests {
         updateTicketStatusOrPriorityLevelOrExpertIdTest(
             ticketId = 1,
             operationUrl = "changeExpert",
-            body = mapOf("expertId" to 0),
+            body = mapOf("expertId" to "id2"),
             expectedStatus = HttpStatus.NOT_FOUND,
             expectedErrorMessage = "Expert Not Found!"
         )
     }
 }
-
-
- */
