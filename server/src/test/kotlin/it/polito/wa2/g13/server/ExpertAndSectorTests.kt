@@ -561,15 +561,16 @@ class ExpertAndSectorTests {
 
         Assertions.assertEquals(HttpStatus.UNAUTHORIZED, result.statusCode)
     }
-    /*
+
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertsBySectorGetSuccessTest() {
         val loginDTO = LoginDTO(username = "expert", password = "password") //It is an expert
-        val token = authService.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
 
-        val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
-        val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
+        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
+        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
         val sector = Sector(name = "linux")
@@ -585,7 +586,7 @@ class ExpertAndSectorTests {
         val uri = URI(baseUrl)
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
         val request = HttpEntity(null, headers)
@@ -593,20 +594,17 @@ class ExpertAndSectorTests {
         val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
 
         Assertions.assertEquals(HttpStatus.OK, result.statusCode)
-        Assertions.assertEquals(
-            "[{\"expertId\":1,\"name\":\"William\",\"surname\":\"Hunt\",\"email\":\"william@gmail.com\"},{\"expertId\":2,\"name\":\"Will\",\"surname\":\"Hunting\",\"email\":\"will@gmail.com\"}]",
-            result.body
-        )
     }
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertsBySectorGetSectorsNotFoundTest() {
         val loginDTO = LoginDTO(username = "client", password = "password") //It is a client
-        val token = authService.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
 
-        val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
-        val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
+        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
+        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
 
@@ -614,7 +612,7 @@ class ExpertAndSectorTests {
         val uri = URI(baseUrl)
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
         val request = HttpEntity(null, headers)
@@ -633,10 +631,11 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertsBySectorGetSectorNotFoundTest() {
         val loginDTO = LoginDTO(username = "client", password = "password") //It is a client
-        val token = authService.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
 
-        val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
-        val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
+        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
+        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
         val sector = Sector(name = "Hardware")
@@ -649,7 +648,7 @@ class ExpertAndSectorTests {
         val uri = URI(baseUrl)
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
         val request = HttpEntity(null, headers)
@@ -667,10 +666,11 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertsBySectorGetExpertOfSelectedSectorNotFoundTest() {
         val loginDTO = LoginDTO(username = "client", password = "password") //It is a client
-        val token = authService.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
 
-        val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
-        val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
+        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
+        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
         val sector = Sector(name = "linux")
@@ -680,7 +680,7 @@ class ExpertAndSectorTests {
         val uri = URI(baseUrl)
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
         val request = HttpEntity(null, headers)
@@ -698,10 +698,11 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorsAllGetSuccessTest() {
         val loginDTO = LoginDTO(username = "client", password = "password") //It is a client
-        val token = authService.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
 
-        val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
-        val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
+        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
+        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
         val sector1 = Sector(name = "linux")
@@ -718,7 +719,7 @@ class ExpertAndSectorTests {
         val uri = URI(baseUrl)
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
         val request = HttpEntity(null, headers)
@@ -737,10 +738,11 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorsAllGetNotFoundTest() {
         val loginDTO = LoginDTO(username = "client", password = "password") //It is a client
-        val token = authService.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
 
-        val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
-        val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
+        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
+        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
 
@@ -748,7 +750,7 @@ class ExpertAndSectorTests {
         val uri = URI(baseUrl)
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
         val request = HttpEntity(null, headers)
@@ -766,10 +768,11 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorsOfExpertGetSuccessTest() {
         val loginDTO = LoginDTO(username = "client", password = "password") //It is a client
-        val token = authService.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
 
-        val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
-        val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
+        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
+        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
         val sector1 = Sector(name = "linux")
@@ -782,11 +785,11 @@ class ExpertAndSectorTests {
         sectorRepository.save(sector2)
         expertRepository.save(expert1)
 
-        val baseUrl = "http://localhost:$port/API/experts/1/sectors"
+        val baseUrl = "http://localhost:$port/API/experts/aaaa/sectors"
         val uri = URI(baseUrl)
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
         val request = HttpEntity(null, headers)
@@ -804,10 +807,11 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorsOfExpertGetExpertNotFoundTest() {
         val loginDTO = LoginDTO(username = "client", password = "password") //It is a client
-        val token = authService.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
 
-        val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
-        val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
+        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
+        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
         val sector1 = Sector(name = "linux")
@@ -820,11 +824,11 @@ class ExpertAndSectorTests {
         sectorRepository.save(sector2)
         expertRepository.save(expert1)
 
-        val baseUrl = "http://localhost:$port/API/experts/3/sectors"
+        val baseUrl = "http://localhost:$port/API/experts/cccc/sectors"
         val uri = URI(baseUrl)
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
         val request = HttpEntity(null, headers)
@@ -842,10 +846,11 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorsOfExpertGetExpertSectorsNotFoundTest() {
         val loginDTO = LoginDTO(username = "client", password = "password") //It is a client
-        val token = authService.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
 
-        val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
-        val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
+        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
+        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
         val sector1 = Sector(name = "linux")
@@ -858,11 +863,11 @@ class ExpertAndSectorTests {
         sectorRepository.save(sector2)
         expertRepository.save(expert1)
 
-        val baseUrl = "http://localhost:$port/API/experts/2/sectors"
+        val baseUrl = "http://localhost:$port/API/experts/bbbb/sectors"
         val uri = URI(baseUrl)
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
         val request = HttpEntity(null, headers)
@@ -880,16 +885,17 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorForExpertSetSuccessTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
-        val token = authService.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
 
-        val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
+        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
         expertRepository.save(expert1)
         val sectorDTO = SectorDTO(sectorId = 1, name = "linux")
-        val baseUrl = "http://localhost:$port/API/experts/1/sectors"
+        val baseUrl = "http://localhost:$port/API/experts/aaaa/sectors"
         val uri = URI(baseUrl)
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
         val request = HttpEntity(sectorDTO, headers)
@@ -905,16 +911,17 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorForExpertSetUnprocessableEntityTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
-        val token = authService.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
 
-        val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
+        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
         expertRepository.save(expert1)
         val sectorDTO = SectorDTO(sectorId = 1, name = "")
-        val baseUrl = "http://localhost:$port/API/experts/1/sectors"
+        val baseUrl = "http://localhost:$port/API/experts/aaaa/sectors"
         val uri = URI(baseUrl)
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
         val request = HttpEntity(sectorDTO, headers)
@@ -932,16 +939,17 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorForExpertSetExpertNotFoundTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
-        val token = authService.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
 
-        val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
+        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
         expertRepository.save(expert1)
         val sectorDTO = SectorDTO(sectorId = 1, name = "cellular network")
-        val baseUrl = "http://localhost:$port/API/experts/2/sectors"
+        val baseUrl = "http://localhost:$port/API/experts/bbbb/sectors"
         val uri = URI(baseUrl)
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
         val request = HttpEntity(sectorDTO, headers)
@@ -959,16 +967,17 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorForExpertSetExpertUnauthorizedTest1() {
         val loginDTO = LoginDTO(username = "client", password = "password")
-        val token = authService.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
 
-        val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
+        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
         expertRepository.save(expert1)
         val sectorDTO = SectorDTO(sectorId = 1, name = "cellular network")
-        val baseUrl = "http://localhost:$port/API/experts/1/sectors"
+        val baseUrl = "http://localhost:$port/API/experts/aaaa/sectors"
         val uri = URI(baseUrl)
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
         val request = HttpEntity(sectorDTO, headers)
@@ -982,16 +991,17 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorForExpertSetExpertUnauthorizedTest2() {
         val loginDTO = LoginDTO(username = "client", password = "password") //it is a client
-        val token = authService.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
 
-        val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
+        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
         expertRepository.save(expert1)
         val sectorDTO = SectorDTO(sectorId = 1, name = "cellular network")
-        val baseUrl = "http://localhost:$port/API/experts/1/sectors"
+        val baseUrl = "http://localhost:$port/API/experts/aaaa/sectors"
         val uri = URI(baseUrl)
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
         val request = HttpEntity(sectorDTO, headers)
@@ -1004,10 +1014,10 @@ class ExpertAndSectorTests {
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorForExpertSetExpertUnauthorizedTest3() {
-        val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
+        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
         expertRepository.save(expert1)
         val sectorDTO = SectorDTO(sectorId = 1, name = "cellular network")
-        val baseUrl = "http://localhost:$port/API/experts/1/sectors"
+        val baseUrl = "http://localhost:$port/API/experts/aaaa/sectors"
         val uri = URI(baseUrl)
 
         val headers = HttpHeaders()
@@ -1024,10 +1034,11 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorForExpertDeleteSuccessTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
-        val token = authService.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
 
-        val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
-        val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
+        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
+        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
         val sector1 = Sector(name = "linux")
@@ -1039,11 +1050,11 @@ class ExpertAndSectorTests {
         sectorRepository.save(sector1)
         sectorRepository.save(sector2)
         expertRepository.save(expert1)
-        val baseUrl = "http://localhost:$port/API/experts/1/sectors/1"
+        val baseUrl = "http://localhost:$port/API/experts/aaaa/sectors/1"
         val uri = URI(baseUrl)
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
         val request = HttpEntity(null, headers)
@@ -1057,10 +1068,11 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorForExpertDeleteExpertNotFoundTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
-        val token = authService.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
 
-        val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
-        val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
+        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
+        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
         val sector1 = Sector(name = "linux")
@@ -1072,11 +1084,11 @@ class ExpertAndSectorTests {
         sectorRepository.save(sector1)
         sectorRepository.save(sector2)
         expertRepository.save(expert1)
-        val baseUrl = "http://localhost:$port/API/experts/3/sectors/1"
+        val baseUrl = "http://localhost:$port/API/experts/cccc/sectors/1"
         val uri = URI(baseUrl)
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
         val request = HttpEntity(null, headers)
@@ -1094,18 +1106,19 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorForExpertDeleteSectorsNotFoundTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
-        val token = authService.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
 
-        val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
-        val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
+        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
+        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
 
-        val baseUrl = "http://localhost:$port/API/experts/1/sectors/1"
+        val baseUrl = "http://localhost:$port/API/experts/aaaa/sectors/1"
         val uri = URI(baseUrl)
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
         val request = HttpEntity(null, headers)
@@ -1123,10 +1136,11 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorForExpertDeleteSectorNotFoundTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
-        val token = authService.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
 
-        val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
-        val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
+        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
+        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
         val sector1 = Sector(name = "linux")
@@ -1136,11 +1150,11 @@ class ExpertAndSectorTests {
         sectorRepository.save(sector2)
         expertRepository.save(expert1)
 
-        val baseUrl = "http://localhost:$port/API/experts/1/sectors/3"
+        val baseUrl = "http://localhost:$port/API/experts/aaaa/sectors/3"
         val uri = URI(baseUrl)
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
         val request = HttpEntity(null, headers)
@@ -1158,10 +1172,11 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorForExpertDeleteExpertSectorsNotFoundTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
-        val token = authService.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
 
-        val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
-        val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
+        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
+        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
         val sector1 = Sector(name = "linux")
@@ -1171,11 +1186,11 @@ class ExpertAndSectorTests {
         sectorRepository.save(sector2)
         expertRepository.save(expert1)
 
-        val baseUrl = "http://localhost:$port/API/experts/2/sectors/1"
+        val baseUrl = "http://localhost:$port/API/experts/bbbb/sectors/1"
         val uri = URI(baseUrl)
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
         val request = HttpEntity(null, headers)
@@ -1193,10 +1208,11 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorForExpertDeleteExpertSectorNotFoundTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
-        val token = authService.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
 
-        val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
-        val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
+        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
+        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
         val sector1 = Sector(name = "linux")
@@ -1206,11 +1222,11 @@ class ExpertAndSectorTests {
         sectorRepository.save(sector2)
         expertRepository.save(expert1)
 
-        val baseUrl = "http://localhost:$port/API/experts/1/sectors/2"
+        val baseUrl = "http://localhost:$port/API/experts/aaaa/sectors/2"
         val uri = URI(baseUrl)
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
         val request = HttpEntity(null, headers)
@@ -1228,10 +1244,11 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorForExpertDeleteUnauthorizedTest1() {
         val loginDTO = LoginDTO(username = "expert", password = "password") //it is an expert
-        val token = authService.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
 
-        val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
-        val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
+        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
+        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
         val sector1 = Sector(name = "linux")
@@ -1243,11 +1260,11 @@ class ExpertAndSectorTests {
         sectorRepository.save(sector1)
         sectorRepository.save(sector2)
         expertRepository.save(expert1)
-        val baseUrl = "http://localhost:$port/API/experts/1/sectors/1"
+        val baseUrl = "http://localhost:$port/API/experts/aaaa/sectors/1"
         val uri = URI(baseUrl)
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
         val request = HttpEntity(null, headers)
@@ -1261,10 +1278,11 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorForExpertDeleteUnauthorizedTest2() {
         val loginDTO = LoginDTO(username = "client", password = "password") //it is a client
-        val token = authService.login(loginDTO).jwtAccessToken
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
 
-        val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
-        val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
+        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
+        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
         val sector1 = Sector(name = "linux")
@@ -1276,11 +1294,11 @@ class ExpertAndSectorTests {
         sectorRepository.save(sector1)
         sectorRepository.save(sector2)
         expertRepository.save(expert1)
-        val baseUrl = "http://localhost:$port/API/experts/1/sectors/1"
+        val baseUrl = "http://localhost:$port/API/experts/aaaa/sectors/1"
         val uri = URI(baseUrl)
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
         val request = HttpEntity(null, headers)
@@ -1293,8 +1311,8 @@ class ExpertAndSectorTests {
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorForExpertDeleteUnauthorizedTest3() {
-        val expert1 = Expert(name = "William", surname = "Hunt", email = "william@gmail.com")
-        val expert2 = Expert(name = "Will", surname = "Hunting", email = "will@gmail.com")
+        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
+        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
         val sector1 = Sector(name = "linux")
@@ -1306,7 +1324,7 @@ class ExpertAndSectorTests {
         sectorRepository.save(sector1)
         sectorRepository.save(sector2)
         expertRepository.save(expert1)
-        val baseUrl = "http://localhost:$port/API/experts/1/sectors/1"
+        val baseUrl = "http://localhost:$port/API/experts/aaaa/sectors/1"
         val uri = URI(baseUrl)
 
         val headers = HttpHeaders()
@@ -1318,7 +1336,6 @@ class ExpertAndSectorTests {
 
         Assertions.assertEquals(HttpStatus.UNAUTHORIZED, result.statusCode)
     }
-    */
 }
 
 
