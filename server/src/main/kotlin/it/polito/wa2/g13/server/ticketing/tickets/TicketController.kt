@@ -84,7 +84,6 @@ class TicketControllerValidated(
         @Size(min=1, max=15, message = "Ean MUST be a NON empty string of max 15 chars")
         ean: String?,
         @RequestParam("profileId")
-        @Email
         profileId: String?,
         @RequestParam("priorityLevel")
         @Min(value = 0, message = "Minimum value for priorityLevel is 0")
