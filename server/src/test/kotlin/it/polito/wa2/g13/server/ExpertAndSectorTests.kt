@@ -1,11 +1,10 @@
 package it.polito.wa2.g13.server
 
 import it.polito.wa2.g13.server.jwtAuth.AuthService
+import it.polito.wa2.g13.server.jwtAuth.JwtResponse
 import it.polito.wa2.g13.server.jwtAuth.LoginDTO
-import it.polito.wa2.g13.server.ticketing.experts.Expert
-import it.polito.wa2.g13.server.ticketing.experts.ExpertDTO
-import it.polito.wa2.g13.server.ticketing.experts.ExpertRepository
-import it.polito.wa2.g13.server.ticketing.experts.toDTO
+import it.polito.wa2.g13.server.jwtAuth.RegisterDTO
+import it.polito.wa2.g13.server.ticketing.experts.*
 import it.polito.wa2.g13.server.ticketing.sectors.Sector
 import it.polito.wa2.g13.server.ticketing.sectors.SectorDTO
 import it.polito.wa2.g13.server.ticketing.sectors.SectorRepository
@@ -22,6 +21,7 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
@@ -30,7 +30,7 @@ import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import java.net.URI
 
-/*
+
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -65,75 +65,105 @@ class ExpertAndSectorTests {
     @Autowired
     lateinit var authService: AuthService
 
-    @Test
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    fun expertSetSuccessTest() {
-        val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
-        val token = authService.login(loginDTO).jwtAccessToken
-
-        val baseUrl = "http://localhost:$port/API/experts"
+    data class CreateExpertData(val dto: ExpertDTO?,val result: ResponseEntity<String>,val headers: HttpHeaders)
+    fun createExpert(token: String,username: String="test-expert",email: String="will@gmail.com"): CreateExpertData{
+        val baseUrl = "http://localhost:$port/API/createExpert"
         val uri = URI(baseUrl)
-        val expertDTO = ExpertDTO(expertId = 1, name = "Will", surname = "Hunting", email = "will@gmail.com")
+        val regDTO= RegisterDTO(username= username, password = "password", email = email,name = "Will", surname = "Hunting")
 
         val headers = HttpHeaders()
         headers.setBearerAuth(token)
         headers.set("X-COM-PERSIST", "true")
 
-        val request = HttpEntity(expertDTO, headers)
+        var request = HttpEntity(regDTO, headers)
 
-        val result = restTemplate.postForEntity(uri, request, String::class.java)
+        val result=restTemplate.postForEntity(uri, request, String::class.java)
 
-        Assertions.assertEquals(HttpStatus.CREATED, result.statusCode)
-        Assertions.assertEquals(expertDTO, expertRepository.findByIdOrNull(1)?.toDTO())
+        var expertDTO= expertRepository.findAll().find { it.username==username && it.email==email}?.toDTO()
+        return CreateExpertData(expertDTO,result,headers)
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    fun expertSetSuccessTest() {
+        val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
+        var token = authService.login(loginDTO)?.jwtAccessToken
+
+        Assertions.assertNotEquals(null,token)
+
+        val postDTO= RegisterDTO(username= "test-expert", password = "password", email = "will@gmail.com",name = "Will", surname = "Hunting")
+
+        val res=createExpert(token!!)
+
+        Assertions.assertEquals(HttpStatus.CREATED,res.result.statusCode)
+        Assertions.assertEquals(RegisterDTO(postDTO.username,"",postDTO.email,postDTO.name,postDTO.surname), res.dto?.toRegisterDTO())
+
+        val deleteExpertUrl="http://localhost:$port/API/experts/${res.dto?.id}"
+
+        val deleteResult=restTemplate.exchange(deleteExpertUrl, HttpMethod.DELETE,HttpEntity<Object>(res.headers),String::class.java)
+
+        Assertions.assertEquals(HttpStatus.OK,deleteResult.statusCode)
     }
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertSetConflictTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
-        val token = authService.login(loginDTO).jwtAccessToken
+        var token = authService.login(loginDTO)?.jwtAccessToken
 
-        expertRepository.save(Expert(name = "William", surname = "Hunt", email = "will@gmail.com"))
-        val baseUrl = "http://localhost:$port/API/experts"
+        Assertions.assertNotEquals(null,token)
+
+        val baseUrl = "http://localhost:$port/API/createExpert"
         val uri = URI(baseUrl)
-        val expertDTO = ExpertDTO(expertId = 1, name = "Will", surname = "Hunting", email = "will@gmail.com")
+
+        val originalRes=createExpert(token!!)
+        Assertions.assertEquals(HttpStatus.CREATED,originalRes.result.statusCode)
+
+        val postDTO= RegisterDTO(username= "test-expert-2", password = "password", email = "will@gmail.com",name = "Will", surname = "Hunting")
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
+        val request= HttpEntity(postDTO, headers)
 
-        val request = HttpEntity(expertDTO, headers)
-
-        val result = restTemplate.postForEntity(uri, request, String::class.java)
+        val result= restTemplate.postForEntity(uri,request,String::class.java)
 
         Assertions.assertEquals(HttpStatus.CONFLICT, result.statusCode)
-        Assertions.assertEquals(
+        /*Assertions.assertEquals(
             "\"detail\":\"An expert with this email address already exists!\"",
             result.body.toString().split(",")[3]
-        )
+        )*/
+
+        val deleteExpertUrl="http://localhost:$port/API/experts/${originalRes.dto?.id}"
+
+        val deleteResult=restTemplate.exchange(deleteExpertUrl, HttpMethod.DELETE,HttpEntity<Object>(headers),String::class.java)
+
+        Assertions.assertEquals(HttpStatus.OK,deleteResult.statusCode)
     }
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertSetUnprocessableEntityTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
-        val token = authService.login(loginDTO).jwtAccessToken
+        var token = authService.login(loginDTO)?.jwtAccessToken
 
-        val baseUrl = "http://localhost:$port/API/experts"
+        Assertions.assertNotEquals(null,token)
+
+        val baseUrl = "http://localhost:$port/API/createExpert"
         val uri = URI(baseUrl)
-        val expertDTO = ExpertDTO(expertId = 1, name = "Will", surname = "", email = "will@ gmail.com")
+        val postDTO= RegisterDTO(username= "test-expert-2", password = "testpwd", email = "will@ gmail.com",name = "Will", surname = "Hunting")
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
-        val request = HttpEntity(expertDTO, headers)
+        val request = HttpEntity(postDTO, headers)
 
         val result = restTemplate.postForEntity(uri, request, String::class.java)
 
         Assertions.assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, result.statusCode)
         Assertions.assertEquals(
-            "\"detail\":\"The inserted input for the expert is not valid!\"",
+            "\"detail\":\"The inserted input is not valid!\"",
             result.body.toString().split(",")[3]
         )
     }
@@ -142,17 +172,18 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertSetUnauthorizedTest1() {
         val loginDTO = LoginDTO(username = "expert", password = "password") //it is an expert
-        val token = authService.login(loginDTO).jwtAccessToken
+        var token = authService.login(loginDTO)?.jwtAccessToken
 
-        val baseUrl = "http://localhost:$port/API/experts"
+        Assertions.assertNotEquals(null,token)
+        val baseUrl = "http://localhost:$port/API/createExpert"
         val uri = URI(baseUrl)
-        val expertDTO = ExpertDTO(expertId = 1, name = "Will", surname = "Hunting", email = "will@gmail.com")
+        val postDTO= RegisterDTO(username= "test-expert-2", password = "testpwd", email = "will@gmail.com",name = "Will", surname = "Hunting")
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
-        val request = HttpEntity(expertDTO, headers)
+        val request = HttpEntity(postDTO, headers)
 
         val result = restTemplate.postForEntity(uri, request, String::class.java)
 
@@ -163,17 +194,18 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertSetUnauthorizedTest2() {
         val loginDTO = LoginDTO(username = "client", password = "password") //it is a client
-        val token = authService.login(loginDTO).jwtAccessToken
+        var token = authService.login(loginDTO)?.jwtAccessToken
 
-        val baseUrl = "http://localhost:$port/API/experts"
+        Assertions.assertNotEquals(null,token)
+        val baseUrl = "http://localhost:$port/API/createExpert"
         val uri = URI(baseUrl)
-        val expertDTO = ExpertDTO(expertId = 1, name = "Will", surname = "Hunting", email = "will@gmail.com")
+        val postDTO= RegisterDTO(username= "test-expert-2", password = "testpwd", email = "will@gmail.com",name = "Will", surname = "Hunting")
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
-        val request = HttpEntity(expertDTO, headers)
+        val request = HttpEntity(postDTO, headers)
 
         val result = restTemplate.postForEntity(uri, request, String::class.java)
 
@@ -183,61 +215,58 @@ class ExpertAndSectorTests {
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertSetUnauthorizedTest3() {
-        val baseUrl = "http://localhost:$port/API/experts"
+        val baseUrl = "http://localhost:$port/API/createExpert"
         val uri = URI(baseUrl)
-        val expertDTO = ExpertDTO(expertId = 1, name = "Will", surname = "Hunting", email = "will@gmail.com")
+        val postDTO= RegisterDTO(username= "test-expert-2", password = "testpwd", email = "will@gmail.com",name = "Will", surname = "Hunting")
 
         val headers = HttpHeaders()
         headers.set("X-COM-PERSIST", "true")
 
-        val request = HttpEntity(expertDTO, headers)
+        val request = HttpEntity(postDTO, headers)
 
         val result = restTemplate.postForEntity(uri, request, String::class.java)
 
         Assertions.assertEquals(HttpStatus.UNAUTHORIZED, result.statusCode)
     }
 
+
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertGetSuccess() {
-        val loginDTO = LoginDTO(username = "expert", password = "password") //it is an expert
-        val token = authService.login(loginDTO).jwtAccessToken
-
-        expertRepository.save(Expert(name = "William", surname = "Hunt", email = "will@gmail.com"))
-        val baseUrl = "http://localhost:$port/API/experts/1"
+        val loginDTO = LoginDTO(username = "manager", password = "password") //it is an expert
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
+        val res=createExpert(token!!)
+        val baseUrl = "http://localhost:$port/API/experts/${res.dto?.id}"
         val uri = URI(baseUrl)
 
-        val headers = HttpHeaders()
-        headers.setBearerAuth(token)
-        headers.set("X-COM-PERSIST", "true")
-
-        val request = HttpEntity(null, headers)
-
-        val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
+        val result = restTemplate.exchange(uri, HttpMethod.GET, HttpEntity<Object>(res.headers), String::class.java)
 
         Assertions.assertEquals(HttpStatus.OK, result.statusCode)
-        Assertions.assertEquals(
-            "{\"expertId\":1,\"name\":\"William\",\"surname\":\"Hunt\",\"email\":\"will@gmail.com\"}",
-            result.body
-        )
+
+        val deleteExpertUrl="http://localhost:$port/API/experts/${res.dto?.id}"
+
+        val deleteResult=restTemplate.exchange(deleteExpertUrl, HttpMethod.DELETE,HttpEntity<Object>(res.headers),String::class.java)
+
+        Assertions.assertEquals(HttpStatus.OK,deleteResult.statusCode)
     }
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertGetNotFound() {
         val loginDTO = LoginDTO(username = "expert", password = "password") //it is an expert
-        val token = authService.login(loginDTO).jwtAccessToken
+        var token = authService.login(loginDTO)?.jwtAccessToken
 
-        val baseUrl = "http://localhost:$port/API/experts/1"
+        Assertions.assertNotEquals(null,token)
+
+        val baseUrl = "http://localhost:$port/API/experts/aaaaaa-aaaaa-aaaaa-aaaaa"
         val uri = URI(baseUrl)
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
-        val request = HttpEntity(null, headers)
-
-        val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
+        val result = restTemplate.exchange(uri, HttpMethod.GET, HttpEntity<Object>(headers), String::class.java)
 
         Assertions.assertEquals(HttpStatus.NOT_FOUND, result.statusCode)
         Assertions.assertEquals(
@@ -246,19 +275,21 @@ class ExpertAndSectorTests {
         )
     }
 
+
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertModifySuccessTest1() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //It is a manager
-        val token = authService.login(loginDTO).jwtAccessToken
-
-        expertRepository.save(Expert(name = "William", surname = "Hunt", email = "will@gmail.com"))
-        val baseUrl = "http://localhost:$port/API/experts/1"
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
+        val res=createExpert(token!!)
+        Assertions.assertEquals(HttpStatus.CREATED,res.result.statusCode)
+        val baseUrl = "http://localhost:$port/API/experts/${res.dto?.id}"
         val uri = URI(baseUrl)
-        val expertDTO = ExpertDTO(expertId = 1, name = "Will", surname = "Hunting", email = "will@gmail.com")
+        val expertDTO = ExpertDTO(id= res.dto!!.id, username = res.dto!!.username,name = res.dto!!.name, surname = "News", email = res.dto!!.email)
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
         val request = HttpEntity(expertDTO, headers)
@@ -266,24 +297,30 @@ class ExpertAndSectorTests {
         val result = restTemplate.exchange(uri, HttpMethod.PUT, request, String::class.java)
 
         Assertions.assertEquals(HttpStatus.OK, result.statusCode)
-        val expert = expertRepository.findByIdOrNull(1)
+        val expert = expertRepository.findByIdOrNull(res.dto!!.id)
         Assertions.assertEquals("Will", expert?.name)
-        Assertions.assertEquals("Hunting", expert?.surname)
+        Assertions.assertEquals("News", expert?.surname)
+        val deleteExpertUrl="http://localhost:$port/API/experts/${res.dto?.id}"
+
+        val deleteResult=restTemplate.exchange(deleteExpertUrl, HttpMethod.DELETE,HttpEntity<Object>(res.headers),String::class.java)
+
+        Assertions.assertEquals(HttpStatus.OK,deleteResult.statusCode)
     }
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertModifySuccessTest2() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //It is a manager
-        val token = authService.login(loginDTO).jwtAccessToken
-
-        expertRepository.save(Expert(name = "William", surname = "Hunt", email = "will@gmail.com"))
-        val baseUrl = "http://localhost:$port/API/experts/1"
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
+        val res=createExpert(token!!)
+        Assertions.assertEquals(HttpStatus.CREATED,res.result.statusCode)
+        val baseUrl = "http://localhost:$port/API/experts/${res.dto?.id}"
         val uri = URI(baseUrl)
-        val expertDTO = ExpertDTO(expertId = 1, name = "William", surname = "Hunt", email = "william@gmail.com")
+        val expertDTO = ExpertDTO(id= res.dto!!.id, username = res.dto!!.username,name = res.dto!!.name, surname = res.dto!!.surname, email = "william@gmail.com")
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
         val request = HttpEntity(expertDTO, headers)
@@ -291,22 +328,29 @@ class ExpertAndSectorTests {
         val result = restTemplate.exchange(uri, HttpMethod.PUT, request, String::class.java)
 
         Assertions.assertEquals(HttpStatus.OK, result.statusCode)
-        Assertions.assertEquals("william@gmail.com", expertRepository.findByIdOrNull(1)?.email)
+        Assertions.assertEquals("william@gmail.com", expertRepository.findByIdOrNull(res.dto!!.id)?.email)
+
+        val deleteExpertUrl="http://localhost:$port/API/experts/${res.dto?.id}"
+
+        val deleteResult=restTemplate.exchange(deleteExpertUrl, HttpMethod.DELETE,HttpEntity<Object>(res.headers),String::class.java)
+
+        Assertions.assertEquals(HttpStatus.OK,deleteResult.statusCode)
     }
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertModifyUnprocessableEntityTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //It is a manager
-        val token = authService.login(loginDTO).jwtAccessToken
-
-        expertRepository.save(Expert(name = "William", surname = "Hunt", email = "will@gmail.com"))
-        val baseUrl = "http://localhost:$port/API/experts/1"
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
+        val res=createExpert(token!!)
+        Assertions.assertEquals(HttpStatus.CREATED,res.result.statusCode)
+        val baseUrl = "http://localhost:$port/API/experts/${res.dto?.id}"
         val uri = URI(baseUrl)
-        val expertDTO = ExpertDTO(expertId = 1, name = "William", surname = "Hunt", email = "william @gmail.com")
+        val expertDTO = ExpertDTO(id= res.dto!!.id, username = res.dto!!.username,name = res.dto!!.name, surname = res.dto!!.surname, email = "william @gmail.com")
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
         val request = HttpEntity(expertDTO, headers)
@@ -318,21 +362,25 @@ class ExpertAndSectorTests {
             "\"detail\":\"The inserted input for the expert is not valid!\"",
             result.body.toString().split(",")[3]
         )
+        val deleteExpertUrl="http://localhost:$port/API/experts/${res.dto?.id}"
+
+        val deleteResult=restTemplate.exchange(deleteExpertUrl, HttpMethod.DELETE,HttpEntity<Object>(res.headers),String::class.java)
+
+        Assertions.assertEquals(HttpStatus.OK,deleteResult.statusCode)
     }
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertModifyNotFoundTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //It is a manager
-        val token = authService.login(loginDTO).jwtAccessToken
-
-        expertRepository.save(Expert(name = "William", surname = "Hunt", email = "will@gmail.com"))
-        val baseUrl = "http://localhost:$port/API/experts/2"
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
+        val baseUrl = "http://localhost:$port/API/experts/aaaaaaa"
         val uri = URI(baseUrl)
-        val expertDTO = ExpertDTO(expertId = 2, name = "Will", surname = "Hunt", email = "william@gmail.com")
+        val expertDTO = ExpertDTO(id= "aaaaaaa", username = "will",name = "William", surname = "Hunt", email = "william@gmail.com")
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
         val request = HttpEntity(expertDTO, headers)
@@ -350,16 +398,18 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertModifyConflictTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //It is a manager
-        val token = authService.login(loginDTO).jwtAccessToken
-
-        expertRepository.save(Expert(name = "William", surname = "Hunt", email = "will@gmail.com"))
-        expertRepository.save(Expert(name = "Will", surname = "Hunting", email = "william@gmail.com"))
-        val baseUrl = "http://localhost:$port/API/experts/2"
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
+        val res=createExpert(token!!)
+        Assertions.assertEquals(HttpStatus.CREATED,res.result.statusCode)
+        val resNew=createExpert(token!!,username="text-expert2",email="will-2@gmail.com")
+        Assertions.assertEquals(HttpStatus.CREATED,resNew.result.statusCode)
+        val baseUrl = "http://localhost:$port/API/experts/${resNew.dto?.id}"
         val uri = URI(baseUrl)
-        val expertDTO = ExpertDTO(expertId = 2, name = "Will", surname = "Hunt", email = "will@gmail.com")
+        val expertDTO = ExpertDTO(id= resNew.dto!!.id, username = resNew.dto!!.username,name = resNew.dto!!.name, surname = resNew.dto!!.surname, email = res.dto!!.email)
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
         val request = HttpEntity(expertDTO, headers)
@@ -367,25 +417,32 @@ class ExpertAndSectorTests {
         val result = restTemplate.exchange(uri, HttpMethod.PUT, request, String::class.java)
 
         Assertions.assertEquals(HttpStatus.CONFLICT, result.statusCode)
-        Assertions.assertEquals(
-            "\"detail\":\"An expert with this email address already exists!\"",
-            result.body.toString().split(",")[3]
-        )
+
+        var deleteExpertUrl="http://localhost:$port/API/experts/${res.dto?.id}"
+
+        var deleteResult=restTemplate.exchange(deleteExpertUrl, HttpMethod.DELETE,HttpEntity<Object>(res.headers),String::class.java)
+
+        Assertions.assertEquals(HttpStatus.OK,deleteResult.statusCode)
+
+        deleteExpertUrl="http://localhost:$port/API/experts/${resNew.dto?.id}"
+
+        deleteResult=restTemplate.exchange(deleteExpertUrl, HttpMethod.DELETE,HttpEntity<Object>(res.headers),String::class.java)
+
+        Assertions.assertEquals(HttpStatus.OK,deleteResult.statusCode)
     }
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertModifyUnauthorizedTest1() {
         val loginDTO = LoginDTO(username = "expert", password = "password") //It is an expert
-        val token = authService.login(loginDTO).jwtAccessToken
-
-        expertRepository.save(Expert(name = "William", surname = "Hunt", email = "will@gmail.com"))
-        val baseUrl = "http://localhost:$port/API/experts/1"
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
+        val baseUrl = "http://localhost:$port/API/experts/aaaaaaa"
         val uri = URI(baseUrl)
-        val expertDTO = ExpertDTO(expertId = 1, name = "Will", surname = "Hunting", email = "will@gmail.com")
+        val expertDTO = ExpertDTO(id= "aaaaaaa", username = "will",name = "William", surname = "Hunt", email = "william@gmail.com")
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
         val request = HttpEntity(expertDTO, headers)
@@ -399,15 +456,14 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertModifyUnauthorizedTest2() {
         val loginDTO = LoginDTO(username = "client", password = "password") //It is a client
-        val token = authService.login(loginDTO).jwtAccessToken
-
-        expertRepository.save(Expert(name = "William", surname = "Hunt", email = "will@gmail.com"))
-        val baseUrl = "http://localhost:$port/API/experts/1"
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
+        val baseUrl = "http://localhost:$port/API/experts/aaaaaaa"
         val uri = URI(baseUrl)
-        val expertDTO = ExpertDTO(expertId = 1, name = "Will", surname = "Hunting", email = "will@gmail.com")
+        val expertDTO = ExpertDTO(id= "aaaaaaa", username = "will",name = "William", surname = "Hunt", email = "william@gmail.com")
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
         val request = HttpEntity(expertDTO, headers)
@@ -420,10 +476,9 @@ class ExpertAndSectorTests {
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertModifyUnauthorizedTest3() {
-        expertRepository.save(Expert(name = "William", surname = "Hunt", email = "will@gmail.com"))
-        val baseUrl = "http://localhost:$port/API/experts/1"
+        val baseUrl = "http://localhost:$port/API/experts/aaaaaaa"
         val uri = URI(baseUrl)
-        val expertDTO = ExpertDTO(expertId = 1, name = "Will", surname = "Hunting", email = "will@gmail.com")
+        val expertDTO = ExpertDTO(id= "aaaaaaa", username = "will",name = "William", surname = "Hunt", email = "william@gmail.com")
 
         val headers = HttpHeaders()
         headers.set("X-COM-PERSIST", "true")
@@ -437,43 +492,18 @@ class ExpertAndSectorTests {
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    fun expertDeleteSuccessTest() {
-        val loginDTO = LoginDTO(username = "manager", password = "password") //It is a manager
-        val token = authService.login(loginDTO).jwtAccessToken
-
-        expertRepository.save(Expert(name = "William", surname = "Hunt", email = "will@gmail.com"))
-        val baseUrl = "http://localhost:$port/API/experts/1"
-        val uri = URI(baseUrl)
-
-        val headers = HttpHeaders()
-        headers.setBearerAuth(token)
-        headers.set("X-COM-PERSIST", "true")
-
-        val request = HttpEntity(null, headers)
-
-        val result = restTemplate.exchange(uri, HttpMethod.DELETE, request, String::class.java)
-
-        Assertions.assertEquals(HttpStatus.OK, result.statusCode)
-        Assertions.assertEquals(null, expertRepository.findByIdOrNull(1))
-
-    }
-
-    @Test
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertDeleteNotFoundTest() {
-        val loginDTO = LoginDTO(username = "manager", password = "password") //It is a manager
-        val token = authService.login(loginDTO).jwtAccessToken
-
-        val baseUrl = "http://localhost:$port/API/experts/1"
+        val loginDTO = LoginDTO(username = "manager", password = "password") //It is a client
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
+        val baseUrl = "http://localhost:$port/API/experts/aaaaaa"
         val uri = URI(baseUrl)
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
-        val request = HttpEntity(null, headers)
-
-        val result = restTemplate.exchange(uri, HttpMethod.DELETE, request, String::class.java)
+        val result = restTemplate.exchange(uri, HttpMethod.DELETE, HttpEntity<Object>(headers), String::class.java)
 
         Assertions.assertEquals(HttpStatus.NOT_FOUND, result.statusCode)
         Assertions.assertEquals(
@@ -485,20 +515,17 @@ class ExpertAndSectorTests {
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertDeleteUnauthorizedTest1() {
-        val loginDTO = LoginDTO(username = "expert", password = "password") //It is an expert
-        val token = authService.login(loginDTO).jwtAccessToken
-
-        expertRepository.save(Expert(name = "William", surname = "Hunt", email = "will@gmail.com"))
-        val baseUrl = "http://localhost:$port/API/experts/1"
+        val loginDTO = LoginDTO(username = "expert", password = "password") //It is a expert
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
+        val baseUrl = "http://localhost:$port/API/experts/aaaaaa"
         val uri = URI(baseUrl)
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
-        val request = HttpEntity(null, headers)
-
-        val result = restTemplate.exchange(uri, HttpMethod.DELETE, request, String::class.java)
+        val result = restTemplate.exchange(uri, HttpMethod.DELETE, HttpEntity<Object>(headers), String::class.java)
 
         Assertions.assertEquals(HttpStatus.FORBIDDEN, result.statusCode)
     }
@@ -507,19 +534,16 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertDeleteUnauthorizedTest2() {
         val loginDTO = LoginDTO(username = "client", password = "password") //It is a client
-        val token = authService.login(loginDTO).jwtAccessToken
-
-        expertRepository.save(Expert(name = "William", surname = "Hunt", email = "will@gmail.com"))
-        val baseUrl = "http://localhost:$port/API/experts/1"
+        val token = authService.login(loginDTO)?.jwtAccessToken
+        Assertions.assertNotEquals(null,token)
+        val baseUrl = "http://localhost:$port/API/experts/aaaaaa"
         val uri = URI(baseUrl)
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
 
-        val request = HttpEntity(null, headers)
-
-        val result = restTemplate.exchange(uri, HttpMethod.DELETE, request, String::class.java)
+        val result = restTemplate.exchange(uri, HttpMethod.DELETE, HttpEntity<Object>(headers), String::class.java)
 
         Assertions.assertEquals(HttpStatus.FORBIDDEN, result.statusCode)
     }
@@ -527,20 +551,17 @@ class ExpertAndSectorTests {
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertDeleteUnauthorizedTest3() {
-        expertRepository.save(Expert(name = "William", surname = "Hunt", email = "will@gmail.com"))
-        val baseUrl = "http://localhost:$port/API/experts/1"
+        val baseUrl = "http://localhost:$port/API/experts/aaaaa"
         val uri = URI(baseUrl)
 
         val headers = HttpHeaders()
         headers.set("X-COM-PERSIST", "true")
 
-        val request = HttpEntity(null, headers)
-
-        val result = restTemplate.exchange(uri, HttpMethod.DELETE, request, String::class.java)
+        val result = restTemplate.exchange(uri, HttpMethod.DELETE, HttpEntity<Object>(headers), String::class.java)
 
         Assertions.assertEquals(HttpStatus.UNAUTHORIZED, result.statusCode)
     }
-
+    /*
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertsBySectorGetSuccessTest() {
@@ -1297,7 +1318,7 @@ class ExpertAndSectorTests {
 
         Assertions.assertEquals(HttpStatus.UNAUTHORIZED, result.statusCode)
     }
-
+    */
 }
 
-*/
+

@@ -83,6 +83,7 @@ class ExpertController(
     @Transactional
     @DeleteMapping("/API/experts/{id}")
     fun deleteExpertById(@PathVariable id: String) {
+        println("Deleting $id expert!")
         expertService.getExpertById(id)?:throw ExpertNotFoundException()
         authService.deleteUser(id)
         expertService.deleteExpertById(id)

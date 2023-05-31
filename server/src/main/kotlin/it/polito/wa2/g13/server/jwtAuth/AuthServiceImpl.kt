@@ -145,7 +145,6 @@ class AuthServiceImpl : AuthService {
 
         userResource.roles().realmLevel().add(mutableListOf(roleRepresentation))
         realmResource.users().get(id).update(userResource.toRepresentation())
-
         return id
     }
 
