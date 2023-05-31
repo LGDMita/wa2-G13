@@ -141,7 +141,7 @@ class TicketControllerValidated(
             throw InvalidTicketArgumentsException()
         }
 
-        log.info("Changing status of ticket $ticketId to $status")
+        log.info("Changing status of ticket  with id:{} to {}", ticketId, status)
 
         return ticketService.changeStatus(ticketId.toLong(), status)
     }
@@ -158,7 +158,7 @@ class TicketControllerValidated(
             throw InvalidTicketArgumentsException()
         }
 
-        log.info("Changing priority level of ticket $ticketId to $priorityLevel")
+        log.info("Changing priority level of ticket with id:{} to {}", ticketId, priorityLevel)
 
         return ticketService.changePriority(ticketId.toLong(), priorityLevel)
     }
@@ -175,7 +175,7 @@ class TicketControllerValidated(
             throw InvalidTicketArgumentsException()
         }
 
-        log.info("Changing expert assigned to ticket $ticketId to $expertId")
+        log.info("Changing expert assigned to ticket with id: {} to {}", ticketId, expertId)
 
         return ticketService.changeExpert(ticketId.toLong(), expertId)
     }
