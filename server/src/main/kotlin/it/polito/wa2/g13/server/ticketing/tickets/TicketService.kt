@@ -18,7 +18,7 @@ interface TicketService {
         ean: String?,
         profileId: String?,
         priorityLevel: Int?,
-        expertId: Long?,
+        expertId: String?,
         status: String?,
         creationDateStart: Date?,
         creationDateStop: Date?

@@ -35,7 +35,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import java.net.URI
 import java.util.*
 
-/*
+
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -87,13 +87,13 @@ class TicketTests {
     fun t1TestGetAllTickets() {
         val baseUrl = "http://localhost:$port/API/tickets/"
         val uri = URI(baseUrl)
-        val myProfile = Profile("luigimolinengo@gmail.com", "Luigi", "Molinengo")
+        val myProfile = Profile("aaaaaa", "luigimolinengo","luigimolinengo@gmail.com", "Luigi", "Molinengo")
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
             "JMT"
         )
-        val myExpert = Expert("Giovanni", "Malnati", "giovanni.malnati@polito.it")
+        val myExpert = Expert("bbbbbb", "giovannimalnati","Giovanni", "Malnati", "giovanni.malnati@polito.it")
         val myTicket = Ticket(
             profile = myProfile, product = myProduct, priorityLevel = 1, expert = myExpert,
             status = "open", creationDate = Date(), messages = mutableSetOf()
@@ -109,10 +109,10 @@ class TicketTests {
         ticketRepository.save(myTicket)
         ticketRepository.save(myTicket2)
 
-        val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO).jwtAccessToken
+        val loginDTO = LoginDTO(username = "expert", password = "password")
+        val token = authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
-        headers.setBearerAuth(token)
+        headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
         val request = HttpEntity(null, headers)
         val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
@@ -130,6 +130,9 @@ class TicketTests {
         productRepository.delete(myProduct)
         expertRepository.delete(myExpert)
     }
+}
+
+    /*
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
@@ -932,6 +935,4 @@ class TicketTests {
         )
     }
 }
-
-
- */
+*/

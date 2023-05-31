@@ -19,7 +19,7 @@ interface TicketRepository : JpaRepository<Ticket, Long> {
     )
     fun getFilteredTickets(
         @Param("ean") ean: String?, @Param("profileId") profileId: String?,
-        @Param("priorityLevel") priorityLevel: Int?, @Param("expertId") expertId: Long?,
+        @Param("priorityLevel") priorityLevel: Int?, @Param("expertId") expertId: String?,
         @Param("status") status: String?, @Param("creationDateStart") creationDateStart: Date?,
         @Param("creationDateStop") creationDateStop: Date?
     ): List<Ticket>
