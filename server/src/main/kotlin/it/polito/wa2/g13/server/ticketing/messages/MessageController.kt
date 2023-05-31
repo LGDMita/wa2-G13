@@ -1,7 +1,6 @@
 package it.polito.wa2.g13.server.ticketing.messages
 
 import io.micrometer.observation.annotation.Observed
-import it.polito.wa2.g13.server.jwtAuth.AuthController
 import lombok.extern.slf4j.Slf4j
 import org.slf4j.LoggerFactory
 import org.springframework.validation.annotation.Validated
@@ -17,7 +16,7 @@ class MessageController(
     private val messageService: MessageService
 ) {
 
-    private val log = LoggerFactory.getLogger(AuthController::class.java)
+    private val log = LoggerFactory.getLogger(MessageController::class.java)
 
     //post: /API/tickets/:id/messages
     //body: {from_user: from_user, text: text, attachments: attachments}

@@ -1,8 +1,11 @@
 package it.polito.wa2.g13.server.profiles
 
+import io.micrometer.observation.annotation.Observed
 import it.polito.wa2.g13.server.jwtAuth.AuthService
 import jakarta.transaction.Transactional
 import jakarta.validation.Valid
+import lombok.extern.slf4j.Slf4j
+import org.slf4j.LoggerFactory
 import org.springframework.validation.BindingResult
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
@@ -16,7 +19,7 @@ class ProfileController(
     private val authService: AuthService
 ) {
 
-    private val log = LoggerFactory.getLogger(AuthController::class.java)
+    private val log = LoggerFactory.getLogger(ProfileController::class.java)
 
     @GetMapping("/API/profiles/{id}")
     fun getProfile(@PathVariable  id: String): ProfileDTO? {
@@ -48,7 +51,7 @@ class ProfileController(
     @DeleteMapping("/API/profiles/{id}")
     fun deleteProfile(
         @PathVariable id: String
-    ): Unit {
+    ) {
         profileService.getProfile(id)?:throw ProfileNotFoundException()
         authService.deleteUser(id)
         profileService.deleteProfile(id)

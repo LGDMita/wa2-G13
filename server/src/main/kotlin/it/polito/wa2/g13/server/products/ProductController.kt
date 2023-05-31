@@ -1,7 +1,6 @@
 package it.polito.wa2.g13.server.products
 
 import io.micrometer.observation.annotation.Observed
-import it.polito.wa2.g13.server.jwtAuth.AuthController
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
@@ -20,7 +19,7 @@ class ProductController(
     private val productService: ProductService
 ){
 
-    private val log = LoggerFactory.getLogger(AuthController::class.java)
+    private val log = LoggerFactory.getLogger(ProductController::class.java)
 
     @GetMapping("/API/products/")
     fun getAll(): List<ProductDTO>{

@@ -1,7 +1,6 @@
 package it.polito.wa2.g13.server.ticketing.sectors
 
 import io.micrometer.observation.annotation.Observed
-import it.polito.wa2.g13.server.jwtAuth.AuthController
 import it.polito.wa2.g13.server.ticketing.experts.ExpertNotFoundException
 import it.polito.wa2.g13.server.ticketing.experts.ExpertService
 import jakarta.validation.Valid
@@ -18,7 +17,7 @@ class SectorController (
     private val expertService: ExpertService
 ){
 
-    private val log = LoggerFactory.getLogger(AuthController::class.java)
+    private val log = LoggerFactory.getLogger(SectorController::class.java)
 
     @GetMapping("/API/experts/sectors")
     fun getAllSectors(): List<SectorDTO>?{

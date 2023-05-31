@@ -2,9 +2,7 @@ package it.polito.wa2.g13.server.ticketing.experts
 
 
 import io.micrometer.observation.annotation.Observed
-import it.polito.wa2.g13.server.jwtAuth.AuthController
 import it.polito.wa2.g13.server.jwtAuth.AuthService
-import it.polito.wa2.g13.server.profiles.ProfileNotFoundException
 import it.polito.wa2.g13.server.ticketing.sectors.SectorNotFoundException
 import it.polito.wa2.g13.server.ticketing.sectors.SectorService
 import it.polito.wa2.g13.server.ticketing.sectors.SectorsNotFoundException
@@ -24,7 +22,7 @@ class ExpertController(
     private val authService: AuthService
 ) {
 
-    private val log = LoggerFactory.getLogger(AuthController::class.java)
+    private val log = LoggerFactory.getLogger(ExpertController::class.java)
 
     //get: /API/experts
     @GetMapping("/API/experts")
@@ -90,6 +88,7 @@ class ExpertController(
             throw SectorsNotFoundException()
         }
     }
+
     @Transactional
     @DeleteMapping("/API/experts/{id}")
     fun deleteExpertById(@PathVariable id: String) {
@@ -98,5 +97,4 @@ class ExpertController(
         authService.deleteUser(id)
         expertService.deleteExpertById(id)
     }
-     */
 }

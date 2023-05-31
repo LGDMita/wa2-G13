@@ -23,7 +23,7 @@ import java.util.*
 class TicketController(
     private val ticketService: TicketService
 ) {
-    private val log = LoggerFactory.getLogger(AuthController::class.java)
+    private val log = LoggerFactory.getLogger(TicketController::class.java)
 
     @GetMapping("/API/tickets")
     fun getTickets(): List<Ticket>? {
