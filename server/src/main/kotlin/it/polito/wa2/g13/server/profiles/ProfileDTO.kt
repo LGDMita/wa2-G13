@@ -1,5 +1,6 @@
 package it.polito.wa2.g13.server.profiles
 
+import it.polito.wa2.g13.server.jwtAuth.RegisterDTO
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
@@ -27,4 +28,8 @@ data class ProfileDTO(
 
 fun Profile.toDTO(): ProfileDTO {
     return ProfileDTO(id, username, email, name, surname)
+}
+
+fun ProfileDTO.toRegisterDTO(): RegisterDTO {
+    return RegisterDTO(username,"",email,name,surname)
 }

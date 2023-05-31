@@ -1,6 +1,9 @@
 package it.polito.wa2.g13.server.problemDetailsHandler
 
+import it.polito.wa2.g13.server.jwtAuth.DuplicateEmailException
+import it.polito.wa2.g13.server.jwtAuth.DuplicateUsernameException
 import it.polito.wa2.g13.server.jwtAuth.InvalidCredentialArgumentsException
+import it.polito.wa2.g13.server.jwtAuth.UserNotFoundException
 import it.polito.wa2.g13.server.products.DuplicateProductException
 import it.polito.wa2.g13.server.products.ProductNotFoundException
 import it.polito.wa2.g13.server.profiles.DuplicateProfileException
@@ -113,4 +116,15 @@ class ProblemDetailsHandler : ResponseEntityExceptionHandler() {
     @ExceptionHandler(WarrantyNotBoughtException::class)
     fun handleWarrantyNotBought(e: WarrantyNotBoughtException) = ProblemDetail
         .forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.message!!)
+    @ExceptionHandler(UserNotFoundException::class)
+    fun handleUserNotFound(e: UserNotFoundException) = ProblemDetail
+        .forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
+
+    @ExceptionHandler(DuplicateEmailException::class)
+    fun handleInvalidTicketArgumentsException(e: DuplicateEmailException) = ProblemDetail
+        .forStatusAndDetail(HttpStatus.CONFLICT, e.message!!)
+
+    @ExceptionHandler(DuplicateUsernameException::class)
+    fun handleInvalidTicketArgumentsException(e: DuplicateUsernameException) = ProblemDetail
+        .forStatusAndDetail(HttpStatus.CONFLICT, e.message!!)
 }

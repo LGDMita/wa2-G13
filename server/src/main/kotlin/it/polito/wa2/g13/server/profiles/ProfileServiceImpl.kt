@@ -1,5 +1,6 @@
 package it.polito.wa2.g13.server.profiles
 
+import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
@@ -20,13 +21,8 @@ class ProfileServiceImpl(
         }
     }
 
-    override fun modifyProfile(username: String, profileDTO: ProfileDTO): Boolean {
-        return if(profileRepository.existsById(username)){
-            profileRepository.save(profileDTO.toProfile())
-            true
-        }else{
-            false
-        }
+    override fun modifyProfile(username: String, profileDTO: ProfileDTO): Unit {
+        profileRepository.save(profileDTO.toProfile())
     }
 
     override fun saveNewProfile(profileDTO: ProfileDTO): Boolean {
@@ -36,5 +32,10 @@ class ProfileServiceImpl(
         }else{
             false
         }
+    }
+
+    @Transactional
+    override fun deleteProfile(id: String) {
+        profileRepository.deleteById(id)
     }
 }

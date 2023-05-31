@@ -3,9 +3,12 @@ package it.polito.wa2.g13.server.ticketing.experts
 
 import io.micrometer.observation.annotation.Observed
 import it.polito.wa2.g13.server.jwtAuth.AuthController
+import it.polito.wa2.g13.server.jwtAuth.AuthService
+import it.polito.wa2.g13.server.profiles.ProfileNotFoundException
 import it.polito.wa2.g13.server.ticketing.sectors.SectorNotFoundException
 import it.polito.wa2.g13.server.ticketing.sectors.SectorService
 import it.polito.wa2.g13.server.ticketing.sectors.SectorsNotFoundException
+import jakarta.transaction.Transactional
 import jakarta.validation.Valid
 import lombok.extern.slf4j.Slf4j
 import org.slf4j.LoggerFactory
@@ -17,7 +20,8 @@ import org.springframework.web.bind.annotation.*
 @Slf4j
 class ExpertController(
     private val expertService: ExpertService,
-    private val sectorService: SectorService
+    private val sectorService: SectorService,
+    private val authService: AuthService
 ) {
 
     private val log = LoggerFactory.getLogger(AuthController::class.java)
@@ -55,32 +59,18 @@ class ExpertController(
     }
 
     //Must be modified or moved to pass the changes to keycloak as well
+    @Transactional
     @PutMapping("/API/experts/{id}")
     fun modifyExpert(@PathVariable id: String,
                      @RequestBody @Valid expertDTO: ExpertDTO,
                      br: BindingResult) : Boolean{
-
         return if(!br.hasErrors()){
-            val result= expertService.modifyExpert(id, expertDTO)
-            if(result== 1) {
-                log.info("Expert successfully modified with id:{} and DTO:{}", id, expertDTO)
-                true
-            }
-            else{
-                if(result== 2) {
-                    log.warn("Expert not found with id:{}", id)
-                    throw ExpertNotFoundException()
-                }
-                else {
-                    log.warn("Duplicate expert error with id:{} and DTO:{}", id, expertDTO)
-                    throw DuplicateExpertException()
-                }
-            }
-        }else {
-            log.warn("Filed constraint not satisfied for DTO: {}", expertDTO.toString())
+            val oldExpert= expertService.getExpertById(id)?.toRegisterDTO()?:throw ExpertNotFoundException()
+            authService.updateUser(id,oldExpert,expertDTO.toRegisterDTO())
+            expertService.modifyExpert(id, expertDTO)
+            true
+        }else
             throw ExpertInvalidArgumentsException()
-        }
-
     }
 
     @GetMapping("/API/experts/")
@@ -100,16 +90,13 @@ class ExpertController(
             throw SectorsNotFoundException()
         }
     }
-
-    //If necessary, implement this functionality passing through keycloak
-    /*
+    @Transactional
     @DeleteMapping("/API/experts/{id}")
     fun deleteExpertById(@PathVariable id: String) {
-        if (expertService.getExpertById(id)!= null){
-            return expertService.deleteExpertById(id)
-        }else{
-            throw ExpertNotFoundException()
-        }
+        println("Deleting $id expert!")
+        expertService.getExpertById(id)?:throw ExpertNotFoundException()
+        authService.deleteUser(id)
+        expertService.deleteExpertById(id)
     }
      */
 }

@@ -10,4 +10,8 @@ interface AuthService {
     fun register(registerDTO: RegisterDTO): String?
 
     fun createExpert(registerDTO: RegisterDTO): String?
+
+    fun updateUser(id: String,oldRegisterDTO: RegisterDTO,registerDTO: RegisterDTO): Boolean
+
+    fun deleteUser(id: String): Unit
 }

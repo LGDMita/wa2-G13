@@ -1,10 +1,8 @@
 package it.polito.wa2.g13.server.profiles
 
-import io.micrometer.observation.annotation.Observed
-import it.polito.wa2.g13.server.jwtAuth.AuthController
+import it.polito.wa2.g13.server.jwtAuth.AuthService
+import jakarta.transaction.Transactional
 import jakarta.validation.Valid
-import lombok.extern.slf4j.Slf4j
-import org.slf4j.LoggerFactory
 import org.springframework.validation.BindingResult
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
@@ -14,7 +12,8 @@ import org.springframework.web.bind.annotation.*
 @Observed
 @Slf4j
 class ProfileController(
-    private val profileService: ProfileService
+    private val profileService: ProfileService,
+    private val authService: AuthService
 ) {
 
     private val log = LoggerFactory.getLogger(AuthController::class.java)
@@ -26,6 +25,7 @@ class ProfileController(
     }
 
     //Must be modified or moved to pass the changes to keycloak as well
+    @Transactional
     @PutMapping("/API/profiles/{id}")
     fun modifyProfile(
         @PathVariable id: String,
@@ -34,14 +34,24 @@ class ProfileController(
     ): Boolean {
         log.info("Edited profile with id: {} and profileDTO: {}", id, profileDTO.toString())
         return if (!br.hasErrors()) {
-            if (profileService.modifyProfile(id, profileDTO)) true else {
-                log.info("No profile found with id: {}", id)
-                throw ProfileNotFoundException()
-            }
+            val oldProfile=profileService.getProfile(id)?.toRegisterDTO()?:throw ProfileNotFoundException()
+            authService.updateUser(id,oldProfile,profileDTO.toRegisterDTO())
+            profileService.modifyProfile(id, profileDTO)
+            true
         } else {
             log.info("Filed constraint not satisfied for DTO: {}", profileDTO.toString())
             throw InvalidArgumentsException()
         }
+    }
+
+    @Transactional
+    @DeleteMapping("/API/profiles/{id}")
+    fun deleteProfile(
+        @PathVariable id: String
+    ): Unit {
+        profileService.getProfile(id)?:throw ProfileNotFoundException()
+        authService.deleteUser(id)
+        profileService.deleteProfile(id)
     }
 }
 

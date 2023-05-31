@@ -1,5 +1,6 @@
 package it.polito.wa2.g13.server.ticketing.experts
 
+import it.polito.wa2.g13.server.jwtAuth.RegisterDTO
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
@@ -27,4 +28,8 @@ data class ExpertDTO(
 
 fun Expert.toDTO(): ExpertDTO {
     return ExpertDTO(id, username, email, name, surname)
+}
+
+fun ExpertDTO.toRegisterDTO(): RegisterDTO{
+    return RegisterDTO(username,"",email,name,surname)
 }

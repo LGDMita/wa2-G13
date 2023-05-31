@@ -32,17 +32,8 @@ class ExpertServiceImpl(
     }
 
     @Transactional
-    override fun modifyExpert(id: String, expertDTO: ExpertDTO): Int {
-        return if(expertRepository.existsById(id)){
-            if(expertRepository.existsByEmailAndIdNot(expertDTO.email, id)){
-                0 // DuplicateExpertException
-            }else{
-                expertRepository.save(expertDTO.toExpertWithId(id))
-                1 // Ok
-            }
-        }else{
-            2 // ExpertNotFoundException
-        }
+    override fun modifyExpert(id: String, expertDTO: ExpertDTO): Unit {
+        expertRepository.save(expertDTO.toExpertWithId(id))
     }
 
     override fun getExpertsBySector(sectorName: String): List<ExpertDTO>? {

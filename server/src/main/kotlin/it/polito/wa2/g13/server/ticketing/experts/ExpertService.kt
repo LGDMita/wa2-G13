@@ -8,7 +8,7 @@ interface ExpertService {
 
     fun getExpertById(id: String): ExpertDTO?
 
-    fun modifyExpert(id: String, expertDTO: ExpertDTO): Int
+    fun modifyExpert(id: String, expertDTO: ExpertDTO): Unit
 
     fun getExpertsBySector(sectorName: String): List<ExpertDTO>?
 
