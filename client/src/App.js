@@ -2,21 +2,24 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 
-import {ProductTable} from "./components/ProductTable";
-import {SingleProduct} from "./components/SingleProduct";
-import {SingleProfile} from "./components/SingleProfile";
-import {AddProfile} from "./components/AddProfile";
-import {EditProfile} from "./components/EditProfile";
+import UserContext from './context/UserContext';
+import Header from './components/Header';
+import { useState,useEffect } from 'react';
+import { Navigate, Route, Routes } from 'react-router-dom';
+import { HomepagePage,LoginPage } from './pages';
 
 function App() {
+    const [user,setUser]=useState({logged:false,role:undefined,username:'',pwd:''});
+    /*<div className="main-div"> --> to have different main div*/
     return (
-        <div className="main-div">
-            <ProductTable></ProductTable>
-            <SingleProduct></SingleProduct>
-            <SingleProfile></SingleProfile>
-            <AddProfile></AddProfile>
-            <EditProfile></EditProfile>
-        </div>
+        <UserContext.Provider value={{user,setUser}}>
+            <Header></Header>
+            <Routes>
+                <Route index element={<Navigate replace to='/home'/>}/>
+                <Route path="/home" element={<HomepagePage/>}/>
+                <Route path="/login" element={<LoginPage/>}/>
+            </Routes>
+        </UserContext.Provider>
     );
 }
 
