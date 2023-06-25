@@ -1,7 +1,6 @@
 package it.polito.wa2.g13.server
 
 import it.polito.wa2.g13.server.jwtAuth.AuthService
-import it.polito.wa2.g13.server.jwtAuth.JwtResponse
 import it.polito.wa2.g13.server.jwtAuth.LoginDTO
 import it.polito.wa2.g13.server.jwtAuth.RegisterDTO
 import it.polito.wa2.g13.server.ticketing.experts.*
@@ -75,11 +74,11 @@ class ExpertAndSectorTests {
         headers.setBearerAuth(token)
         headers.set("X-COM-PERSIST", "true")
 
-        var request = HttpEntity(regDTO, headers)
+        val request = HttpEntity(regDTO, headers)
 
         val result=restTemplate.postForEntity(uri, request, String::class.java)
 
-        var expertDTO= expertRepository.findAll().find { it.username==username && it.email==email}?.toDTO()
+        val expertDTO= expertRepository.findAll().find { it.username==username && it.email==email}?.toDTO()
         return CreateExpertData(expertDTO,result,headers)
     }
 
@@ -87,7 +86,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertSetSuccessTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
-        var token = authService.login(loginDTO)?.jwtAccessToken
+        val token = authService.login(loginDTO)?.jwtAccessToken
 
         Assertions.assertNotEquals(null,token)
 
@@ -109,7 +108,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertSetConflictTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
-        var token = authService.login(loginDTO)?.jwtAccessToken
+        val token = authService.login(loginDTO)?.jwtAccessToken
 
         Assertions.assertNotEquals(null,token)
 
@@ -122,7 +121,7 @@ class ExpertAndSectorTests {
         val postDTO= RegisterDTO(username= "test-expert-2", password = "password", email = "will@gmail.com",name = "Will", surname = "Hunting")
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token!!)
+        headers.setBearerAuth(token)
         headers.set("X-COM-PERSIST", "true")
         val request= HttpEntity(postDTO, headers)
 
@@ -145,7 +144,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertSetUnprocessableEntityTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
-        var token = authService.login(loginDTO)?.jwtAccessToken
+        val token = authService.login(loginDTO)?.jwtAccessToken
 
         Assertions.assertNotEquals(null,token)
 
@@ -172,7 +171,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertSetUnauthorizedTest1() {
         val loginDTO = LoginDTO(username = "expert", password = "password") //it is an expert
-        var token = authService.login(loginDTO)?.jwtAccessToken
+        val token = authService.login(loginDTO)?.jwtAccessToken
 
         Assertions.assertNotEquals(null,token)
         val baseUrl = "http://localhost:$port/API/createExpert"
@@ -194,7 +193,7 @@ class ExpertAndSectorTests {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertSetUnauthorizedTest2() {
         val loginDTO = LoginDTO(username = "client", password = "password") //it is a client
-        var token = authService.login(loginDTO)?.jwtAccessToken
+        val token = authService.login(loginDTO)?.jwtAccessToken
 
         Assertions.assertNotEquals(null,token)
         val baseUrl = "http://localhost:$port/API/createExpert"
@@ -286,10 +285,10 @@ class ExpertAndSectorTests {
         Assertions.assertEquals(HttpStatus.CREATED,res.result.statusCode)
         val baseUrl = "http://localhost:$port/API/experts/${res.dto?.id}"
         val uri = URI(baseUrl)
-        val expertDTO = ExpertDTO(id= res.dto!!.id, username = res.dto!!.username,name = res.dto!!.name, surname = "News", email = res.dto!!.email)
+        val expertDTO = ExpertDTO(id= res.dto!!.id, username = res.dto.username,name = res.dto!!.name, surname = "News", email = res.dto!!.email)
 
         val headers = HttpHeaders()
-        headers.setBearerAuth(token!!)
+        headers.setBearerAuth(token)
         headers.set("X-COM-PERSIST", "true")
 
         val request = HttpEntity(expertDTO, headers)
@@ -515,7 +514,7 @@ class ExpertAndSectorTests {
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun expertDeleteUnauthorizedTest1() {
-        val loginDTO = LoginDTO(username = "expert", password = "password") //It is a expert
+        val loginDTO = LoginDTO(username = "expert", password = "password") //It is an expert
         val token = authService.login(loginDTO)?.jwtAccessToken
         Assertions.assertNotEquals(null,token)
         val baseUrl = "http://localhost:$port/API/experts/aaaaaa"

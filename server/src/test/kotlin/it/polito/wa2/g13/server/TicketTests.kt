@@ -690,7 +690,7 @@ class TicketTests {
         expectedStatus: HttpStatus,
         expectedErrorMessage: String = ""
     ) {
-        val product = Product(ean = "000000000000000")
+        val product = Product(ean = "000000000000000", name= "name", brand="brand")
         val profile = Profile(
             id = "id",
             username = "username",
@@ -768,7 +768,7 @@ class TicketTests {
         expectedStatus: HttpStatus,
         expectedErrorMessage: String = ""
     ) {
-        val myProduct=Product(ean = "0000000000000")
+        val myProduct=Product(ean = "0000000000000", name= "name", brand="brand")
         productRepository.save(myProduct)
         val myProfile=Profile(
             id = "id",

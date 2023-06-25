@@ -12,6 +12,7 @@ class ProfileServiceImpl(
         return profileRepository.findByIdOrNull(username)?.toDTO()
     }
 
+    @Transactional
     override fun setProfile(profileDTO: ProfileDTO): Boolean{
         return if(!profileRepository.existsById(profileDTO.username)){
             profileRepository.save(profileDTO.toProfile())
@@ -21,17 +22,9 @@ class ProfileServiceImpl(
         }
     }
 
-    override fun modifyProfile(username: String, profileDTO: ProfileDTO): Unit {
+    @Transactional
+    override fun modifyProfile(username: String, profileDTO: ProfileDTO) {
         profileRepository.save(profileDTO.toProfile())
-    }
-
-    override fun saveNewProfile(profileDTO: ProfileDTO): Boolean {
-        return if(!profileRepository.existsById(profileDTO.id)){
-            profileRepository.save(profileDTO.toProfile())
-            true
-        }else{
-            false
-        }
     }
 
     @Transactional

@@ -44,7 +44,6 @@ class ExpertServiceImpl(
         return listOfExpertDTOs.ifEmpty {
             null
         }
-
     }
 
     @Transactional
