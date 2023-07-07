@@ -1,22 +1,26 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import HamburgerMenu from './components/HamburgerMenu';
 
-import {ProductTable} from "./components/ProductTable";
-import {SingleProduct} from "./components/SingleProduct";
-import {SingleProfile} from "./components/SingleProfile";
-import {AddProfile} from "./components/AddProfile";
-import {EditProfile} from "./components/EditProfile";
+function HomePage() {
+    return <h1>Homepage</h1>;
+}
+
+function ContattiPage() {
+    return <h1>Pagina Contatti</h1>;
+}
 
 function App() {
     return (
-        <div className="main-div">
-            <ProductTable></ProductTable>
-            <SingleProduct></SingleProduct>
-            <SingleProfile></SingleProfile>
-            <AddProfile></AddProfile>
-            <EditProfile></EditProfile>
-        </div>
+        <Router>
+            <HamburgerMenu />
+            <Routes>
+                <Route path="/" exact component={HomePage} />
+                <Route path="/contatti" component={ContattiPage} />
+            </Routes>
+        </Router>
     );
 }
 
