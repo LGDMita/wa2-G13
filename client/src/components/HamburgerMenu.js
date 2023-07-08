@@ -5,7 +5,7 @@ import { ReactComponent as Logo } from "../logo.svg";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/HamburgerMenu.css"
 
-export default function App() {
+export default function HamburgerMenu() {
   return (
     <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark" className="my-menu">
       <Navbar.Brand href="#home" className="logo-title">

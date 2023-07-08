@@ -1,0 +1,14 @@
+.login-page-container {
+    background-color: #212529;
+    width: 100%;
+    padding: 0 10%;
+    height: 100vh;
+}
+
+.text-login {
+    color: white;
+}
+
+.btn-login button {
+    margin: 10px 10px;
+}
