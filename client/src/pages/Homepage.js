@@ -1,13 +1,18 @@
+import { useContext } from "react";
 import { ProductTable,SingleProduct,SingleProfile,AddProfile,EditProfile } from "../components";
+import UserContext from "../context/UserContext";
 
 function HomepagePage(props){
+    const {user,setUser}=useContext(UserContext);
+    if(user.role==='customer') return CustomerHomepagePage;
+    else return(<></>);
+}
+
+function CustomerHomepagePage(props){
     return(
         <>
-            <ProductTable></ProductTable>
-            <SingleProduct></SingleProduct>
-            <SingleProfile></SingleProfile>
-            <AddProfile></AddProfile>
-            <EditProfile></EditProfile>
+            <SingleProduct/>
+            <ProductTable/>
         </>
     );
 }
