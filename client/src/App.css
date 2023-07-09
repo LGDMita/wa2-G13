@@ -8,7 +8,10 @@
   padding-top: 30px;
 }
 
-.single-product, .single-profile, .add-profile, .edit-profile {
+.single-product,
+.single-profile,
+.add-profile,
+.edit-profile {
   margin-top: 50px;
   border-top: 1px black solid;
   padding-top: 20px;
