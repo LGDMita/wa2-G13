@@ -32,7 +32,7 @@ class ExpertServiceImpl(
     }
 
     @Transactional
-    override fun modifyExpert(id: String, expertDTO: ExpertDTO): Unit {
+    override fun modifyExpert(id: String, expertDTO: ExpertDTO){
         expertRepository.save(expertDTO.toExpertWithId(id))
     }
 

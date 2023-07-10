@@ -157,18 +157,18 @@ class AuthServiceImpl : AuthService {
     fun existsByUsername(
         realmResource: RealmResource,
         username: String
-    ): Unit {
+    ){
         if(realmResource.users().searchByUsername(username,true).size>0)    throw DuplicateUsernameException()
     }
 
     fun existsByEmail(realmResource: RealmResource,
-                      email: String): Unit {
+                      email: String) {
         if(realmResource.users().searchByEmail(email,true).size>0)  throw DuplicateEmailException()
     }
 
     fun existsByUsernameOrEmail(realmResource: RealmResource,
                                 username: String,
-                                email: String): Unit {
+                                email: String){
         existsByUsername(realmResource,username)
         existsByEmail(realmResource,email)
     }
@@ -206,7 +206,7 @@ class AuthServiceImpl : AuthService {
     }
 
     @Transactional
-    override fun deleteUser(id: String): Unit {
+    override fun deleteUser(id: String) {
         val keycloak = KeycloakBuilder.builder()
             .serverUrl("http://${keycloakPath}")
             .realm("wa2-g13")

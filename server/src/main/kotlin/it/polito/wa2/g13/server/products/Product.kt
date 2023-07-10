@@ -15,7 +15,7 @@ class Product (
     @OneToMany(mappedBy = "product")
     val purchases: MutableSet<Purchase> = mutableSetOf()
 
-    fun addPurchase(purch: Purchase): Unit{
+    fun addPurchase(purch: Purchase){
         purchases.add(purch)
     }
     override fun toString(): String {
