@@ -1,0 +1,15 @@
+.my-menu {
+    font-family: sans-serif;
+    text-align: center;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.logo-title {
+    display: flex;
+    align-items: center;
+}
+
+.logo-title span {
+    margin-left: 10px;
+}

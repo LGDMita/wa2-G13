@@ -1,71 +1,111 @@
+import axios from 'axios';
 import Product from "./product";
 import Profile from "./profile";
+import TokenManager from './TokenManager';
 
 const SERVER_URL = 'http://localhost:8080';
 
-const getProducts = async () => {
-    const response = await fetch(`${SERVER_URL}/API/products/`)
-    const rows = await response.json()
-    if (response.ok) {
-        return rows.map(row => {
-            return new Product(row.ean, row.name, row.brand)
-        });
+// Crea un'istanza di Axios
+const apiInstance = axios.create({
+    baseURL: SERVER_URL,
+});
+
+const tokenManager = TokenManager();
+
+// Aggiungi un interceptor per le richieste
+apiInstance.interceptors.request.use(
+    (config) => {
+        const token = tokenManager.getAuthToken();
+        if (token) {
+            config.headers['Authorization'] = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
     }
-    else
+);
+
+// Aggiungi un interceptor per le risposte
+apiInstance.interceptors.response.use(
+    (response) => {
+        return response;
+    },
+    (error) => {
+        // Puoi gestire gli errori di autenticazione qui
+        if (error.response && error.response.status === 401) {
+            console.log('Errore di autenticazione. Effettua nuovamente il login.');
+            // Esegui il logout o altre azioni di gestione dell'autenticazione
+        }
+        return Promise.reject(error);
+    }
+);
+
+const getProducts = async () => {
+    const response = await apiInstance.get('/API/products/');
+    const rows = response.data;
+    if (response.status === 200) {
+        return rows.map(row => {
+            return new Product(row.ean, row.name, row.brand);
+        });
+    } else {
         throw new Error(rows.detail);
+    }
 };
 
 const getProduct = async (ean) => {
-    const response = await fetch(`${SERVER_URL}/API/products/${ean}`);
-    const row = await response.json();
-    if (response.ok) {
-        return new Product(row.ean, row.name, row.brand)
-    }
-    else {
+    const response = await apiInstance.get(`/API/products/${ean}`);
+    const row = response.data;
+    if (response.status === 200) {
+        return new Product(row.ean, row.name, row.brand);
+    } else {
         throw new Error(`${response.status} - ${row.detail}`);
     }
 };
 
 const getUserInfo = async (email) => {
-    const response = await fetch(`${SERVER_URL}/API/profiles/${email}`);
-    const row = await response.json();
-    if (response.ok) {
-        return new Profile(row.email, row.name, row.surname)
-    }
-    else {
+    const response = await apiInstance.get(`/API/profiles/${email}`);
+    const row = response.data;
+    if (response.status === 200) {
+        return new Profile(row.email, row.name, row.surname);
+    } else {
         throw new Error(`${response.status} - ${row.detail}`);
     }
 };
 
 const addProfile = async (profile) => {
-    const response = await fetch(`${SERVER_URL}/API/profiles`, {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({'email': profile.email, 'name': profile.name, 'surname': profile.surname})
-    });
-    if (!response.ok) {
-        const row = await response.json();
+    const response = await apiInstance.post('/API/profiles', profile);
+    if (response.status !== 200) {
+        const row = response.data;
         throw new Error(`${response.status} - ${row.detail}`);
     }
-}
+};
 
 const updateProfile = async (email, profile) => {
-    const response = await fetch(`${SERVER_URL}/API/profiles/${email}`, {
-        method: 'PUT',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({'email': profile.email, 'name': profile.name, 'surname': profile.surname})
-    });
-    if (!response.ok) {
-        const row = await response.json();
+    const response = await apiInstance.put(`/API/profiles/${email}`, profile);
+    if (response.status !== 200) {
+        const row = response.data;
         throw new Error(`${response.status} - ${row.detail}`);
     }
-}
+};
+
+const login = async (username, password) => {
+    try {
+        const response = await axios.post('/api/login', {
+            username,
+            password,
+        });
+
+        const { token } = response.data;
+
+        // Salva il token utilizzando il TokenManager
+        tokenManager.setAuthToken(token);
+
+        // Effettua ulteriori operazioni dopo il login, come la navigazione alla pagina successiva
+    } catch (error) {
+        console.error('Errore durante il login:', error);
+    }
+};
 
 
 const API = {
@@ -73,7 +113,8 @@ const API = {
     getProduct,
     getUserInfo,
     addProfile,
-    updateProfile
+    updateProfile,
+    login
 };
 
 export default API;
