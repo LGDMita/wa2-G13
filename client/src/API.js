@@ -91,12 +91,12 @@ const updateProfile = async (email, profile) => {
 
 const login = async (username, password) => {
     try {
-        const response = await axios.post('/api/login', {
+        const response = await axios.post('/API/login', {
             username,
             password,
         });
 
-        const { token } = response.data;
+        const token = response.data.jwtAccessToken;
 
         // Salva il token utilizzando il TokenManager
         tokenManager.setAuthToken(token);
@@ -104,9 +104,9 @@ const login = async (username, password) => {
         // Effettua ulteriori operazioni dopo il login, come la navigazione alla pagina successiva
     } catch (error) {
         console.error('Errore durante il login:', error);
+        throw new Error(error.response.status)
     }
 };
-
 
 const API = {
     getProducts,

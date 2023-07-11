@@ -1,7 +1,6 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import HamburgerMenu from './components/HamburgerMenu';
 import {LoginPage as LoginPage_} from './components/LoginPage';
 import { useLocation } from "react-router-dom";
@@ -11,6 +10,7 @@ import Header from './components/Header';
 import { useState,useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { HomepagePage,LoginPage } from './pages';
+import TokenManager from './TokenManager';
 
 function HomePage() {
     return <h1>Homepage</h1>;
@@ -30,10 +30,21 @@ function LocationBasedHamburgerMenu() {
     return <HamburgerMenu />;
 }
 
+function Logout(props) {
+    const tokenManager = TokenManager();
+
+    useEffect(() => {
+        tokenManager.removeAuthToken();
+        props.setLoggedIn(false);
+    }, [tokenManager, props.setLoggedIn]);
+
+    return (<Navigate to="/login" />);
+}
+
 function App() {
-    const [user,setUser]=useState({logged:false,role:undefined,username:'',pwd:''});
+    //const [user,setUser]=useState({logged:false,role:undefined,username:'',pwd:''});
     /*<div className="main-div"> --> to have different main div*/
-    return (
+    /*return (
         <UserContext.Provider value={{user,setUser}}>
             <Header></Header>
             <Routes>
@@ -44,7 +55,44 @@ function App() {
                 <Route path="/login_" element={<LoginPage_ />} />
             </Routes>
         </UserContext.Provider>
-    );
+    );*/
+    const [loggedIn, setLoggedIn] = useState(false);
+    const [loading, setLoading] = useState(true);
+
+    const handleLoad = () => {
+        const tokenManager = TokenManager();
+        if (tokenManager.amILogged()) {
+            setLoggedIn(true);
+        }
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        handleLoad();
+    }, []);
+
+    if (!loading) {
+        return (
+            <>
+                <LocationBasedHamburgerMenu />
+                <Routes>
+                    <Route path="/" exact
+                        element={!loggedIn ?
+                            <Navigate to="/login" /> :
+                            <HomePage />}
+                    />
+                    <Route path="/contatti" exact
+                        element={
+                            !loggedIn ?
+                                <Navigate to="/login" /> :
+                                <ContattiPage />}
+                    />
+                    <Route path="/login" element={<LoginPage setLoggedIn={setLoggedIn} />} />
+                    <Route path="/logout" element={<Logout setLoggedIn={setLoggedIn} />} />
+                </Routes>
+            </ >
+        );
+    }
 }
 
 export default App;
