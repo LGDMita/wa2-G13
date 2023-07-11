@@ -1,4 +1,4 @@
-// TokenManager.js
+import jwt_decode from "jwt-decode";
 
 const TokenManager = () => {
     let token = null;
@@ -16,7 +16,14 @@ const TokenManager = () => {
 
     const amILogged = () => {
         if (token) {
-            return true
+            let decodedToken = jwt_decode(token);
+            let currentDate = new Date();
+            if (decodedToken.exp * 1000 < currentDate.getTime()) {
+                removeAuthToken();
+                return false;
+            } else {
+                return true;
+            }
         }
         else {
             return false

@@ -5,21 +5,39 @@ import { useNavigate } from 'react-router-dom';
 import { ReactComponent as Logo } from "../logo.svg";
 import API from '../API';
 import TokenManager from '../TokenManager';
+import ErrorMessage from './ErrorMessage';
 
 import "../styles/LoginPage.css"
 
 export default function LoginPage(props) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [showError, setShowError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
 
-    const handleLogin = () => {
-        API.login(username, password);
-        console.log("Chiamata API login eseguita");
-        console.log("Username:", username);
-        console.log("Password:", password);
-        props.setLoggedIn(true);
-        navigate("/")
+    const handleLogin = async () => {
+        try {
+            await API.login(username, password);
+            console.log("Chiamata API login eseguita");
+            console.log("Username:", username);
+            console.log("Password:", password);
+            props.setLoggedIn(true);
+            navigate("/")
+        }
+        catch (status) {
+            setShowError(true);
+            if (parseInt(status.message) === 500) {
+                setErrorMessage("Failed to contact the server.")
+            }
+            else if (parseInt(status.message) === 401) {
+                setErrorMessage('Username or password is incorrect.');
+            }
+        }
+    };
+
+    const handleErrorClose = () => {
+        setShowError(false);
     };
 
     const handleLoad = () => {
@@ -82,6 +100,7 @@ export default function LoginPage(props) {
                                 </Button>
                             </div>
                             <br />
+                            {showError && <ErrorMessage message={errorMessage} onClose={handleErrorClose} />}
                         </Form>
                     </Col>
                 </Row>

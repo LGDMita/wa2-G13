@@ -104,6 +104,7 @@ const login = async (username, password) => {
         // Effettua ulteriori operazioni dopo il login, come la navigazione alla pagina successiva
     } catch (error) {
         console.error('Errore durante il login:', error);
+        throw new Error(error.response.status)
     }
 };
 
