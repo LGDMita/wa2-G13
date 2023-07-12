@@ -89,8 +89,9 @@ const updateProfile = async (email, profile) => {
     }
 };
 
-const login = async (username, password) => {
+const login = async (username, password, setUser) => {
     try {
+        //console.log("Trying login API");
         const response = await axios.post('/API/login', {
             username,
             password,
@@ -100,13 +101,22 @@ const login = async (username, password) => {
 
         // Salva il token utilizzando il TokenManager
         tokenManager.setAuthToken(token);
-
+        
         // Effettua ulteriori operazioni dopo il login, come la navigazione alla pagina successiva
+        const user=tokenManager.getUser();
+        user.pwd=password;
+        //console.log("User is "+JSON.stringify(user));
+        tokenManager.storeUser(user);
+        setUser(user);
     } catch (error) {
-        console.error('Errore durante il login:', error);
+        //console.error('Errore durante il login:', error);
         throw new Error(error.response.status)
     }
 };
+
+const logout = async () =>{
+    return null;
+}
 
 const API = {
     getProducts,
@@ -114,7 +124,8 @@ const API = {
     getUserInfo,
     addProfile,
     updateProfile,
-    login
+    login,
+    logout
 };
 
 export default API;

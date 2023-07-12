@@ -1,0 +1,81 @@
+.messages-container {
+    height: 100%;
+    width: 100%;
+    margin: 0rem;
+    overflow: hidden;
+    -ms-overflow-style: none; /* for Internet Explorer, Edge */
+    scrollbar-width: none; /* for Firefox */
+    overflow-y: scroll;
+    scroll-snap-align: center;
+    scroll-behavior: smooth;
+}
+
+.message-box {
+    box-sizing: border-box;
+    padding: 0.5rem 1rem;
+    margin: 1rem;
+    background: #FFF;
+    border-radius: 1.125rem 1.125rem 1.125rem 0;
+    min-height: 2.25rem;
+    width: fit-content;
+    max-width: 66%;
+    
+    box-shadow: 
+        0 0 2rem rgba(black, 0.075),
+        0rem 1rem 1rem -1rem rgba(black, 0.1);
+}
+
+
+.newmessage-box {
+    box-sizing: border-box;
+    padding: 0.5rem 1rem;
+    margin: 1rem;
+    background: cadetblue;
+    border-radius: 1.125rem 1.125rem 1.125rem 0;
+    min-height: 2.25rem;
+    width: 100%;
+    
+    box-shadow: 
+        0 0 2rem rgba(black, 0.075),
+        0rem 1rem 1rem -1rem rgba(black, 0.1);
+}
+
+.newmessage-send {
+    background-color: green;
+    border-radius: 50%;
+    width: max-content;
+    height: max-content;
+    text-align: center;
+    padding: 0.5rem 1rem;
+    margin: 1rem;
+}
+
+.sendmessagebutton {
+    color: white;
+}
+
+.newmessage-send:hover > .sendmessagebutton {
+    color: greenyellow;
+}
+
+.message-box.message-left {
+    background-color: blueviolet;
+}
+
+.message-box.message-right {
+    margin: 1rem 1rem 1rem auto ;
+	border-radius: 1.125rem 1.125rem 0 1.125rem;
+    background-color:cadetblue;
+}
+
+.message-box.message-right.message-header {
+    font-weight: bolder;
+}
+
+.message-time {
+    text-align: end;
+}
+
+/*.message-box.message-footer {
+
+}*/

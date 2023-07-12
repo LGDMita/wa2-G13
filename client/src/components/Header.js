@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { useNavigate } from 'react-router-dom';
 import UserContext from "../context/UserContext";
 import { Container, Row, Nav, Navbar, Button, NavbarBrand, Anchor } from "react-bootstrap";
+import API from "../API";
 
 
 function Header(props){
@@ -44,7 +45,12 @@ function Header(props){
 }
 
 function authButton(logged,navigate){
-    if(logged)  return  (<Button variant='danger'>Logout</Button>);
+    const handleLogout=async e=>{
+        e.preventDefault();
+        e.stopPropagation();
+        await API.logout();
+    }
+    if(logged)  return  (<Button variant='danger' onClick={handleLogout}>Logout</Button>);
     else    return (<Button variant='success' onClick={async e=>{e.preventDefault();e.stopPropagation();navigate('/login');}}>Login</Button>);
 }
 

@@ -15,13 +15,17 @@ const TokenManager = () => {
     };
 
     const amILogged = () => {
+        //console.log("Am I logged?");
         if (token) {
+            //console.log("I have token");
             let decodedToken = jwt_decode(token);
             let currentDate = new Date();
             if (decodedToken.exp * 1000 < currentDate.getTime()) {
+                //console.log("Token expired, expiry date "+decodedToken.exp);
                 removeAuthToken();
                 return false;
             } else {
+                //console.log("Token not expired");
                 return true;
             }
         }
@@ -32,6 +36,7 @@ const TokenManager = () => {
 
     const removeAuthToken = () => {
         localStorage.removeItem("jwtToken");
+        localStorage.removeItem("userData");
         token = null;
         storedToken = null;
     }
@@ -43,7 +48,42 @@ const TokenManager = () => {
         token = storedToken;
     }
 
-    return { setAuthToken, getAuthToken, amILogged, removeAuthToken };
+    // get decoded token
+    const getDecodedToken= () => token ? jwt_decode(token) : {logged:false,role:undefined,username:'',pwd:''}
+
+    const getUser= () => {
+        if(token){
+            const decodedToken=jwt_decode(token);
+            let userRole="";
+            switch (decodedToken.resource_access["spring-client"].roles[0]) {
+                case "client":
+                    userRole="customer";
+                    break;
+                case "manager":
+                    userRole="manager";
+                    break;
+                case "expert":
+                    userRole="expert";
+                    break;
+                default:
+                    break;
+            }
+            return {
+                logged:true,
+                role:userRole,
+                username:decodedToken.preferred_username,
+            }
+        }
+        return {logged:false,role:undefined,username:'',pwd:''}
+    }
+    const storeUser= user => {
+        localStorage.setItem("userData",JSON.stringify(user));
+    }
+    const retrieveUser= ()=>{
+        if(token) return JSON.parse(localStorage.getItem("userData"));
+        else return {logged:false,role:undefined,username:'',pwd:''};
+    }
+    return { setAuthToken, getAuthToken, amILogged, removeAuthToken, getDecodedToken, getUser, storeUser, retrieveUser };
 };
 
 export default TokenManager;

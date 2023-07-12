@@ -1,0 +1,223 @@
+
+.imggallerybody {
+    height: 100%;
+    width: 100%;
+    margin: 0rem;
+    overflow: hidden;
+    -ms-overflow-style: none; /* for Internet Explorer, Edge */
+    scrollbar-width: none; /* for Firefox */
+    overflow-x: scroll;
+    scroll-snap-align: center;
+    scroll-behavior: smooth;
+}
+  
+.imggallerybody::-webkit-scrollbar {
+width: 0 !important;
+}
+
+#imggallery {
+display: flex;
+gap: 1vmin;
+}
+
+#imggallery > .cardimages > .image {
+width: 18vmin;
+height: 15vmin;
+object-fit: cover;
+object-position: center;
+}
+
+.addimage > .image {
+width: 14vmin;
+height: 20vmin;
+object-fit: cover;
+object-position: center;
+}
+
+.addimage:hover .image {
+filter: brightness(50%);
+}
+
+.cardimages:hover .image:not(:fullscreen) {
+filter: brightness(50%);
+}
+
+.cardimages:hover .cardimagesoverlay {
+display: block;
+/* box-shadow: 0 0 1rem grey; */
+}
+
+.cardimages {
+position: relative;
+}
+
+.cardimages .cardimagesoverlay {
+position: absolute;
+top: 0;
+left: 0;
+color: #f1f1f1;
+width: 100%;
+height: 100%;
+transition: 0.5s ease;
+display: none;
+text-align: center;
+}
+
+.imageuploader {
+position: absolute;
+top: 0;
+left: 0;
+color: #f1f1f1;
+width: 14vmin;
+height: 20vmin;
+opacity: 0;
+transition: 0.5s ease;
+}
+
+.cardoverlayimageremove {
+position: absolute;
+bottom: 10px;
+right: 10px;
+}
+
+.cardoverlayimageremove > .bi {
+fill: red;
+}
+
+.cardoverlayimageremove:hover {
+color: rgba(255, 255, 255, 0.699);
+}
+
+.cardoverlayimagezoom > .bi {
+fill: cyan;
+}
+
+.cardoverlayimagezoom:hover > .bi {
+fill: white;
+}
+
+.cardoverlayimagezoom {
+width: 100%;
+}
+
+.dropdown-menu.show {
+z-index: 9999;
+}
+
+.slick-slide div img {
+width: 100%;
+height: 100%;
+}
+
+.sliderimage {
+position: relative;
+}
+
+.sliderimage .sliderimageoverlay {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+display: none;
+}
+
+.sliderimage:hover > .sliderimageoverlay {
+display: block;
+box-shadow: 0 0 1rem red;
+}
+
+.sliderimage:hover .sliderimageimg {
+filter: brightness(50%);
+}
+
+.addfilecontainer {
+position: relative;
+border-radius: 50%;
+background-color: indianred;
+}
+
+
+.addfilelogo {
+position: absolute;
+top: calc(-18px + 50%);
+left: 0;
+height: 100%;
+width: 100%;
+text-align: center;
+vertical-align: middle;
+color: aliceblue;
+}
+
+.addfilecontainer:hover {
+filter: brightness(50%);
+}
+
+.addfilelogo:hover {
+color: darkkhaki;
+}
+
+.slidecont {
+position: relative;
+}
+
+.slidefile {
+    background-color:gainsboro;
+    border-radius: 1.125rem 1.125rem 1.125rem 1.125rem;
+    width:100%;
+    height:100%;
+    text-align: center;
+}
+
+.slidecont:hover .slideimg:not(:fullscreen) {
+filter: brightness(50%);
+}
+
+.slidecont:hover .slideoverlay {
+color: aliceblue;
+}
+
+.slideoverlay {
+position: absolute;
+top: calc(-18px + 50%);
+left: 0;
+height: 100%;
+width: 100%;
+text-align: center;
+vertical-align: middle;
+display: none;
+}
+
+.slidecont:hover .slideoverlay {
+display: block;
+}
+
+.slidedelete:hover {
+color: red;
+}
+
+.slidefullscreen:hover {
+color: cadetblue;
+}
+
+.slidedown:hover {
+color:gold;
+}
+
+.slick-prev:before,
+.slick-next:before {
+color: maroon !important;
+}
+
+.hikeselectimage {
+color: blueviolet;
+}
+
+.hikeselectimage:hover {
+filter: brightness(150%);
+}
+
+.hikeselectimage.active {
+text-shadow: 0 0 0.2rem white, 0 0 0.5rem white, 0 0 0.7rem blueviolet,
+    0 0 1rem blueviolet;
+}

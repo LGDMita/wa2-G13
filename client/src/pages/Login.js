@@ -10,6 +10,7 @@ function LoginPage(props){
     const [username,setUsername]=useState('');
     const [password,setPassword]=useState('');
     const [error,setError]=useState(false);
+    const [errorMessage,setErrorMessage]=useState('');
     return(
         <Form style={
             {
@@ -24,11 +25,21 @@ function LoginPage(props){
             e.preventDefault();
             e.stopPropagation();
             try {
-                //await API.login(username,password);
-                setUser({logged:true,role:role,username:username,password:password});
-                navigate('/home');
-            } catch (error) {
+                console.log("Trying login");
+                await API.login(username, password, setUser);
+                console.log("Chiamata API login eseguita");
+                console.log("Username:", username);
+                console.log("Password:", password);
+                navigate("/home");
+            }
+            catch (status) {
                 setError(true);
+                if (parseInt(status.message) === 500) {
+                    setErrorMessage("Failed to contact the server.")
+                }
+                else if (parseInt(status.message) === 401) {
+                    setErrorMessage('Username or password is incorrect.');
+                }
             }
         }}>
             <Form.Group className="mb-3">
@@ -48,7 +59,7 @@ function LoginPage(props){
                 </Form.Select>
             </Form.Group>
             <Button variant="success" type="submit">Submit</Button>
-            {error?<Alert className="my-3" variant="danger">Something went wrong!</Alert>:<></>}
+            {error?<Alert className="my-3" variant="danger">{errorMessage}</Alert>:<></>}
         </Form>
     );
 }
