@@ -30,6 +30,16 @@ const TokenManager = () => {
         }
     };
 
+    const amIManager = () => {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.realm_access.roles.includes("app_manager");
+    }
+
+    const amIExpertOrManager = () => {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.realm_access.roles.includes("app_manager") || payload.realm_access.roles.includes("app_expert");
+    }
+
     const removeAuthToken = () => {
         localStorage.removeItem("jwtToken");
         token = null;
@@ -43,7 +53,14 @@ const TokenManager = () => {
         token = storedToken;
     }
 
-    return { setAuthToken, getAuthToken, amILogged, removeAuthToken };
+    return {
+        setAuthToken,
+        getAuthToken,
+        amILogged,
+        removeAuthToken,
+        amIManager,
+        amIExpertOrManager
+    };
 };
 
 export default TokenManager;

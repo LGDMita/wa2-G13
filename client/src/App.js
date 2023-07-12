@@ -45,6 +45,7 @@ function App() {
         const tokenManager = TokenManager();
         if (tokenManager.amILogged()) {
             setLoggedIn(true);
+            tokenManager.amIManager();
         }
         setLoading(false);
     };
