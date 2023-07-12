@@ -24,7 +24,7 @@ export default function HamburgerMenu() {
       <Navbar.Collapse id="responsive-navbar-nav">
         <Nav className="mr-auto">
           <Nav.Link href="/products">Prodotti</Nav.Link>
-          {tokenManager.amIExpertOrManager() ? <Nav.Link href="#pricing">All tickets</Nav.Link> : null}
+          {tokenManager.amIExpertOrManager() ? <Nav.Link href="/tickets">All tickets</Nav.Link> : null}
           {tokenManager.amIManager() ? <Nav.Link href="#pricing">All experts</Nav.Link> : null}
           <NavDropdown title="My Profile" id="collasible-nav-dropdown">
             <NavDropdown.Item href="/profile">My profile</NavDropdown.Item>

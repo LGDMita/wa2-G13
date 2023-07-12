@@ -31,13 +31,13 @@ const TokenManager = () => {
     };
 
     const amIManager = () => {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        return payload.realm_access.roles.includes("app_manager");
+        const payload = token ? JSON.parse(atob(token.split('.')[1])) : null;
+        return payload ? payload.realm_access.roles.includes("app_manager") : null;
     }
 
     const amIExpertOrManager = () => {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        return payload.realm_access.roles.includes("app_manager") || payload.realm_access.roles.includes("app_expert");
+        const payload = token ? JSON.parse(atob(token.split('.')[1])) : null;
+        return payload ? payload.realm_access.roles.includes("app_manager") || payload.realm_access.roles.includes("app_expert") : null;
     }
 
     const removeAuthToken = () => {

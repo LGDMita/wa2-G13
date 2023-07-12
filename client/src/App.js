@@ -5,8 +5,10 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import HamburgerMenu from './components/HamburgerMenu';
 import LoginPage from './components/LoginPage';
+import {TicketList} from "./components/TicketList";
 import { useLocation } from "react-router-dom";
 import TokenManager from './TokenManager';
+import {ProductTable} from "./components/ProductTable";
 
 function HomePage() {
     return <h1>Homepage</h1>;
@@ -72,6 +74,8 @@ function App() {
                     />
                     <Route path="/login" element={<LoginPage setLoggedIn={setLoggedIn} />} />
                     <Route path="/logout" element={<Logout setLoggedIn={setLoggedIn} />} />
+                    <Route path="/tickets" element={<TicketList/>} />;
+                    <Route path="/products" element={<ProductTable/>}/>;
                 </Routes>
             </Router >
         );
