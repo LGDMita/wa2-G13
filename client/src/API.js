@@ -2,6 +2,7 @@ import axios from 'axios';
 import Product from "./product";
 import Profile from "./profile";
 import TokenManager from './TokenManager';
+import Ticket from "./ticket";
 
 const SERVER_URL = 'http://localhost:8080';
 
@@ -40,6 +41,18 @@ apiInstance.interceptors.response.use(
         return Promise.reject(error);
     }
 );
+
+const getTickets = async () => {
+    const response = await apiInstance.get('/API/tickets/');
+    const rows = response.data;
+    if (response.status === 200) {
+        return rows.map(row => {
+            return new Ticket(row.ticketId, row.profile, row.product, row.priorityLevel, row.expert, row.status, row.creationDate, row.messages);
+        });
+    } else {
+        throw new Error(rows.detail);
+    }
+};
 
 const getProducts = async () => {
     const response = await apiInstance.get('/API/products/');
@@ -119,6 +132,7 @@ const logout = async () =>{
 }
 
 const API = {
+    getTickets,
     getProducts,
     getProduct,
     getUserInfo,

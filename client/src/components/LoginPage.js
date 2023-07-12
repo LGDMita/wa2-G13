@@ -19,9 +19,6 @@ export default function LoginPagee(props) {
     const handleLogin = async () => {
         try {
             await API.login(username, password);
-            console.log("Chiamata API login eseguita");
-            console.log("Username:", username);
-            console.log("Password:", password);
             props.setLoggedIn(true);
             navigate("/")
         }

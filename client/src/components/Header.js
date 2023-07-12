@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { useNavigate } from 'react-router-dom';
 import UserContext from "../context/UserContext";
-import { Container, Row, Nav, Navbar, Button, NavbarBrand, Anchor } from "react-bootstrap";
+import { Container, Nav, Navbar, Button, NavbarBrand, Anchor } from "react-bootstrap";
 import API from "../API";
 
 
@@ -35,7 +35,7 @@ function Header(props){
                     <Nav.Item>
                     {
                         //Login or logout simply
-                        authButton(user.logged,navigate)
+                        authButton(user.logged,navigate,props.handleLogout)
                     }
                     </Nav.Item>
                 </Nav>
@@ -44,11 +44,13 @@ function Header(props){
     );
 }
 
-function authButton(logged,navigate){
+function authButton(logged,navigate,logoutCallback){
     const handleLogout=async e=>{
         e.preventDefault();
         e.stopPropagation();
         await API.logout();
+        logoutCallback();
+        navigate("/home");
     }
     if(logged)  return  (<Button variant='danger' onClick={handleLogout}>Logout</Button>);
     else    return (<Button variant='success' onClick={async e=>{e.preventDefault();e.stopPropagation();navigate('/login');}}>Login</Button>);
@@ -57,26 +59,48 @@ function authButton(logged,navigate){
 function roleSpecificNavbar(logged,role){
     if(logged) switch (role) {
         case 'customer':
-            return (<CustomerNavOptions></CustomerNavOptions>);
-    
+            return (<CustomerNavOptions/>);
+        case 'manager':
+            return (<ManagerNavOptions/>);
+        case 'expert':
+            return (<ExpertNavOptions/>);
         default:
             break;
     }
-    return (<CustomerNavOptions></CustomerNavOptions>);
-    //return (<></>);
+    return (<></>);
 }
 
 function CustomerNavOptions(props){
     return(
         <>
-            <Nav.Link href="/customer/warranties">
-                Warranties
+            <Nav.Link href="/tickets">
+                My tickets
             </Nav.Link>
-            <Nav.Link href="/customer/chats">
-                Chats
+            <Nav.Link href="/purchases">
+                My products
             </Nav.Link>
         </>
     );
+}
+
+function ManagerNavOptions(props){
+    return(
+        <>
+            <Nav.Link href="/tickets">
+                Tickets
+            </Nav.Link>
+        </>
+    )
+}
+
+function ExpertNavOptions(props){
+    return(
+        <>
+            <Nav.Link href="/tickets">
+                Tickets
+            </Nav.Link>
+        </>
+    )
 }
 
 export default Header;
