@@ -129,6 +129,53 @@ const login = async (username, password, setUser) => {
 
 const logout = async () =>{
     return null;
+};
+
+
+const sendMessage=async (ticketId,fromUser,text,files) => {
+    const data=new FormData();
+    data.append("fromUser",fromUser);
+    data.append("text",text);
+    files.forEach(f=>data.append("attachments",f));
+    const res=await apiInstance.post("/API/tickets/"+ticketId+"/messages",data,{
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+    });
+    if(res.status!==201){
+        const ret=await res.data;
+        throw new Error({status:res.status,detail:ret});
+    }
+}
+
+const getMessages=async ticketId => {
+    const res=await apiInstance.get("/API/tickets/"+ticketId+"/messages");
+    const ret=await res.data;
+    if(res.status!==200) throw new Error({status:res.status,detail:ret});
+    else return ret;
+}
+
+const getTicketsOf=async (id,role) => {
+    const queryParams = new URLSearchParams('?');
+    let queryRole="profile";
+    switch (role) {
+        case 'customer':
+            break;
+        case 'expert':
+            queryRole='expert';
+            break;
+        case 'manager':
+            queryRole='expert';
+            break;
+        default:
+            break;
+    }
+    queryParams.append(role+"Id",id);
+    const url="/API/tickets/"+queryParams.toString();
+    const res=await apiInstance.get(url);
+    const ret=await res.data;
+    if(res.status!==200) throw new Error({status:res.status,detail:ret});
+    else return ret.map(row=>new Ticket(row.ticketId, row.profile, row.product, row.priorityLevel, row.expert, row.status, row.creationDate, row.messages));
 }
 
 const API = {
@@ -139,7 +186,10 @@ const API = {
     addProfile,
     updateProfile,
     login,
-    logout
+    logout,
+    sendMessage,
+    getMessages,
+    getTicketsOf,
 };
 
 export default API;

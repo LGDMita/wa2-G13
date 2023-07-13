@@ -1,6 +1,6 @@
 .messages-container {
-    height: 75vh;
-    max-height: 75vh;
+    height: 71vh;
+    max-height: 71vh;
     width: 100%;
     margin: 0rem;
     -ms-overflow-style: none; /* for Internet Explorer, Edge */
@@ -26,7 +26,8 @@
 }
 
 .newmessage-container {
-    height: 15vh;
+    height: 19vh;
+    max-height: 19vh;
     -ms-overflow-style: none; /* for Internet Explorer, Edge */
     scrollbar-width: none; /* for Firefox */
     overflow-y: scroll;

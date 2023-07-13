@@ -132,18 +132,12 @@ filter: brightness(50%);
 }
 
 .addfilecontainer {
-position: relative;
 border-radius: 50%;
 background-color: indianred;
+vertical-align: middle;
 }
 
-
 .addfilelogo {
-position: absolute;
-top: calc(-18px + 50%);
-left: 0;
-height: 100%;
-width: 100%;
 text-align: center;
 vertical-align: middle;
 color: aliceblue;
@@ -153,7 +147,7 @@ color: aliceblue;
 filter: brightness(50%);
 }
 
-.addfilelogo:hover {
+.addfilecontainer:hover > .addfilelogo {
 color: darkkhaki;
 }
 

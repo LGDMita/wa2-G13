@@ -4,6 +4,7 @@ import { useContext, useState } from "react";
 import UserContext from "../context/UserContext";
 import "../styles/Chat.css";
 import { GallerySlider } from ".";
+import API from "../API";
 
 function Message(props){
     return(
@@ -41,14 +42,17 @@ function MessageList(props){
 }
 
 function NewMessage(props){
+    const {user,setUser}=useContext(UserContext);
     const [newMessageText,setNewMessageText]=useState("");
     const [files,setFiles]=useState([]);
     const [error,setError]=useState("");
     const handleMessage=async()=>{
         try {
-            setError("Blabla");
+            // modify file structure, actually useless now
             //const attachments=files.map(f=>{});
-            //await API.sendMessage(props.ticketId,user.role==='CUSTOMER',newMessageText,attachments);
+            await API.sendMessage(props.ticketId,user.role==='CUSTOMER',newMessageText,files);
+            files.forEach(f=>URL.revokeObjectURL(f.url));
+            setFiles([]);
             props.setRefresh(!props.refresh);
         } catch (error) {
             setError(error);
@@ -58,10 +62,17 @@ function NewMessage(props){
         <div className="newmessage-container">
             <Row>
                 <Col xs={10}>
-                    <div className="newmessage-box">
-                        <textarea disabled={props.ticket.status!=="IN PROGRESS"} value={newMessageText} style={{border:"none", background: "transparent", "outline": 0,width:"100%",height:"100%"}}
-                        placeholder="Type here...!" onChange={e=>{e.preventDefault();e.stopPropagation();setNewMessageText(e.target.value);}}/>
-                    </div>
+                    <Row>
+                        <Col xs={files.length>0?8:11}>
+                            <div className="newmessage-box">
+                                <textarea disabled={props.ticket.status!=="IN PROGRESS"} value={newMessageText} style={{border:"none", background: "transparent", "outline": 0,width:"100%",height:"100%"}}
+                                placeholder="Type here...!" onChange={e=>{e.preventDefault();e.stopPropagation();setNewMessageText(e.target.value);}}/>
+                            </div>
+                        </Col>
+                        <Col xs={files.length>0?4:1}>
+                            <GallerySlider disabled={props.ticket.status!=="IN PROGRESS"} add={true} files={files} setFiles={setFiles}/>
+                        </Col>
+                    </Row>
                 </Col>
                 <Col xs={2}>
                     <div className="newmessage-send" onClick={e=>{e.preventDefault();e.stopPropagation();handleMessage();}}>
@@ -70,9 +81,6 @@ function NewMessage(props){
                         </span>
                     </div>
                 </Col>
-            </Row>
-            <Row>
-                <GallerySlider disabled={props.ticket.status!=="IN PROGRESS"} add={true} files={files} setFiles={setFiles}/>
             </Row>
             {error!=="" &&
                 <Modal show={true} onHide={()=>setError("")} size="md" aria-labelledby="contained-modal-title-vcenter" centered>
@@ -207,48 +215,49 @@ function ChatHeader(props){
 function Chat(props){
     const {user,setUser}=useContext(UserContext);
     //some messages just for test frontend, actual ones will be blobs so they will be treated differently as well
-    const [messages,setMessages]=useState([{
+    const frontendTestMessages=[{
         datetime: "22/02/1999 14:22",
         fromUser:false,
         text:"Hey customer how may I assist u?",
-        files:[/*{
-            type:"photo",
+        files:[{
+            type:"image/png",
             name:"Stark",
             url:'https://vignette.wikia.nocookie.net/marvelcinematicuniverse/images/7/73/SMH_Mentor_6.png'
         },{
-            type:"photo",
+            type:"image/jpg",
             name:"Banner",
             url:'https://vignette.wikia.nocookie.net/marvelcinematicuniverse/images/4/4f/BruceHulk-Endgame-TravelingCapInPast.jpg'
         },{
             type:"pdf",
             name:"Myfile",
             url:"file.pdf"
-        }{
-            type:"photo",
+        },{
+            type:"image/jpg",
             name:"Thor",
             url:'https://vignette.wikia.nocookie.net/marvelcinematicuniverse/images/9/98/ThorFliesThroughTheAnus.jpg'
         },{
-            type:"photo",
+            type:"image/png",
             name:"Rogers",
             url:'https://vignette.wikia.nocookie.net/marvelcinematicuniverse/images/7/7c/Cap.America_%28We_Don%27t_Trade_Lives_Vision%29.png'
-        }*/],
+        }],
     },{
         datetime: "22/02/1999 14:25",
         fromUser:true,
-        text:"Hey expert this is my issue"
+        text:"Hey expert my TV is not working"
+    },{
+        datetime: "22/02/1999 14:25",
+        fromUser:false,
+        text:"Have you tried to plug it and unplug it?"
     },{
         datetime: "22/02/1999 14:25",
         fromUser:true,
-        text:"Hey expert this is my issue"
+        text:"Oh no actually thanks for the suggestion!"
     },{
         datetime: "22/02/1999 14:25",
         fromUser:true,
-        text:"Hey expert this is my issue"
-    },{
-        datetime: "22/02/1999 14:25",
-        fromUser:true,
-        text:"Hey expert this is my issue"
-    }]);
+        text:"I tried and it's working currently, thanks!"
+    }];
+    const [messages,setMessages]=useState([])
     return(
         <Row>
             <ChatHeader ticket={props.ticket}/>

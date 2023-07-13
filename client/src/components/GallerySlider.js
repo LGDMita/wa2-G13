@@ -19,7 +19,8 @@ function GallerySlider(props){
     const addFile = file => {
         console.log("Adding file",file.target.files[0]);
         props.setFiles([...props.files,{file:file.target.files[0],
-            filename:file.target.files[0].name,
+            type:file.target.files[0].type,
+            name:file.target.files[0].name,
             url:URL.createObjectURL(file.target.files[0])}]);
     };
     const removeFile = url => {
@@ -53,7 +54,7 @@ function GallerySlider(props){
     return(
         <Row>
             {props.add &&
-                <Col xs={6} sm={4} className='justify-content-center mx-auto my-2'>
+                <Col xs={props.files.length>0?6:12} sm={props.files.length>0?4:12} className='justify-content-center mx-auto my-2'>
                     <div className="addfilecontainer">
                         <span className={"material-icons-round md-36 addfilelogo"+(props.disabled?" disabled":"")} onClick={e=>{
                             e.preventDefault();
@@ -66,50 +67,52 @@ function GallerySlider(props){
                     </div>
                 </Col>
             }
-            <Col xs={12} sm={props.add?8:12} className='justify-content-center mx-auto my-2'>
-                <div className="mx-auto slider-container">
-                    <Slider className='mx-auto' {...sliderSettings} style={{width:"75%",height:"25%"}}>
-                        {
-                            props.files.map(f=>
-                                <div key={f.url} className="slidecont">
-                                    {f.type==="photo" ?
-                                        <img alt="alt" src={f.url} id={f.url} className='img-fluid slideimg'/>
-                                        :
-                                        <div className="slidefile justify-content-center mx-auto">
-                                            <span className="material-icons-round md-3" style={{color:"white"}}>
-                                                file_copy
-                                            </span>
-                                            {f.name}
-                                        </div> }
-                                    <div className="slideoverlay">
-                                        {f.type==='photo' && <span className="material-icons-round md-36 slidefullscreen" onClick={e=>{
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                setFullScreenUrl(f.url)
-                                            }}>
-                                            open_in_full
-                                        </span>}
-                                        {props.add && 
-                                            <span className="material-icons-round md-36 slidedelete" onClick={e=>{
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                removeFile(f.url)
-                                            }}>
-                                                delete_forever
-                                            </span>
-                                        }
-                                        {!props.add &&
-                                            <span className="material-icons-round md-36 slidedown">
-                                                file_download
-                                                <a href={f.url} download/>
-                                            </span>
-                                        }
-                                    </div>
-                                </div>)
-                        }
-                    </Slider>
-                </div>
-            </Col>
+            {props.files.length>0 &&
+                <Col xs={12} sm={props.add?8:12} className='justify-content-center mx-auto my-2'>
+                    <div className="mx-auto slider-container">
+                        <Slider className='mx-auto' {...sliderSettings} style={{width:"75%",height:"25%"}}>
+                            {
+                                props.files.map(f=>
+                                    <div key={f.url} className="slidecont">
+                                        {f.type.split("/")[0]==="image" ?
+                                            <img alt="alt" src={f.url} id={f.url} className='img-fluid slideimg'/>
+                                            :
+                                            <div className="slidefile justify-content-center mx-auto">
+                                                <span className="material-icons-round md-3" style={{color:"white"}}>
+                                                    file_copy
+                                                </span>
+                                                {f.name}
+                                            </div> }
+                                        <div className="slideoverlay">
+                                            {f.type.split("/")[0]==="image" && <span className="material-icons-round md-36 slidefullscreen" onClick={e=>{
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    setFullScreenUrl(f.url)
+                                                }}>
+                                                open_in_full
+                                            </span>}
+                                            {props.add && 
+                                                <span className="material-icons-round md-36 slidedelete" onClick={e=>{
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    removeFile(f.url)
+                                                }}>
+                                                    delete_forever
+                                                </span>
+                                            }
+                                            {!props.add &&
+                                                <span className="material-icons-round md-36 slidedown">
+                                                    file_download
+                                                    <a href={f.url} download/>
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>)
+                            }
+                        </Slider>
+                    </div>
+                </Col>
+            }
         </Row>
     )
 }
