@@ -1,0 +1,16 @@
+.ticket-page {
+    max-height: 93vh;
+    overflow: hidden;
+}
+
+.ticket-list {
+    -ms-overflow-style: none; /* for Internet Explorer, Edge */
+    scrollbar-width: none; /* for Firefox */
+    overflow-y: scroll;
+    scroll-snap-align: center;
+    scroll-behavior: smooth;
+    max-height: 93vh;
+}
+
+.ticket-card {
+}

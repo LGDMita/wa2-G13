@@ -6,5 +6,6 @@ import { SingleProduct } from "./SingleProduct";
 import { SingleProfile } from "./SingleProfile";
 import LoginPagee from "./LoginPage";
 import GallerySlider from "./GallerySlider";
+import Chat from "./Chat";
 
-export {AddProfile,EditProfile,Header,ProductTable,SingleProduct,SingleProfile,LoginPagee,GallerySlider};
+export {AddProfile,EditProfile,Header,ProductTable,SingleProduct,SingleProfile,LoginPagee,GallerySlider,Chat};

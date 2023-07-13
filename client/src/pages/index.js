@@ -1,5 +1,5 @@
 import HomepagePage from "./Homepage";
 import LoginPage from "./Login";
-import Chat from "./Chat";
+import TicketPage from "./TicketPage";
 
-export {HomepagePage,LoginPage,Chat};
+export {HomepagePage,LoginPage,TicketPage};

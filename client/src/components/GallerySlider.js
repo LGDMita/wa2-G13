@@ -55,14 +55,14 @@ function GallerySlider(props){
             {props.add &&
                 <Col xs={6} sm={4} className='justify-content-center mx-auto my-2'>
                     <div className="addfilecontainer">
-                        <span className="material-icons-round md-36 addfilelogo" onClick={e=>{
+                        <span className={"material-icons-round md-36 addfilelogo"+(props.disabled?" disabled":"")} onClick={e=>{
                             e.preventDefault();
                             e.stopPropagation();
                             openFileUpload();
                         }}>
                             upload_file
                         </span>
-                        <input id="addfileupload" type="file" hidden onChange={f=>addFile(f)}/>
+                        <input disabled={props.disabled} id="addfileupload" type="file" hidden onChange={f=>addFile(f)}/>
                     </div>
                 </Col>
             }

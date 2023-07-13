@@ -1,8 +1,8 @@
 .messages-container {
-    height: 100%;
+    height: 75vh;
+    max-height: 75vh;
     width: 100%;
     margin: 0rem;
-    overflow: hidden;
     -ms-overflow-style: none; /* for Internet Explorer, Edge */
     scrollbar-width: none; /* for Firefox */
     overflow-y: scroll;
@@ -25,6 +25,14 @@
         0rem 1rem 1rem -1rem rgba(black, 0.1);
 }
 
+.newmessage-container {
+    height: 15vh;
+    -ms-overflow-style: none; /* for Internet Explorer, Edge */
+    scrollbar-width: none; /* for Firefox */
+    overflow-y: scroll;
+    scroll-snap-align: center;
+    scroll-behavior: smooth;
+}
 
 .newmessage-box {
     box-sizing: border-box;
@@ -74,6 +82,30 @@
 
 .message-time {
     text-align: end;
+}
+
+.chat-header {
+    background-color: cadetblue;
+    width: 100%;
+    height: 6vh;
+}
+
+.chat-header-receiver {
+    text-align: start;
+    vertical-align: middle;
+    justify-content: center;
+    color: white;
+    font-weight: bolder;
+}
+
+.chat-header-status-management {
+    text-align: end;
+    color: white;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: end;
+    vertical-align: middle;
+    gap: 1em;
 }
 
 /*.message-box.message-footer {

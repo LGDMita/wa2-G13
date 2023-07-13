@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import UserContext from "../context/UserContext";
 import { Container, Nav, Navbar, Button, NavbarBrand, Anchor } from "react-bootstrap";
 import API from "../API";
-
+import "../styles/Header.css";
 
 function Header(props){
     const {user,setUser}=useContext(UserContext);
@@ -13,7 +13,7 @@ function Header(props){
             {
               "backgroundColor":"#057fb4"
             }
-          } sticky="top">
+          } sticky="top" className="header-container">
             <Container fluid className="d-flex justify-content-between">
                 {/*
                 Common nav options
