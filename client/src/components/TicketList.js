@@ -2,6 +2,8 @@ import API from '../API';
 import React, {useEffect, useState} from 'react';
 import Table from 'react-bootstrap/Table';
 import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button'
+import { Link } from 'react-router-dom';
 
 import TokenManager from '../TokenManager';
 
@@ -53,6 +55,7 @@ function TicketList() {
                     <th>PRIORITY LEVEL</th>
                     <th>STATUS</th>
                     <th>CREATION DATE</th>
+                    <th>ASSIGN</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -69,6 +72,13 @@ function TicketList() {
                                     <td>{t.product.priorityLevel}</td>
                                     <td>{t.status}</td>
                                     <td>{t.creationDate}</td>
+                                    <td>
+                                        <Button>
+                                            <Link to={`/tickets/manage/${t.ticketId}`}>
+                                                Go
+                                            </Link>
+                                        </Button>
+                                    </td>
                                 </tr>
                             )
                         })
