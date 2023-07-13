@@ -1,11 +1,15 @@
 import API from '../API';
 import React, {useEffect, useState} from 'react';
 import Table from 'react-bootstrap/Table';
+import Form from 'react-bootstrap/Form';
 
+import TokenManager from '../TokenManager';
 
 function TicketList() {
 
     const [tickets, setTickets] = useState([]);
+    const [filterOption, setFilterOption] = useState('all');
+
     async function load(){
         setTickets(await API.getTickets());
     }
@@ -13,9 +17,32 @@ function TicketList() {
         void load();
     }, []);
 
+    const handleOptionChange = (event) => {
+        setFilterOption(event.target.value);
+    };
+
     return (
         <div className="table-products">
-            <h3>All tickets</h3>
+            <Form>
+                <Form.Check
+                    inline
+                    label="All tickets"
+                    name="group1"
+                    type={'radio'}
+                    value={'all'}
+                    checked={filterOption === 'all'}
+                    onChange={handleOptionChange}
+                />
+                <Form.Check
+                    inline
+                    label="Open tickets"
+                    name="group1"
+                    type={'radio'}
+                    value={'open'}
+                    checked={filterOption === 'open'}
+                    onChange={handleOptionChange}
+                />
+            </Form>
             <Table striped bordered hover>
                 <thead>
                 <tr>
@@ -30,19 +57,21 @@ function TicketList() {
                 </thead>
                 <tbody>
                 {
-                    tickets.map(p => {
-                        return (
-                            <tr key={p.ticketId}>
-                                <td>{p.profile.username}</td>
-                                <td>{p.profile.email}</td>
-                                <td>{p.product.brand}</td>
-                                <td>{p.product.name}</td>
-                                <td>{p.product.priorityLevel}</td>
-                                <td>{p.status}</td>
-                                <td>{p.creationDate}</td>
-                            </tr>
-                        )
-                    })
+                    tickets
+                        .filter(t => filterOption === 'open' ? t.status === 'open': true)
+                        .map(t => {
+                            return (
+                                <tr key={t.ticketId}>
+                                    <td>{t.profile.username}</td>
+                                    <td>{t.profile.email}</td>
+                                    <td>{t.product.brand}</td>
+                                    <td>{t.product.name}</td>
+                                    <td>{t.product.priorityLevel}</td>
+                                    <td>{t.status}</td>
+                                    <td>{t.creationDate}</td>
+                                </tr>
+                            )
+                        })
                 }
                 </tbody>
             </Table>
