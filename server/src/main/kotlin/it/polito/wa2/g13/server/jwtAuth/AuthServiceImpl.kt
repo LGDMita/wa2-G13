@@ -1,10 +1,5 @@
 package it.polito.wa2.g13.server.jwtAuth
 
-import it.polito.wa2.g13.server.profiles.DuplicateProfileException
-import it.polito.wa2.g13.server.profiles.ProfileDTO
-import it.polito.wa2.g13.server.profiles.ProfileService
-import it.polito.wa2.g13.server.ticketing.experts.ExpertDTO
-import it.polito.wa2.g13.server.ticketing.experts.ExpertNotFoundException
 import jakarta.transaction.Transactional
 import org.keycloak.admin.client.KeycloakBuilder
 import org.keycloak.admin.client.resource.RealmResource
@@ -13,8 +8,6 @@ import org.keycloak.representations.idm.UserRepresentation
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.*
 import org.springframework.stereotype.Service
-import javax.ws.rs.core.Response
-import javax.ws.rs.core.Response.status
 import javax.ws.rs.NotAuthorizedException
 
 
@@ -41,6 +34,7 @@ class AuthServiceImpl : AuthService {
         }
     }
 
+    @Transactional
     override fun register(registerDTO: RegisterDTO): String? {
         val keycloak = KeycloakBuilder.builder()
             .serverUrl("http://${keycloakPath}")
@@ -95,6 +89,7 @@ class AuthServiceImpl : AuthService {
         return id
     }
 
+    @Transactional
     override fun createExpert(registerDTO: RegisterDTO): String? {
         val keycloak = KeycloakBuilder.builder()
             .serverUrl("http://${keycloakPath}")

@@ -8,9 +8,7 @@ interface ProfileService {
 
     fun setProfile(profileDTO: ProfileDTO): Boolean
 
-    fun modifyProfile(username: String, profileDTO: ProfileDTO): Unit
+    fun modifyProfile(username: String, profileDTO: ProfileDTO)
 
-    fun saveNewProfile(profileDTO: ProfileDTO): Boolean
-
-    fun deleteProfile(id: String): Unit
+    fun deleteProfile(id: String)
 }

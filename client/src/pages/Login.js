@@ -5,12 +5,12 @@ import UserContext from "../context/UserContext";
 import API from "../API";
 function LoginPage(props){
     const navigate=useNavigate();
-    const {user,setUser}=useContext(UserContext);
-    const [role,setRole]=useState('');
-    const [username,setUsername]=useState('');
-    const [password,setPassword]=useState('');
-    const [error,setError]=useState(false);
-    const [errorMessage,setErrorMessage]=useState('');
+    const {user,setUser}= useContext(UserContext);
+    const [role,setRole]= useState('');
+    const [username,setUsername]= useState('');
+    const [password,setPassword]= useState('');
+    const [error,setError]= useState(false);
+    const [errorMessage,setErrorMessage]= useState('');
     return(
         <Form style={
             {
@@ -30,6 +30,7 @@ function LoginPage(props){
                 console.log("Chiamata API login eseguita");
                 console.log("Username:", username);
                 console.log("Password:", password);
+
                 navigate("/home");
             }
             catch (status) {

@@ -1,4 +1,4 @@
-class Profile {
+class Expert {
     constructor(id, username, email, name, surname) {
         this.id= id;
         this.username= username;
@@ -8,4 +8,4 @@ class Profile {
     }
 }
 
-export default Profile;
+export default Expert;

@@ -31,25 +31,6 @@ class ExpertController(
         return expertService.getExperts()
     }
 
-    //No longer necessary as creation managed with keycloak
-    /*
-    @PostMapping("/API/experts")
-    @ResponseStatus(HttpStatus.CREATED)
-    fun setExpert(@RequestBody @Valid expertDTO: ExpertDTO,
-                  br: BindingResult): Boolean {
-
-        if (!br.hasErrors()) {
-            return if(expertService.setExpert(expertDTO))
-                true
-            else
-                throw DuplicateExpertException()
-        }
-        else
-            throw ExpertInvalidArgumentsException()
-
-    }
-    */
-
     @GetMapping("/API/experts/{id}")
     fun getExpertById(@PathVariable id: String): ExpertDTO? {
         log.info("Getting expert with id:{}", id)

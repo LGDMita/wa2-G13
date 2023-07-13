@@ -7,6 +7,7 @@ import jakarta.persistence.*
 @Table(name= "experts")
 class Expert(
     @Id
+    @Column(updatable = false, nullable = false)
     var id: String,
     var username: String,
     var email: String,

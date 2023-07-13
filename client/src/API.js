@@ -1,5 +1,6 @@
 import axios from 'axios';
 import Product from "./product";
+import Expert from "./expert";
 import Profile from "./profile";
 import TokenManager from './TokenManager';
 import Ticket from "./ticket";
@@ -76,26 +77,54 @@ const getProduct = async (ean) => {
     }
 };
 
-const getUserInfo = async (email) => {
-    const response = await apiInstance.get(`/API/profiles/${email}`);
+const getProfileInfo = async (id) => {
+    const response = await apiInstance.get(`/API/profiles/${id}`);
     const row = response.data;
     if (response.status === 200) {
-        return new Profile(row.email, row.name, row.surname);
+        return new Profile(row.id, row.username, row.email, row.name, row.surname);
     } else {
         throw new Error(`${response.status} - ${row.detail}`);
     }
 };
 
-const addProfile = async (profile) => {
-    const response = await apiInstance.post('/API/profiles', profile);
+const getExpertInfo = async (id) => {
+    const response = await apiInstance.get(`/API/experts/${id}`);
+    const row = response.data;
+    if (response.status === 200) {
+        return new Expert(row.id, row.username, row.email, row.name, row.surname);
+    } else {
+        throw new Error(`${response.status} - ${row.detail}`);
+    }
+};
+
+const signup = async (registrationData) => {
+    try{
+        await apiInstance.post('/API/signup', registrationData);
+    }catch (error) {
+        console.error('Error during signup:', error);
+        throw new Error(error.response.status)
+    }
+};
+
+const createExpert = async (registrationData) => {
+    try{
+        await apiInstance.post('/API/createExpert', registrationData);
+    }catch (error) {
+        console.error('Error during signup:', error);
+        throw new Error(error.response.status)
+    }
+};
+
+const modifyProfile = async (id, profile) => {
+    const response = await apiInstance.put(`/API/profiles/${id}`, profile);
     if (response.status !== 200) {
         const row = response.data;
         throw new Error(`${response.status} - ${row.detail}`);
     }
 };
 
-const updateProfile = async (email, profile) => {
-    const response = await apiInstance.put(`/API/profiles/${email}`, profile);
+const modifyExpert = async (id, expert) => {
+    const response = await apiInstance.put(`/API/experts/${id}`, expert);
     if (response.status !== 200) {
         const row = response.data;
         throw new Error(`${response.status} - ${row.detail}`);
@@ -117,7 +146,7 @@ const login = async (username, password, setUser) => {
         
         // Effettua ulteriori operazioni dopo il login, come la navigazione alla pagina successiva
         const user=tokenManager.getUser();
-        user.pwd=password;
+        user.pwd= password;
         //console.log("User is "+JSON.stringify(user));
         tokenManager.storeUser(user);
         setUser(user);
@@ -135,9 +164,12 @@ const API = {
     getTickets,
     getProducts,
     getProduct,
-    getUserInfo,
-    addProfile,
-    updateProfile,
+    getProfileInfo,
+    getExpertInfo,
+    signup,
+    createExpert,
+    modifyProfile,
+    modifyExpert,
     login,
     logout
 };

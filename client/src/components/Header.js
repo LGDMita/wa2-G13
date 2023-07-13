@@ -4,7 +4,6 @@ import UserContext from "../context/UserContext";
 import { Container, Nav, Navbar, Button, NavbarBrand, Anchor } from "react-bootstrap";
 import API from "../API";
 
-
 function Header(props){
     const {user,setUser}=useContext(UserContext);
     const navigate=useNavigate();
@@ -52,8 +51,21 @@ function authButton(logged,navigate,logoutCallback){
         logoutCallback();
         navigate("/home");
     }
-    if(logged)  return  (<Button variant='danger' onClick={handleLogout}>Logout</Button>);
-    else    return (<Button variant='success' onClick={async e=>{e.preventDefault();e.stopPropagation();navigate('/login');}}>Login</Button>);
+
+    if(logged)
+        return  (
+            <>
+                <Button className="mx-1" variant='secondary'  onClick={async e=>{e.preventDefault();e.stopPropagation();navigate("/userInfo");}}>UserInfo</Button>
+                <Button className="mx-1" variant='danger'  onClick={handleLogout}>Logout</Button>
+            </>
+        );
+    else
+        return (
+            <>
+                <Button className="mx-1" variant='secondary'   onClick={async e=>{e.preventDefault();e.stopPropagation();navigate("/signup");}}>Signup</Button>
+                <Button className="mx-1" variant='success'   onClick={async e=>{e.preventDefault();e.stopPropagation();navigate('/login');}}>Login</Button>
+            </>
+        );
 }
 
 function roleSpecificNavbar(logged,role){
@@ -88,6 +100,9 @@ function ManagerNavOptions(props){
         <>
             <Nav.Link href="/tickets">
                 Tickets
+            </Nav.Link>
+            <Nav.Link href="/createExpert">
+                Create Expert
             </Nav.Link>
         </>
     )
