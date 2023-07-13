@@ -4,9 +4,12 @@ import { useContext, useEffect, useState } from "react";
 import UserContext from "../context/UserContext";
 import "../styles/TicketPage.css";
 import API from "../API";
+import { Route, Routes, useLocation, useNavigate, useParams } from "react-router";
 
 function MyTicketList(props){
     const {user,setUser}=useContext(UserContext);
+    // route when select
+    //const navigate=useNavigate();
     return(
         <div className="ticket-list">
             {
@@ -15,10 +18,13 @@ function MyTicketList(props){
                         <Card border={tick===props.selectedTicket?"info":"dark"} onClick={e=>{
                             e.preventDefault();
                             e.stopPropagation();
+                            // single route
                             props.setSelectedTicket(tick==props.selectedTicket?undefined:tick);
+                            // route when select
+                            //navigate("/tickets/"+tick.ticketId);
                         }} className="ticket-card my-2">
                             <Card.Body>
-                                Ticket for {tick.product.name} created at {tick.creationDate}{user.role!=='CUSTOMER' && " by "+tick.profile.username}
+                                Ticket for {tick.product.name} created at {tick.creationDate}{user.role!=='customer' && " by "+tick.profile.username}
                             </Card.Body>
                         </Card>
                     )
@@ -28,10 +34,12 @@ function MyTicketList(props){
     )
 }
 
+//single route
 function TicketPage(props){
-    const {user,setUser}=useContext(UserContext);
-    const [refresh,setRefresh]=useState(false);
-    const [ticketList,setTicketList]=useState([
+//route different when selected ticket
+//function TicketPageBody(props){
+    // set of tickets for frontend testing purposes
+    const frontendTestTickets=[
         {
             ticketId:1,
             creationDate:"29/09/1999",
@@ -77,8 +85,17 @@ function TicketPage(props){
                 brand:"Sony",
             },
         }
-    ]);
-    const [selectedTicket,setSelectedTicket]=useState(undefined);
+    ];
+    const {user,setUser}=useContext(UserContext);
+    const [refresh,setRefresh]=useState(false);
+    const [ticketList,setTicketList]=useState(frontendTestTickets);
+    const location=useLocation();
+    // single route
+    const [selectedTicket,setSelectedTicket]=useState(location.state?location.state:undefined);
+    // to clear location state without rerender
+    window.history.replaceState({},document.title);
+    // instead if we use a specific route when the ticket is opened
+    //ticketList.find(tick=>tick.ticketId===props.selectedTicketId));
     /*useEffect(()=>{
         const getTickets=async()=>{
             try {
@@ -103,5 +120,22 @@ function TicketPage(props){
         </Container>
     )
 }
+/*
+if we have different routes when ticket is selected
+function TicketPageBodySelectedTicket(props){
+    const {ticketId}=useParams();
+    return(
+        <TicketPageBody selectedTicketId={ticketId}/>
+    )
+}
 
+function TicketPage(props){
+    return(
+        <Routes>
+            <Route index element={<TicketPageBody selectedTicketId={-1}/>}/>
+            <Route path=":ticketId" element={<TicketPageBodySelectedTicket/>}/>
+        </Routes>
+    )
+}
+*/
 export default TicketPage;

@@ -1,0 +1,28 @@
+.purchase-list {
+    -ms-overflow-style: none; /* for Internet Explorer, Edge */
+    scrollbar-width: none; /* for Firefox */
+    overflow-y: scroll;
+    scroll-snap-align: center;
+    scroll-behavior: smooth;
+    max-height: 93vh;   
+}
+
+.purchase-footer {
+    text-align: end;
+}
+
+.purchase-dropopen:hover {
+    color:cadetblue;
+}
+
+.purchase-status {
+    text-align: start;
+}
+
+.purchase-link {
+    text-align: end;
+}
+
+.purchase-link:hover {
+    color: green;
+}

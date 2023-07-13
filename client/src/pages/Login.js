@@ -3,10 +3,10 @@ import { Form, Button, Alert } from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
 import UserContext from "../context/UserContext";
 import API from "../API";
+
 function LoginPage(props){
     const navigate=useNavigate();
     const {user,setUser}=useContext(UserContext);
-    const [role,setRole]=useState('');
     const [username,setUsername]=useState('');
     const [password,setPassword]=useState('');
     const [error,setError]=useState(false);
@@ -49,14 +49,6 @@ function LoginPage(props){
             <Form.Group className="mb-3" controlId="formBasicPassword">
                 <Form.Label style={{fontWeight:"bolder"}}>Password : </Form.Label>
                 <Form.Control type="password" placeholder="insert password" name="password" required onChange={p=>setPassword(p.target.value)}/>
-            </Form.Group>
-            <Form.Group>
-                <Form.Select style={{fontWeight:"bolder"}} value={role} required onChange={r=>setRole(r.target.value)}>
-                    <option value=''>Select your role!</option>
-                    <option value="customer">Customer</option>
-                    <option value="expert">Expert</option>
-                    <option value="manager">Manager</option>
-                </Form.Select>
             </Form.Group>
             <Button variant="success" type="submit">Submit</Button>
             {error?<Alert className="my-3" variant="danger">{errorMessage}</Alert>:<></>}

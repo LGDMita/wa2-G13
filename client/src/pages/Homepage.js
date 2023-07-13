@@ -5,7 +5,7 @@ import UserContext from "../context/UserContext";
 function HomepagePage(props){
     const {user,setUser}=useContext(UserContext);
     if(user.role==='customer') return CustomerHomepagePage();
-    else return(<></>);
+    else return(<ProductTable/>);
 }
 
 function CustomerHomepagePage(props){

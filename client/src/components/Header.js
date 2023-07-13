@@ -77,7 +77,7 @@ function CustomerNavOptions(props){
                 My tickets
             </Nav.Link>
             <Nav.Link href="/purchases">
-                My products
+                My purchases
             </Nav.Link>
         </>
     );

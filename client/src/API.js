@@ -178,6 +178,17 @@ const getTicketsOf=async (id,role) => {
     else return ret.map(row=>new Ticket(row.ticketId, row.profile, row.product, row.priorityLevel, row.expert, row.status, row.creationDate, row.messages));
 }
 
+const getTicketsOfCustomerOfPurchase=async (customerId,productEan) => {
+    const queryParams = new URLSearchParams('?');
+    queryParams.append("profileId",customerId);
+    queryParams.append("ean",productEan);
+    const url="/API/tickets/"+queryParams.toString();
+    const res=await apiInstance.get(url);
+    const ret=await res.data;
+    if(res.status!==200) throw new Error({status:res.status,detail:ret});
+    else return ret.map(row=>new Ticket(row.ticketId, row.profile, row.product, row.priorityLevel, row.expert, row.status, row.creationDate, row.messages));
+}
+
 const API = {
     getTickets,
     getProducts,
@@ -190,6 +201,7 @@ const API = {
     sendMessage,
     getMessages,
     getTicketsOf,
+    getTicketsOfCustomerOfPurchase,
 };
 
 export default API;
