@@ -1,98 +1,153 @@
-import { useContext, useState, useEffect } from "react";
+import { useContext, useEffect, useState} from "react";
 import UserContext from "../context/UserContext";
 import API from "../API";
 import "../styles/UserInfo.css";
 import { useNavigate} from 'react-router-dom';
-import {Col, Container, Row} from "react-bootstrap";
+import {Col, Container, Row, Form, Button, Alert} from "react-bootstrap";
+import Profile from "../profile";
+import Manager from "../manager";
+import Expert from "../expert";
 
 function UserInfoPage(props){
     const {user, setUser}= useContext(UserContext);
     const navigate = useNavigate();
-    const [id, setId] = useState('');
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
+    const [error, setError] = useState(false);
+    const [changed, setChanged]= useState(false);
+    const [showMenu, setShowMenu] = useState(false);
 
-    //soluzione provvisoria: non abbiamo API e tabelle per il manager: rivedere come gestire
     useEffect(() => {
-        if (!user.logged || user.role === 'manager' ) {
+        if (!user.logged) {
             navigate('/home');
         }else{
-            fetchUserInfo().then((result) => {
-                setId(result.id)
-                setUsername(result.username)
-                setEmail(result.email)
-                setName(result.name)
-                setSurname(result.surname)
-            }).catch((error) => {
+            fetchUserInfo().catch((error) => {
                 console.error(error);
             });
         }
-    }, [user.logged, navigate]);
+    }, [user.logged, changed, navigate]);
+
+    const togglePopupMenu = () => {
+        setShowMenu(!showMenu);
+    };
 
     const fetchUserInfo = async () => {
         try {
             let userInfo;
             if (user.role === 'customer') {
                 userInfo = await API.getProfileInfo(user.id);
-                return userInfo
             } else if (user.role === 'expert') {
                 userInfo = await API.getExpertInfo(user.id);
-                return userInfo
+            } else if (user.role === 'manager'){
+                userInfo = await API.getManagerInfo(user.id);
             }
+            const updatedUser = {
+                ...user,
+                username: userInfo.username,
+                email: userInfo.email,
+                name: userInfo.name,
+                surname: userInfo.surname,
+            };
+            setUser(updatedUser);
         } catch (error) {
             console.error(error);
         }
     };
 
-    if(user.logged && user.role !== 'manager' ) {
+    if (user.logged) {
         return (
-            <Container className="user-info">
-                <h1 className="user-info-h1">User Info</h1>
-                <Row className="user-info-row">
-                    <Col xs={12} sm={4}>
-                        <strong>Id:</strong>
-                    </Col>
-                    <Col xs={12} sm={8}>
-                        <span>{id}</span>
-                    </Col>
-                </Row>
-                <Row className="user-info-row">
-                    <Col xs={12} sm={4}>
-                        <strong>Username:</strong>
-                    </Col>
-                    <Col xs={12} sm={8}>
-                        <span>{username}</span>
-                    </Col>
-                </Row>
-                <Row className="user-info-row">
-                    <Col xs={12} sm={4}>
-                        <strong>Email:</strong>
-                    </Col>
-                    <Col xs={12} sm={8}>
-                        <span>{email}</span>
-                    </Col>
-                </Row>
-                <Row className="user-info-row">
-                    <Col xs={12} sm={4}>
-                        <strong>Name:</strong>
-                    </Col>
-                    <Col xs={12} sm={8}>
-                        <span>{name}</span>
-                    </Col>
-                </Row>
-                <Row className="user-info-row">
-                    <Col xs={12} sm={4}>
-                        <strong>Surname:</strong>
-                    </Col>
-                    <Col xs={12} sm={8}>
-                        <span>{surname}</span>
-                    </Col>
-                </Row>
-            </Container>
+            <div className="user-info-container">
+                <Container className="user-info">
+                    <h1 className="user-info-h1">User Info</h1>
+                    <Row className="user-info-row">
+                        <Col xs={12} sm={4}>
+                            <strong>Username:</strong>
+                        </Col>
+                        <Col xs={12} sm={8}>
+                            <span>{user.username}</span>
+                        </Col>
+                    </Row>
+                    <Row className="user-info-row">
+                        <Col xs={12} sm={4}>
+                            <strong>Email:</strong>
+                        </Col>
+                        <Col xs={12} sm={8}>
+                            <span>{user.email}</span>
+                        </Col>
+                    </Row>
+                    <Row className="user-info-row">
+                        <Col xs={12} sm={4}>
+                            <strong>Name:</strong>
+                        </Col>
+                        <Col xs={12} sm={8}>
+                            <span>{user.name}</span>
+                        </Col>
+                    </Row>
+                    <Row className="user-info-row">
+                        <Col xs={12} sm={4}>
+                            <strong>Surname:</strong>
+                        </Col>
+                        <Col xs={12} sm={8}>
+                            <span>{user.surname}</span>
+                        </Col>
+                    </Row>
+                </Container>
+
+                <Container className="modify-user-info">
+                    <h1 className="mx-auto">Modify User Info</h1>
+                    <button className="open-menu-button" onClick={togglePopupMenu}>
+                        {showMenu ? '-' : '+' /*aggiungere emoticon*/}
+                    </button>
+                    {showMenu && (
+                        <div className="popup-menu">
+                            <Form onSubmit={async e => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                try {
+                                    if (user.role=== 'customer'){
+                                        await API.modifyProfile(user.id, new Profile(user.id, username, email, name, surname))
+                                    }else if (user.role=== 'expert'){
+                                        await API.modifyExpert(user.id, new Expert(user.id, username, email, name, surname))
+                                    }else if (user.role=== 'manager'){
+                                        await API.modifyManager(user.id, new Manager(user.id, username, email, name, surname))
+                                    }
+                                    setChanged(true);
+                                } catch (error) {
+                                    window.alert(error)
+                                    setError(true);
+                                }
+                            }}>
+                                <Form.Group className="mb-3">
+                                    <Form.Label style={{fontWeight: "bolder"}}>Username : </Form.Label>
+                                    <Form.Control type="text" placeholder="insert new username or confirm the old one" name="username" required value={username}
+                                                  onChange={e => setUsername(e.target.value)}/>
+                                </Form.Group>
+                                <Form.Group className="mb-3">
+                                    <Form.Label style={{fontWeight: "bolder"}}>Email : </Form.Label>
+                                    <Form.Control type="email" placeholder="insert new email or confirm the old one" name="email" required
+                                                  onChange={p => setEmail(p.target.value)}/>
+                                </Form.Group>
+                                <Form.Group className="mb-3">
+                                    <Form.Label style={{fontWeight: "bolder"}}>Name : </Form.Label>
+                                    <Form.Control type="text" placeholder="insert new name or confirm the old one" name="name" required value={name}
+                                                  onChange={e => setName(e.target.value)}/>
+                                </Form.Group>
+                                <Form.Group className="mb-3">
+                                    <Form.Label style={{fontWeight: "bolder"}}>Surname : </Form.Label>
+                                    <Form.Control type="text" placeholder="insert surname or confirm the old one" name="surname" required value={surname}
+                                                  onChange={e => setSurname(e.target.value)}/>
+                                </Form.Group>
+                                <Button variant="success" type="submit">Submit</Button>
+                                {error ? <Alert className="my-3" variant="danger">Something went wrong!</Alert> : <></>}
+                            </Form>
+                        </div >
+                    )}
+                </Container>
+            </div>
         );
-    }else{
+    } else{
         return null;
     }
 }

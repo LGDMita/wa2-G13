@@ -4,6 +4,7 @@ import it.polito.wa2.g13.server.jwtAuth.DuplicateEmailException
 import it.polito.wa2.g13.server.jwtAuth.DuplicateUsernameException
 import it.polito.wa2.g13.server.jwtAuth.InvalidCredentialArgumentsException
 import it.polito.wa2.g13.server.jwtAuth.UserNotFoundException
+import it.polito.wa2.g13.server.managers.ManagerNotFoundException
 import it.polito.wa2.g13.server.products.DuplicateProductException
 import it.polito.wa2.g13.server.products.ProductNotFoundException
 import it.polito.wa2.g13.server.profiles.DuplicateProfileException
@@ -127,4 +128,8 @@ class ProblemDetailsHandler : ResponseEntityExceptionHandler() {
     @ExceptionHandler(DuplicateUsernameException::class)
     fun handleInvalidTicketArgumentsException(e: DuplicateUsernameException) = ProblemDetail
         .forStatusAndDetail(HttpStatus.CONFLICT, e.message!!)
+
+    @ExceptionHandler(ManagerNotFoundException::class)
+    fun handleProductNotFound(e: ManagerNotFoundException) = ProblemDetail
+        .forStatusAndDetail(HttpStatus.NOT_FOUND, e.message!!)
 }

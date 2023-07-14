@@ -22,7 +22,7 @@ class WebSecurityConfig(private val jwtAuthConverter: JwtAuthConverter) {
 
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
-        http.csrf().disable()
+        http.csrf().disable().cors()
         http.authorizeHttpRequests()
             .requestMatchers(HttpMethod.GET, "/API/tickets").hasAnyRole(MANAGER, EXPERT, CLIENT)
             .requestMatchers(HttpMethod.GET, "/API/tickets/**").hasAnyRole(MANAGER, EXPERT, CLIENT)
@@ -33,11 +33,14 @@ class WebSecurityConfig(private val jwtAuthConverter: JwtAuthConverter) {
             .requestMatchers(HttpMethod.GET, "/API/experts/**").hasAnyRole(MANAGER, EXPERT, CLIENT)
             .requestMatchers(HttpMethod.POST, "/API/experts").hasAnyRole(MANAGER)
             .requestMatchers(HttpMethod.POST, "/API/experts/**").hasAnyRole(MANAGER)
-            .requestMatchers(HttpMethod.PUT, "/API/experts/**").hasAnyRole(MANAGER)
+            .requestMatchers(HttpMethod.PUT, "/API/experts/**").hasAnyRole(MANAGER, EXPERT)
             .requestMatchers(HttpMethod.DELETE, "/API/experts/**").hasAnyRole(MANAGER)
             .requestMatchers(HttpMethod.DELETE, "/API/profiles/**").hasAnyRole(MANAGER)
-            .requestMatchers(HttpMethod.PUT, "/API/profiles/**").hasAnyRole(MANAGER)
-
+            .requestMatchers(HttpMethod.PUT, "/API/profiles/**").hasAnyRole(CLIENT)
+            .requestMatchers(HttpMethod.GET, "/API/managers").hasAnyRole(MANAGER)
+            .requestMatchers(HttpMethod.PUT, "/API/managers").hasAnyRole(MANAGER)
+            .requestMatchers(HttpMethod.GET, "/API/managers/**").hasAnyRole(MANAGER)
+            .requestMatchers(HttpMethod.PUT, "/API/managers/+*").hasAnyRole(MANAGER)
             .requestMatchers(HttpMethod.POST, "/API/createExpert").hasAnyRole(MANAGER) //Only the manager can create an expert
             .anyRequest().permitAll()
         http.oauth2ResourceServer()

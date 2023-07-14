@@ -4,6 +4,7 @@ import Expert from "./expert";
 import Profile from "./profile";
 import TokenManager from './TokenManager';
 import Ticket from "./ticket";
+import Manager from "./manager";
 
 const SERVER_URL = 'http://localhost:8080';
 
@@ -97,6 +98,16 @@ const getExpertInfo = async (id) => {
     }
 };
 
+const getManagerInfo = async (id) => {
+    const response = await apiInstance.get(`/API/manager/${id}`);
+    const row = response.data;
+    if (response.status === 200) {
+        return new Manager(row.id, row.username, row.email, row.name, row.surname);
+    } else {
+        throw new Error(`${response.status} - ${row.detail}`);
+    }
+};
+
 const signup = async (registrationData) => {
     try{
         await apiInstance.post('/API/signup', registrationData);
@@ -131,6 +142,14 @@ const modifyExpert = async (id, expert) => {
     }
 };
 
+const modifyManager = async (id, manager) => {
+    const response = await apiInstance.put(`/API/managers/${id}`, manager);
+    if (response.status !== 200) {
+        const row = response.data;
+        throw new Error(`${response.status} - ${row.detail}`);
+    }
+};
+
 const login = async (username, password, setUser) => {
     try {
         //console.log("Trying login API");
@@ -145,8 +164,7 @@ const login = async (username, password, setUser) => {
         tokenManager.setAuthToken(token);
         
         // Effettua ulteriori operazioni dopo il login, come la navigazione alla pagina successiva
-        const user=tokenManager.getUser();
-        user.pwd= password;
+        const user= tokenManager.getUser();
         //console.log("User is "+JSON.stringify(user));
         tokenManager.storeUser(user);
         setUser(user);
@@ -166,10 +184,12 @@ const API = {
     getProduct,
     getProfileInfo,
     getExpertInfo,
+    getManagerInfo,
     signup,
     createExpert,
     modifyProfile,
     modifyExpert,
+    modifyManager,
     login,
     logout
 };

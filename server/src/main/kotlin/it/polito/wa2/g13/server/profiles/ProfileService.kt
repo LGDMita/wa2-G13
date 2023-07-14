@@ -4,11 +4,11 @@ import org.springframework.stereotype.Service
 
 @Service
 interface ProfileService {
-    fun getProfile(username: String): ProfileDTO?
+    fun getProfile(id: String): ProfileDTO?
 
     fun setProfile(profileDTO: ProfileDTO): Boolean
 
-    fun modifyProfile(username: String, profileDTO: ProfileDTO)
+    fun modifyProfile(id: String, profileDTO: ProfileDTO)
 
     fun deleteProfile(id: String)
 }

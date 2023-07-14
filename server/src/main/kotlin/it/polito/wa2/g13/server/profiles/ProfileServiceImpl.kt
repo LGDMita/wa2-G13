@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service
 class ProfileServiceImpl(
     private val profileRepository: ProfileRepository
 ) : ProfileService {
-    override fun getProfile(username: String): ProfileDTO? {
-        return profileRepository.findByIdOrNull(username)?.toDTO()
+    override fun getProfile(id: String): ProfileDTO? {
+        return profileRepository.findByIdOrNull(id)?.toDTO()
     }
 
     override fun setProfile(profileDTO: ProfileDTO): Boolean{
@@ -22,7 +22,7 @@ class ProfileServiceImpl(
     }
 
     @Transactional
-    override fun modifyProfile(username: String, profileDTO: ProfileDTO): Unit {
+    override fun modifyProfile(id: String, profileDTO: ProfileDTO): Unit {
         profileRepository.save(profileDTO.toProfile())
     }
 

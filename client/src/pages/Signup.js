@@ -39,6 +39,7 @@ function SignupPage(props){
                     await API.signup(new RegistrationData(username, password, email, name, surname));
                     navigate('/login');
                 } catch (error) {
+                    window.alert(error)
                     setError(true);
                 }
             }}>

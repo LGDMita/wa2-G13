@@ -49,7 +49,7 @@ const TokenManager = () => {
     }
 
     // get decoded token
-    const getDecodedToken= () => token ? jwt_decode(token) : {id:'', logged:false,role:undefined,username:'',pwd:''}
+    const getDecodedToken= () => token ? jwt_decode(token) : {id:'', logged:false, role:undefined, username:'', email: '', name: '', surname:''}
 
     const getUser= () => {
         if(token){
@@ -73,16 +73,20 @@ const TokenManager = () => {
                 logged: true,
                 role: userRole,
                 username: decodedToken.preferred_username,
+                email: '',
+                name: '',
+                surname:'',
+                dataFetched: false
             }
         }
-        return {id:'', logged:false, role:undefined, username:'', pwd:''}
+        return {id:'', logged:false, role:undefined, username:'', email: '', name: '', surname:''}
     }
     const storeUser= user => {
         localStorage.setItem("userData",JSON.stringify(user));
     }
     const retrieveUser= ()=>{
         if(token) return JSON.parse(localStorage.getItem("userData"));
-        else return {id:'', logged:false, role:undefined, username:'', pwd:''};
+        else return {id:'', logged:false, role:undefined, username:'', email: '', name: '', surname:''};
     }
     return { setAuthToken, getAuthToken, amILogged, removeAuthToken, getDecodedToken, getUser, storeUser, retrieveUser };
 };

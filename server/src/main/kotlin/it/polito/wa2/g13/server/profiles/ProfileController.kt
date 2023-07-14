@@ -27,7 +27,6 @@ class ProfileController(
         return profileService.getProfile(id) ?: throw ProfileNotFoundException()
     }
 
-    //Must be modified or moved to pass the changes to keycloak as well
     @Transactional
     @PutMapping("/API/profiles/{id}")
     fun modifyProfile(
@@ -58,21 +57,3 @@ class ProfileController(
         profileService.deleteProfile(id)
     }
 }
-
-
-//No longer necessary as subscription managed with keycloak
-/*
-@RestController
-class ProfileControllerBR(
-    private val profileService: ProfileService
-) {
-    @PostMapping("/API/profiles")
-    fun setProfile(@RequestBody @Valid profileDTO: ProfileDTO, br: BindingResult): Boolean {
-        if (!br.hasErrors()) {
-            return if (profileService.setProfile(profileDTO)) true else throw DuplicateProfileException()
-        }
-        else
-            throw InvalidArgumentsException()
-    }
- }
- */
