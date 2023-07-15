@@ -257,7 +257,7 @@ function Chat(props){
         fromUser:true,
         text:"I tried and it's working currently, thanks!"
     }];
-    const [messages,setMessages]=useState([])
+    const [messages,setMessages]=useState(frontendTestMessages)
     return(
         <Row>
             <ChatHeader ticket={props.ticket}/>

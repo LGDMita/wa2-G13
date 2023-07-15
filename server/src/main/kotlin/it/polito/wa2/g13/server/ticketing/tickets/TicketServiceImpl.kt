@@ -54,10 +54,10 @@ class TicketServiceImpl(
     ): List<TicketDTO> {
         return ticketRepository.getFilteredTickets(ean, profileId, priorityLevel, expertId, status, creationDateStart, creationDateStop).map { t -> t.toDTO() }
     }
-    override fun createTicket(ticketPostDTO: TicketPostDTO, br: BindingResult): TicketDTO? {
+    override fun createTicket(ticketPostDTO: TicketPostDTO, username: String, br: BindingResult): TicketDTO? {
 
         // If the email contained in the request doesn't exist throws exception
-        val profile = profileRepository.findProfileByEmail(ticketPostDTO.email) ?: throw ProfileNotFoundException()
+        val profile = profileRepository.findProfileByUsername(username) ?: throw ProfileNotFoundException()
 
         // If the productId contained in the request doesn't exist throws exception
         val product = productRepository.findByIdOrNull(ticketPostDTO.ean) ?: throw ProductNotFoundException()

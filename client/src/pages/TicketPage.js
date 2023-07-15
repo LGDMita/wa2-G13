@@ -8,6 +8,7 @@ import { Route, Routes, useLocation, useNavigate, useParams } from "react-router
 
 function MyTicketList(props){
     const {user,setUser}=useContext(UserContext);
+    //console.log("ticket list ",props.ticketList);
     // route when select
     //const navigate=useNavigate();
     return(
@@ -15,11 +16,11 @@ function MyTicketList(props){
             {
                 props.ticketList.map(tick=>{
                     return(
-                        <Card border={tick===props.selectedTicket?"info":"dark"} onClick={e=>{
+                        <Card key={tick.ticketId} border={tick.ticketId===(props.selectedTicket?props.selectedTicket.ticketId:undefined)?"info":"dark"} onClick={e=>{
                             e.preventDefault();
                             e.stopPropagation();
                             // single route
-                            props.setSelectedTicket(tick==props.selectedTicket?undefined:tick);
+                            props.setSelectedTicket(tick.ticketId==(props.selectedTicket?props.selectedTicket.ticketId:undefined)?undefined:tick);
                             // route when select
                             //navigate("/tickets/"+tick.ticketId);
                         }} className="ticket-card my-2">
@@ -88,7 +89,7 @@ function TicketPage(props){
     ];
     const {user,setUser}=useContext(UserContext);
     const [refresh,setRefresh]=useState(false);
-    const [ticketList,setTicketList]=useState(frontendTestTickets);
+    const [ticketList,setTicketList]=useState([]);
     const location=useLocation();
     // single route
     const [selectedTicket,setSelectedTicket]=useState(location.state?location.state:undefined);
@@ -96,17 +97,18 @@ function TicketPage(props){
     window.history.replaceState({},document.title);
     // instead if we use a specific route when the ticket is opened
     //ticketList.find(tick=>tick.ticketId===props.selectedTicketId));
-    /*useEffect(()=>{
+    useEffect(()=>{
         const getTickets=async()=>{
             try {
-                const ticks=await API.getTickets();
+                const ticks=await API.getTicketsOf("032d838b-1b21-4154-8aac-315f2b0cc88c",user.role);
                 setTicketList(ticks);
             } catch (error) {
                 setTicketList([]);
 
             }
         }
-    },[refresh]);*/
+        getTickets();
+    },[]);
     return(
         <Container fluid className="ticket-page">
             <Row>

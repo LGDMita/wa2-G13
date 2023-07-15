@@ -2,6 +2,7 @@ package it.polito.wa2.g13.server.ticketing.tickets
 
 import io.micrometer.observation.annotation.Observed
 import it.polito.wa2.g13.server.jwtAuth.AuthController
+import it.polito.wa2.g13.server.profiles.ProfileService
 import jakarta.validation.Valid
 import jakarta.validation.constraints.*
 import lombok.extern.slf4j.Slf4j
@@ -9,6 +10,8 @@ import org.slf4j.LoggerFactory
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.validation.BindingResult
 import org.springframework.validation.annotation.Validated
@@ -64,7 +67,8 @@ class TicketController(
 @Observed
 @Slf4j
 class TicketControllerValidated(
-    private val ticketService: TicketService
+    private val ticketService: TicketService,
+    private val profileService: ProfileService,
 ) {
 
     private val log = LoggerFactory.getLogger(AuthController::class.java)
@@ -121,7 +125,7 @@ class TicketControllerValidated(
     ): TicketDTO? {
         if (!br.hasErrors()) {
             log.info("Creating ticket: {}", ticketPostDTO.toString())
-            return ticketService.createTicket(ticketPostDTO, br)
+            return ticketService.createTicket(ticketPostDTO, SecurityContextHolder.getContext().authentication.name, br)
         }
         else {
             log.warn("Filed constraint not satisfied for DTO: {}", ticketPostDTO.toString())

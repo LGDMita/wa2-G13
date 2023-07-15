@@ -1,12 +1,13 @@
 
 
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Badge, Button, Card, Col, Modal, Row } from "react-bootstrap";
 import dayjs from 'dayjs';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import "../styles/PurchasesPage.css";
 import { useNavigate } from "react-router";
 import UserContext from "../context/UserContext";
+import API from "../API";
 dayjs.extend(isSameOrBefore);
 
 function PurchaseSelection(props){
@@ -59,17 +60,29 @@ function PurchaseSelection(props){
         }
     ];
     const {user,setUser}=useContext(UserContext)
-    const [ticketsOfPurchase,setTicketsOfPurchase]=useState(frontendTestPurchaseTickets);
+    const [ticketsOfPurchase,setTicketsOfPurchase]=useState([]);
     const [error,setError]=useState("");
     const navigate=useNavigate();
     const handleNewTicket=async ()=>{
         try {
-            setError("Blabla");
-            //await API.newTicket(user.email,props.purchase.product.ean);
+            //setError("Blabla");
+            const tick=await API.newTicket(undefined,props.purchase.product.ean);
+            navigate("/tickets",{state:tick});
         } catch (error) {
             setError(error.detail);
         }
     }
+    useEffect(()=>{
+        const getTickets=async()=>{
+            try {
+                const ticks=await API.getTicketsOfCustomerOfPurchase("032d838b-1b21-4154-8aac-315f2b0cc88c",props.purchase.product.ean);
+                setTicketsOfPurchase(ticks);
+            } catch (error) {
+                setTicketsOfPurchase([]);
+            }
+        }
+        getTickets();
+    },[])
     return(
         <div className="purchase-bodyopened">
             {ticketsOfPurchase.map(tick=>{
@@ -128,6 +141,20 @@ function PurchasesPage(props){
     ]
     const [purchases,setPurchases]=useState(frontendTestPurchases);
     const [selectedPurchase,setSelectedPurchase]=useState(undefined);
+    useEffect(()=>{
+        const getPurchases=async ()=>{
+            try {
+                //console.log("Calling get purchases");
+                const purchs=await API.getPurchasesOf();
+                //console.log("Got ",purchs);
+                setPurchases(purchs);
+            } catch (error) {
+                //console.log("Got error ",error.status);
+                setPurchases([]);
+            }
+        }
+        getPurchases();
+    },[]);
     return(
         <div className="purchase-list">
             {

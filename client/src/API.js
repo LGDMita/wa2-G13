@@ -171,9 +171,10 @@ const getTicketsOf=async (id,role) => {
             break;
     }
     queryParams.append(role+"Id",id);
-    const url="/API/tickets/"+queryParams.toString();
+    const url="/API/tickets/?"+queryParams.toString();
     const res=await apiInstance.get(url);
     const ret=await res.data;
+    //console.log("Tickets of status ",res.status,", details ",ret);
     if(res.status!==200) throw new Error({status:res.status,detail:ret});
     else return ret.map(row=>new Ticket(row.ticketId, row.profile, row.product, row.priorityLevel, row.expert, row.status, row.creationDate, row.messages));
 }
@@ -182,11 +183,28 @@ const getTicketsOfCustomerOfPurchase=async (customerId,productEan) => {
     const queryParams = new URLSearchParams('?');
     queryParams.append("profileId",customerId);
     queryParams.append("ean",productEan);
-    const url="/API/tickets/"+queryParams.toString();
+    const url="/API/tickets/?"+queryParams.toString();
     const res=await apiInstance.get(url);
     const ret=await res.data;
+    console.log("Url ",url," Tickets purchase status ",res.status,", details ",ret);
     if(res.status!==200) throw new Error({status:res.status,detail:ret});
     else return ret.map(row=>new Ticket(row.ticketId, row.profile, row.product, row.priorityLevel, row.expert, row.status, row.creationDate, row.messages));
+}
+
+const newTicket=async (email,ean)=>{
+    const res=await apiInstance.post("/API/tickets",{ean:ean});
+    const ret=await res.data;
+    console.log("New ticket status ",res.status,", details ",ret);
+    if(res.status!==201)    throw new Error({status:res.status,detail:ret});
+    else return ret;
+}
+
+const getPurchasesOf=async ()=>{
+    const res=await apiInstance.get("/API/customer/purchases");
+    const ret=await res.data;
+    //console.log("Ret ",ret);
+    if(res.status!==200) throw new Error({status:res.status,detail:ret});
+    else return ret;
 }
 
 const API = {
@@ -202,6 +220,8 @@ const API = {
     getMessages,
     getTicketsOf,
     getTicketsOfCustomerOfPurchase,
+    newTicket,
+    getPurchasesOf,
 };
 
 export default API;

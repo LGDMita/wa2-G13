@@ -5,7 +5,7 @@ import java.util.*
 data class PurchaseDTO (
     val purchaseId: Long?=null,
     val ean: String,
-    val profileUsername: String?=null,
+    val profileId: String?=null,
     val datetime: Date
 )
 

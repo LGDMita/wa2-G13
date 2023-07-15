@@ -27,7 +27,7 @@ interface TicketService {
     /**
      * Creates a new ticket associated to a product and a profile
      */
-    fun createTicket(ticketPostDTO: TicketPostDTO, br: BindingResult): TicketDTO?
+    fun createTicket(ticketPostDTO: TicketPostDTO, username: String, br: BindingResult): TicketDTO?
 
     /**
      * Changes the status of an existing ticket
