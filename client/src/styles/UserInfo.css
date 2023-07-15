@@ -21,7 +21,15 @@
 
 .user-info-h1 {
     margin-top: 0.1em;
-    margin-bottom: 1em;
+    margin-bottom: 1.5em;
+}
+.open-menu-button{
+    border: none ;
+}
+
+.button-icon{
+    font-size: 2em;
+    margin-bottom: 0.05em;
 }
 
 .modify-user-info {
@@ -34,10 +42,6 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 45%;
     height: auto;
-}
-
-.popup-menu {
-
 }
 
 @media (max-width: 768px) {
