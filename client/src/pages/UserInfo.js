@@ -31,7 +31,7 @@ function UserInfoPage(props){
                 console.error(error);
             });
         }
-    }, [user.logged, changed, navigate]);
+    }, [user.logged, changed]);
 
     const togglePopupMenu = () => {
         setShowMenu(!showMenu);

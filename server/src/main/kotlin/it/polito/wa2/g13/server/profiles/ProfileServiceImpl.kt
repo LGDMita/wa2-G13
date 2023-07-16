@@ -12,6 +12,7 @@ class ProfileServiceImpl(
         return profileRepository.findByIdOrNull(id)?.toDTO()
     }
 
+    @Transactional
     override fun setProfile(profileDTO: ProfileDTO): Boolean{
         return if(!profileRepository.existsById(profileDTO.username)){
             profileRepository.save(profileDTO.toProfile())

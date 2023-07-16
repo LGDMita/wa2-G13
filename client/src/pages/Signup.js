@@ -2,6 +2,7 @@ import {useState, useContext, useEffect} from "react";
 import { Form, Button, Alert, Container, Row, Spinner} from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
 import "../styles/Loading.css";
+import "../styles/Signup.css";
 import API from "../API";
 import RegistrationData from "../registrationData";
 import UserContext from "../context/UserContext";
@@ -35,59 +36,56 @@ function SignupPage(props){
             );
         }else {
             return (
-                <Form style={
-                    {
-                        "margin": 0,
-                        "position": "absolute",
-                        "top": "50%",
-                        "left": "50%",
-                        "msTransform": "translate(-50%, -50%)",
-                        "transform": "translate(-50%, -50%)"
-                    }
-                } onSubmit={async e => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setLoading(true)
-                    try {
-                        await API.signup(new RegistrationData(username, password, email, name, surname));
-                        navigate('/login');
-                        setLoading(false)
-                    } catch (error) {
-                        window.alert(error)
-                        setError(true);
-                        setLoading(false)
-                    }
-                }}>
-                    <Form.Group className="mb-3">
-                        <Form.Label style={{fontWeight: "bolder"}}>Username : </Form.Label>
-                        <Form.Control type="text" placeholder="insert username" name="username" required
-                                      value={username}
-                                      onChange={e => setUsername(e.target.value)}/>
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="formBasicPassword">
-                        <Form.Label style={{fontWeight: "bolder"}}>Password : </Form.Label>
-                        <Form.Control type="password" placeholder="insert password" name="password" required
-                                      onChange={p => setPassword(p.target.value)}/>
-                    </Form.Group>
-                    <Form.Group className="mb-3">
-                        <Form.Label style={{fontWeight: "bolder"}}>Email : </Form.Label>
-                        <Form.Control type="text" placeholder="insert email" name="email" required value={email}
-                                      onChange={e => setEmail(e.target.value)}/>
-                    </Form.Group>
-                    <Form.Group className="mb-3">
-                        <Form.Label style={{fontWeight: "bolder"}}>Name : </Form.Label>
-                        <Form.Control type="text" placeholder="insert name" name="name" required value={name}
-                                      onChange={e => setName(e.target.value)}/>
-                    </Form.Group>
-                    <Form.Group className="mb-3">
-                        <Form.Label style={{fontWeight: "bolder"}}>Surname : </Form.Label>
-                        <Form.Control type="text" placeholder="insert surname" name="surname" required
-                                      value={surname}
-                                      onChange={e => setSurname(e.target.value)}/>
-                    </Form.Group>
-                    <Button variant="success" type="submit">Submit</Button>
-                    {error ? <Alert className="my-3" variant="danger">Something went wrong!</Alert> : <></>}
-                </Form>
+                <div  className="container-sign-up-parent">
+                    <div className="container-sign-up">
+                        <h1 className="container-sign-up-h1">Signup</h1>
+                        <Form className="container-sign-up-form"
+                              onSubmit={async e => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setLoading(true)
+                            try {
+                                await API.signup(new RegistrationData(username, password, email, name, surname));
+                                navigate('/login');
+                                setLoading(false)
+                            } catch (error) {
+                                window.alert(error)
+                                setError(true);
+                                setLoading(false)
+                            }
+                        }}>
+                            <Form.Group className="mb-3">
+                                <Form.Label style={{fontWeight: "bolder"}}>Username : </Form.Label>
+                                <Form.Control type="text" placeholder="insert username" name="username" required
+                                              value={username}
+                                              onChange={e => setUsername(e.target.value)}/>
+                            </Form.Group>
+                            <Form.Group className="mb-3" controlId="formBasicPassword">
+                                <Form.Label style={{fontWeight: "bolder"}}>Password : </Form.Label>
+                                <Form.Control type="password" placeholder="insert password" name="password" required
+                                              onChange={p => setPassword(p.target.value)}/>
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Label style={{fontWeight: "bolder"}}>Email : </Form.Label>
+                                <Form.Control type="text" placeholder="insert email" name="email" required value={email}
+                                              onChange={e => setEmail(e.target.value)}/>
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Label style={{fontWeight: "bolder"}}>Name : </Form.Label>
+                                <Form.Control type="text" placeholder="insert name" name="name" required value={name}
+                                              onChange={e => setName(e.target.value)}/>
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Label style={{fontWeight: "bolder"}}>Surname : </Form.Label>
+                                <Form.Control type="text" placeholder="insert surname" name="surname" required
+                                              value={surname}
+                                              onChange={e => setSurname(e.target.value)}/>
+                            </Form.Group>
+                            <Button variant="success" type="submit">Submit</Button>
+                            {error ? <Alert className="my-3" variant="danger">Something went wrong!</Alert> : <></>}
+                        </Form>
+                    </div>
+                </div>
             );
         }
     }else{

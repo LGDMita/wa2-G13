@@ -1,0 +1,30 @@
+.container-sign-up-parent {
+    display: flex;
+    justify-content: center;
+}
+
+.container-sign-up {
+    margin-top: 2em;
+    margin-bottom: 2em;
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 60%;
+    height: auto;
+}
+
+.container-sign-up-h1 {
+    margin: 0.5em;
+}
+
+.container-sign-up-form {
+    margin: 2em 3em 0.5em;
+}
+
+@media (max-width: 768px) {
+    .container-sign-up {
+        width: 100%;
+    }
+}

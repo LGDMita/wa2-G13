@@ -99,7 +99,7 @@ const getExpertInfo = async (id) => {
 };
 
 const getManagerInfo = async (id) => {
-    const response = await apiInstance.get(`/API/manager/${id}`);
+    const response = await apiInstance.get(`/API/managers/${id}`);
     const row = response.data;
     if (response.status === 200) {
         return new Manager(row.id, row.username, row.email, row.name, row.surname);
