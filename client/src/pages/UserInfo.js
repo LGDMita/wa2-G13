@@ -136,7 +136,7 @@ function UserInfoPage(props){
                                         setSurname('');
                                         togglePopupMenu()
                                     } catch (error) {
-                                        window.alert(error)
+                                        console.log(error)
                                         setError(true);
                                         setLoading(false);
                                     }

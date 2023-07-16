@@ -46,10 +46,11 @@ function SignupPage(props){
                             setLoading(true)
                             try {
                                 await API.signup(new RegistrationData(username, password, email, name, surname));
-                                navigate('/login');
+                                window.alert("User successfully created!")
                                 setLoading(false)
+                                navigate('/login');
                             } catch (error) {
-                                window.alert(error)
+                                console.log(error)
                                 setError(true);
                                 setLoading(false)
                             }

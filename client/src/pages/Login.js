@@ -54,6 +54,7 @@ function LoginPage(props){
                     } catch (status) {
                         setLoading(false)
                         setError(true);
+                        console.log(status)
                         if (parseInt(status.message) === 500) {
                             setErrorMessage("Failed to contact the server.")
                         } else if (parseInt(status.message) === 401) {

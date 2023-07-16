@@ -50,8 +50,9 @@ function CreateExpertPage(props){
                                 setEmail('');
                                 setName('');
                                 setSurname('');
-                                window.message("Expert successfully created!")
+                                window.alert("Expert successfully created!")
                             } catch (error) {
+                                console.log(error)
                                 setLoading(false)
                                 setError(true);
                             }
