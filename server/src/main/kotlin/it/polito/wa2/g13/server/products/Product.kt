@@ -1,18 +1,16 @@
 package it.polito.wa2.g13.server.products
 
 import it.polito.wa2.g13.server.purchase.Purchase
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.OneToMany
-import jakarta.persistence.Table
+import jakarta.persistence.*
 
 @Entity
 @Table(name="products")
 class Product (
     @Id
-    var ean: String = "",
-    var name: String = "",
-    var brand: String = ""
+    @Column(updatable = false, nullable = false)
+    var ean: String,
+    var name: String,
+    var brand: String
 ){
     @OneToMany(mappedBy = "product")
     val purchases: MutableSet<Purchase> = mutableSetOf()

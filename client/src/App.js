@@ -5,7 +5,7 @@ import UserContext from './context/UserContext';
 import Header from './components/Header';
 import { useState } from 'react';
 import { Navigate, Route, Routes,useLocation } from 'react-router-dom';
-import { HomepagePage,LoginPage, PurchasesPage, TicketPage,ExpertsPage } from './pages';
+import { HomepagePage,LoginPage, PurchasesPage, TicketPage,ExpertsPage,SignupPage, CreateExpertPage,  UserInfoPage } from './pages';
 import TokenManager from './TokenManager';
 import { ProductTable } from "./components/ProductTable";
 import Logout from "./components/Logout";
@@ -43,6 +43,9 @@ function App() {
                 <Route path="/login" element={<LoginPage/>}/>
                 <Route path="/logout" element={<Logout />} />;
                 <Route path="/tickets" element={<TicketPage/>} />;
+                <Route path="/signup" element={<SignupPage/>}/>
+                <Route path="/createExpert" element={<CreateExpertPage/>}/>
+                <Route path="/userInfo" element={<UserInfoPage/>}/>
                 <Route path="/products" element={<ProductTable/>}/>;
                 <Route path="/purchases" element={<PurchasesPage/>}/>;
                 <Route path='/experts' element={<ExpertsPage />} />;

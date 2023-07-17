@@ -1,6 +1,7 @@
 import API from '../API';
 import {Button, InputGroup, Form} from "react-bootstrap";
 import React, {useState} from "react";
+import "../styles/Products.css";
 
 function SingleProduct() {
     const [ean, setEan] = useState("");
@@ -24,7 +25,7 @@ function SingleProduct() {
     return (
         <div className="single-product">
             <h3>Search single product</h3>
-            <InputGroup className="mb-3">
+            <InputGroup className="px-4">
                 <Form.Control
                     placeholder="Insert EAN value"
                     aria-label="Insert EAN value"

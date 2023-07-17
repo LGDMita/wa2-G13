@@ -50,12 +50,12 @@ const TokenManager = () => {
     }
 
     // get decoded token
-    const getDecodedToken = () => token ? jwt_decode(token) : { logged: false, role: undefined, username: '', pwd: '' }
+    const getDecodedToken= () => token ? jwt_decode(token) : {id:'', logged:false, role:undefined, username:'', email: '', name: '', surname:''}
 
-    const getUser = () => {
-        if (token) {
-            const decodedToken = jwt_decode(token);
-            let userRole = "";
+    const getUser= () => {
+        if(token){
+            const decodedToken= jwt_decode(token);
+            let userRole="";
             switch (decodedToken.resource_access["spring-client"].roles[0]) {
                 case "client":
                     userRole = "customer";
@@ -70,19 +70,23 @@ const TokenManager = () => {
                     break;
             }
             return {
+                id: decodedToken.sub,
                 logged: true,
                 role: userRole,
                 username: decodedToken.preferred_username,
+                email: '',
+                name: '',
+                surname:'',
             }
         }
-        return { logged: false, role: undefined, username: '', pwd: '' }
+        return {id:'', logged:false, role:undefined, username:'', email: '', name: '', surname:''}
     }
     const storeUser = user => {
         localStorage.setItem("userData", JSON.stringify(user));
     }
-    const retrieveUser = () => {
-        if (token) return JSON.parse(localStorage.getItem("userData"));
-        else return { logged: false, role: undefined, username: '', pwd: '' };
+    const retrieveUser= ()=>{
+        if(token) return JSON.parse(localStorage.getItem("userData"));
+        else return {id:'', logged:false, role:undefined, username:'', email: '', name: '', surname:''};
     }
     return { setAuthToken, getAuthToken, amILogged, removeAuthToken, getDecodedToken, getUser, storeUser, retrieveUser };
 };

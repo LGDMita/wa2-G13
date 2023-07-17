@@ -3,11 +3,9 @@ import UserContext from "../context/UserContext";
 import { Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { ReactComponent as Logo } from "../logo.svg";
 
-import "bootstrap/dist/css/bootstrap.min.css";
-import "../styles/HamburgerMenu.css"
-
-function Header(props) {
-    const { user } = useContext(UserContext);
+function Header(props){
+    const {user,setUser}=useContext(UserContext);
+    const navigate=useNavigate();
     return (
         <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark" className="my-menu">
             <Navbar.Brand href="/" className="logo-title">
@@ -37,8 +35,33 @@ function Header(props) {
     );
 }
 
-function roleSpecificNavbar(logged, role) {
-    if (logged) switch (role) {
+function authButton(logged,navigate,logoutCallback){
+    const handleLogout=async e=>{
+        e.preventDefault();
+        e.stopPropagation();
+        await API.logout();
+        logoutCallback();
+        navigate("/home");
+    }
+
+    if(logged)
+        return  (
+            <>
+                <Button className="mx-1" variant='secondary'  onClick={async e=>{e.preventDefault();e.stopPropagation();navigate("/userInfo");}}>UserInfo</Button>
+                <Button className="mx-1" variant='danger'  onClick={handleLogout}>Logout</Button>
+            </>
+        );
+    else
+        return (
+            <>
+                <Button className="mx-1" variant='secondary'   onClick={async e=>{e.preventDefault();e.stopPropagation();navigate("/signup");}}>Signup</Button>
+                <Button className="mx-1" variant='success'   onClick={async e=>{e.preventDefault();e.stopPropagation();navigate('/login');}}>Login</Button>
+            </>
+        );
+}
+
+function roleSpecificNavbar(logged,role){
+    if(logged) switch (role) {
         case 'customer':
             return (<CustomerNavOptions />);
         case 'manager':

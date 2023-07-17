@@ -690,7 +690,7 @@ class TicketTests {
         expectedStatus: HttpStatus,
         expectedErrorMessage: String = ""
     ) {
-        val product = Product(ean = "000000000000000")
+        val myProduct=Product(ean = "0000000000000", name= "name", brand="brand")
         val profile = Profile(
             id = "id",
             username = "username",
@@ -698,7 +698,7 @@ class TicketTests {
             name = "this",
             surname = "exists"
         )
-        productRepository.save(product)
+        productRepository.save(myProduct)
         profileRepository.save(profile)
         expertRepository.save(Expert(
             id = "id",
@@ -711,7 +711,7 @@ class TicketTests {
             creationDate = Date(),
             expert = null,
             priorityLevel = null,
-            product = product,
+            product = myProduct,
             profile = profile,
             status = "open"
         ))
@@ -768,7 +768,7 @@ class TicketTests {
         expectedStatus: HttpStatus,
         expectedErrorMessage: String = ""
     ) {
-        val myProduct=Product(ean = "0000000000000")
+        val myProduct=Product(ean = "0000000000000", name= "name", brand="brand")
         productRepository.save(myProduct)
         val myProfile=Profile(
             id = "id",

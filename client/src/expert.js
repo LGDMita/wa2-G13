@@ -1,9 +1,10 @@
 class Expert {
-    constructor(id, name, surname, email, username) {
-        this.id = id;
-        this.name = name;
-        this.surname = surname;
-        this.username = username;
+    constructor(id, username, email, name, surname) {
+        this.id= id;
+        this.username= username;
+        this.email= email;
+        this.name= name;
+        this.surname= surname;
     }
 }
 

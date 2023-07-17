@@ -1,4 +1,3 @@
-import { AddProfile } from "./AddProfile";
 import { EditProfile } from "./EditProfile";
 import Header from "./Header";
 import { ProductTable } from "./ProductTable";

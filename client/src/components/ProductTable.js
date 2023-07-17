@@ -1,7 +1,7 @@
 import API from '../API';
 import React, {useEffect, useState} from 'react';
 import Table from 'react-bootstrap/Table';
-
+import "../styles/Products.css";
 
 function ProductTable() {
 
@@ -16,7 +16,7 @@ function ProductTable() {
     return (
         <div className="table-products">
             <h3>All products</h3>
-            <Table striped bordered hover>
+            <Table className="m-3" striped bordered hover>
                 <thead>
                 <tr>
                     <th>EAN</th>
