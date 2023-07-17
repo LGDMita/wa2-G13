@@ -3,6 +3,7 @@ import Product from "./product";
 import Profile from "./profile";
 import TokenManager from './TokenManager';
 import Ticket from "./ticket";
+import Expert from "./expert";
 
 const SERVER_URL = 'http://localhost:8080';
 
@@ -115,10 +116,10 @@ const login = async (username, password, setUser) => {
 
         // Salva il token utilizzando il TokenManager
         tokenManager.setAuthToken(token);
-        
+
         // Effettua ulteriori operazioni dopo il login, come la navigazione alla pagina successiva
-        const user=tokenManager.getUser();
-        user.pwd=password;
+        const user = tokenManager.getUser();
+        user.pwd = password;
         //console.log("User is "+JSON.stringify(user));
         tokenManager.storeUser(user);
         setUser(user);
@@ -128,7 +129,7 @@ const login = async (username, password, setUser) => {
     }
 };
 
-const logout = async () =>{
+const logout = async () => {
     return null;
 };
 
@@ -160,17 +161,17 @@ const getMessages=async ticketId => {
     else return ret;
 }
 
-const getTicketsOf=async (id,role) => {
+const getTicketsOf = async (id, role) => {
     const queryParams = new URLSearchParams('?');
     let queryRole="profile";
     /*switch (role) {
         case 'customer':
             break;
         case 'expert':
-            queryRole='expert';
+            queryRole = 'expert';
             break;
         case 'manager':
-            queryRole='expert';
+            queryRole = 'expert';
             break;
         default:
             break;
@@ -228,6 +229,26 @@ const getTicketHistory = async ticketId => {
     return ret;
 }
 
+const getExperts = async () => {
+    const response = await apiInstance.get('/API/experts');
+    const rows = response.data;
+    if (response.status === 200) {
+        return rows.map(row => {
+            return new Expert(row.id, row.name, row.surname, row.email, row.username);
+        });
+    } else {
+        throw new Error(rows.detail);
+    }
+};
+
+const updateExpert = async (expert) => {
+    try {
+        await apiInstance.put(`/API/experts/${expert.id}`, expert);
+    } catch (error) {
+        throw new Error(error.response.data.detail);
+    }
+};
+
 const API = {
     getTickets,
     getProducts,
@@ -245,6 +266,8 @@ const API = {
     getPurchasesOf,
     changeTicketStatus,
     getTicketHistory,
+    updateExpert,
+    getExperts
 };
 
 export default API;

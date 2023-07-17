@@ -1,26 +1,27 @@
-import React from 'react';
+import { useContext, useState } from "react";
 import { Row, Col, Form, Button, Container } from 'react-bootstrap';
-import { useState, useEffect } from "react";
+import ErrorMessage from '../components/ErrorMessage';
 import { useNavigate } from 'react-router-dom';
 import { ReactComponent as Logo } from "../logo.svg";
-import API from '../API';
-import TokenManager from '../TokenManager';
-import ErrorMessage from './ErrorMessage';
+
+import UserContext from "../context/UserContext";
+import API from "../API";
 
 import "../styles/LoginPage.css"
 
-export default function LoginPagee(props) {
+function LoginPage(props) {
+    const navigate = useNavigate();
+    const { user, setUser } = useContext(UserContext);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [showError, setShowError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    const navigate = useNavigate();
 
     const handleLogin = async () => {
         try {
-            await API.login(username, password);
-            props.setLoggedIn(true);
-            navigate("/")
+            console.log("Trying login");
+            await API.login(username, password, setUser);
+            navigate("/home");
         }
         catch (status) {
             setShowError(true);
@@ -31,25 +32,14 @@ export default function LoginPagee(props) {
                 setErrorMessage('Username or password is incorrect.');
             }
         }
-    };
+    }
 
     const handleErrorClose = () => {
         setShowError(false);
     };
 
-    const handleLoad = () => {
-        const tokenManager = TokenManager();
-        if (tokenManager.amILogged()) {
-            props.setLoggedIn(true);
-            navigate("/");
-        }
-    };
-
-    useEffect(() => {
-        handleLoad(); // Esegui la funzione handleLoad al caricamento di LoginPage
-    }, []);
-
     return (
+
         <div className='login-page-container d-flex align-items-center'>
             <Container>
                 <Row>
@@ -104,4 +94,6 @@ export default function LoginPagee(props) {
             </Container>
         </div>
     );
-};
+}
+
+export default LoginPage;

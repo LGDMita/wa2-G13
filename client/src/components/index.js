@@ -4,8 +4,7 @@ import Header from "./Header";
 import { ProductTable } from "./ProductTable";
 import { SingleProduct } from "./SingleProduct";
 import { SingleProfile } from "./SingleProfile";
-import LoginPagee from "./LoginPage";
 import GallerySlider from "./GallerySlider";
 import Chat from "./Chat";
 
-export {AddProfile,EditProfile,Header,ProductTable,SingleProduct,SingleProfile,LoginPagee,GallerySlider,Chat};
+export { AddProfile, EditProfile, Header, ProductTable, SingleProduct, SingleProfile, GallerySlider, Chat };

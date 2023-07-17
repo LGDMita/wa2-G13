@@ -1,77 +1,58 @@
 import { useContext } from "react";
-import { useNavigate } from 'react-router-dom';
 import UserContext from "../context/UserContext";
-import { Container, Nav, Navbar, Button, NavbarBrand, Anchor } from "react-bootstrap";
-import API from "../API";
-import "../styles/Header.css";
+import { Nav, Navbar, NavDropdown } from "react-bootstrap";
+import { ReactComponent as Logo } from "../logo.svg";
 
-function Header(props){
-    const {user,setUser}=useContext(UserContext);
-    const navigate=useNavigate();
+import "bootstrap/dist/css/bootstrap.min.css";
+import "../styles/HamburgerMenu.css"
+
+function Header(props) {
+    const { user } = useContext(UserContext);
     return (
-        <Navbar style={
-            {
-              "backgroundColor":"#057fb4"
-            }
-          } sticky="top" className="header-container">
-            <Container fluid className="d-flex justify-content-between">
-                {/*
-                Common nav options
-                */}
-                <NavbarBrand className="justify-content-start">
-                    <Anchor className="navbar-brand d-flex align-items-center text-white" href="/home">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-ticket-perforated-fill" viewBox="0 0 16 16">
-                            <path d="M0 4.5A1.5 1.5 0 0 1 1.5 3h13A1.5 1.5 0 0 1 16 4.5V6a.5.5 0 0 1-.5.5 1.5 1.5 0 0 0 0 3 .5.5 0 0 1 .5.5v1.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 11.5V10a.5.5 0 0 1 .5-.5 1.5 1.5 0 1 0 0-3A.5.5 0 0 1 0 6V4.5Zm4-1v1h1v-1H4Zm1 3v-1H4v1h1Zm7 0v-1h-1v1h1Zm-1-2h1v-1h-1v1Zm-6 3H4v1h1v-1Zm7 1v-1h-1v1h1Zm-7 1H4v1h1v-1Zm7 1v-1h-1v1h1Zm-8 1v1h1v-1H4Zm7 1h1v-1h-1v1Z"/>
-                        </svg>
-                    </Anchor>
-                </NavbarBrand>
-                <Nav className="justify-content-center">
-                {
-                    //Role specific options
-                    roleSpecificNavbar(user.logged,user.role)
-                }
-                </Nav>
-                <Nav className="justify-content-end">
-                    <Nav.Item>
+        <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark" className="my-menu">
+            <Navbar.Brand href="/" className="logo-title">
+                <Logo
+                    alt=""
+                    width="40"
+                    height="50"
+                    className="d-inline-block align-top"
+                />
+                <span>MyTicketManager</span>
+            </Navbar.Brand>
+            <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+            <Navbar.Collapse id="responsive-navbar-nav" className="mynav">
+                <Nav>
+                    <Nav.Link href="/products">Prodotti</Nav.Link>
                     {
-                        //Login or logout simply
-                        authButton(user.logged,navigate,props.handleLogout)
+                        roleSpecificNavbar(user.logged, user.role)
                     }
-                    </Nav.Item>
+                    <NavDropdown title="My Profile" id="collasible-nav-dropdown" className="mydropdown">
+                        <NavDropdown.Item href="/profile">My profile</NavDropdown.Item>
+                        <NavDropdown.Divider />
+                        <NavDropdown.Item href="/logout">Logout</NavDropdown.Item>
+                    </NavDropdown>
                 </Nav>
-            </Container>
+            </Navbar.Collapse>
         </Navbar>
     );
 }
 
-function authButton(logged,navigate,logoutCallback){
-    const handleLogout=async e=>{
-        e.preventDefault();
-        e.stopPropagation();
-        await API.logout();
-        logoutCallback();
-        navigate("/home");
-    }
-    if(logged)  return  (<Button variant='danger' onClick={handleLogout}>Logout</Button>);
-    else    return (<Button variant='success' onClick={async e=>{e.preventDefault();e.stopPropagation();navigate('/login');}}>Login</Button>);
-}
-
-function roleSpecificNavbar(logged,role){
-    if(logged) switch (role) {
+function roleSpecificNavbar(logged, role) {
+    if (logged) switch (role) {
         case 'customer':
-            return (<CustomerNavOptions/>);
+            return (<CustomerNavOptions />);
         case 'manager':
-            return (<ManagerNavOptions/>);
+            return (<ManagerNavOptions />);
         case 'expert':
-            return (<ExpertNavOptions/>);
+            return (<ExpertNavOptions />);
         default:
             break;
     }
     return (<></>);
 }
 
-function CustomerNavOptions(props){
-    return(
+function CustomerNavOptions(props) {
+    return (
         <>
             <Nav.Link href="/tickets">
                 My tickets
@@ -83,18 +64,21 @@ function CustomerNavOptions(props){
     );
 }
 
-function ManagerNavOptions(props){
-    return(
+function ManagerNavOptions(props) {
+    return (
         <>
             <Nav.Link href="/tickets">
                 Tickets
+            </Nav.Link>
+            <Nav.Link href="/experts">
+                Manage experts
             </Nav.Link>
         </>
     )
 }
 
-function ExpertNavOptions(props){
-    return(
+function ExpertNavOptions(props) {
+    return (
         <>
             <Nav.Link href="/tickets">
                 Tickets
