@@ -3,6 +3,7 @@ import Product from "./product";
 import Profile from "./profile";
 import TokenManager from './TokenManager';
 import Ticket from "./ticket";
+import Expert from "./expert";
 
 const SERVER_URL = 'http://localhost:8080';
 
@@ -64,6 +65,18 @@ const getTicket = async (id) => {
     }
 };
 
+const getExpertsBySector = async (sector) => {
+    const response = await apiInstance.get(`/API/experts/?sectorName=${sector}`);
+    const rows = response.data;
+    if (response.status === 200) {
+        return rows.map(row => {
+            return new Expert(row.id, row.username, row.email, row.name, row.surname);
+        });
+    } else {
+        throw new Error(rows.detail);
+    }
+};
+
 const getProducts = async () => {
     const response = await apiInstance.get('/API/products/');
     const rows = response.data;
@@ -112,6 +125,30 @@ const updateProfile = async (email, profile) => {
     }
 };
 
+const changeStatus = async (ticketId, status) => {
+    const response = await apiInstance.put(`/API/tickets/${ticketId}/changeStatus`, {'status': status});
+    if (response.status !== 200) {
+        const row = response.data;
+        throw new Error(`${response.status} - ${row.detail}`);
+    }
+};
+
+const changePriorityLevel = async (ticketId, priorityLevel) => {
+    const response = await apiInstance.put(`/API/tickets/${ticketId}/changePriority`, {'priorityLevel': priorityLevel});
+    if (response.status !== 200) {
+        const row = response.data;
+        throw new Error(`${response.status} - ${row.detail}`);
+    }
+};
+
+const changeExpert = async (ticketId, expertId) => {
+    const response = await apiInstance.put(`/API/tickets/${ticketId}/changeExpert`, {'expertId': expertId});
+    if (response.status !== 200) {
+        const row = response.data;
+        throw new Error(`${response.status} - ${row.detail}`);
+    }
+};
+
 const login = async (username, password, setUser) => {
     try {
         //console.log("Trying login API");
@@ -146,6 +183,10 @@ const API = {
     getTicket,
     getProducts,
     getProduct,
+    getExpertsBySector,
+    changeStatus,
+    changePriorityLevel,
+    changeExpert,
     getUserInfo,
     addProfile,
     updateProfile,
