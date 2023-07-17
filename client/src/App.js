@@ -3,12 +3,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import UserContext from './context/UserContext';
 import Header from './components/Header';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
-import { HomepagePage, LoginPage, TicketPage } from './pages';
+import { HomepagePage, LoginPage, TicketPage, ExpertsPage } from './pages';
 import TokenManager from './TokenManager';
 import { ProductTable } from "./components/ProductTable";
-import Logout from "./components/Logout"
+import Logout from "./components/Logout";
 
 function CheckHeader(props) {
     const location = useLocation();
@@ -41,9 +41,10 @@ function App() {
                 <Route index element={<Navigate replace to='/home' />} />
                 <Route path="/home" element={<HomepagePage />} />
                 <Route path="/login" element={<LoginPage />} />
+                <Route path="/logout" element={<Logout />} />;
                 <Route path="/tickets" element={<TicketPage />} />;
                 <Route path="/products" element={<ProductTable />} />;
-                <Route path="/logout" element={<Logout />} />;
+                <Route path='/experts' element={<ExpertsPage />} />;
             </Routes>
         </UserContext.Provider>
     );

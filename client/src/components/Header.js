@@ -1,14 +1,13 @@
 import { useContext } from "react";
-import { useNavigate } from 'react-router-dom';
 import UserContext from "../context/UserContext";
-import { Container, Nav, Navbar, NavDropdown, Button, NavbarBrand, Anchor } from "react-bootstrap";
+import { Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { ReactComponent as Logo } from "../logo.svg";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/HamburgerMenu.css"
 
 function Header(props) {
-    const { user, setUser } = useContext(UserContext);
+    const { user } = useContext(UserContext);
     return (
         <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark" className="my-menu">
             <Navbar.Brand href="/" className="logo-title">
@@ -70,6 +69,9 @@ function ManagerNavOptions(props) {
         <>
             <Nav.Link href="/tickets">
                 Tickets
+            </Nav.Link>
+            <Nav.Link href="/experts">
+                Manage experts
             </Nav.Link>
         </>
     )

@@ -6,6 +6,7 @@ const TokenManager = () => {
     const setAuthToken = (newToken) => {
         token = newToken;
         // Salva il token nel localStorage
+        console.log(token)
         localStorage.setItem('jwtToken', newToken);
     };
 
@@ -49,39 +50,39 @@ const TokenManager = () => {
     }
 
     // get decoded token
-    const getDecodedToken= () => token ? jwt_decode(token) : {logged:false,role:undefined,username:'',pwd:''}
+    const getDecodedToken = () => token ? jwt_decode(token) : { logged: false, role: undefined, username: '', pwd: '' }
 
-    const getUser= () => {
-        if(token){
-            const decodedToken=jwt_decode(token);
-            let userRole="";
+    const getUser = () => {
+        if (token) {
+            const decodedToken = jwt_decode(token);
+            let userRole = "";
             switch (decodedToken.resource_access["spring-client"].roles[0]) {
                 case "client":
-                    userRole="customer";
+                    userRole = "customer";
                     break;
                 case "manager":
-                    userRole="manager";
+                    userRole = "manager";
                     break;
                 case "expert":
-                    userRole="expert";
+                    userRole = "expert";
                     break;
                 default:
                     break;
             }
             return {
-                logged:true,
-                role:userRole,
-                username:decodedToken.preferred_username,
+                logged: true,
+                role: userRole,
+                username: decodedToken.preferred_username,
             }
         }
-        return {logged:false,role:undefined,username:'',pwd:''}
+        return { logged: false, role: undefined, username: '', pwd: '' }
     }
-    const storeUser= user => {
-        localStorage.setItem("userData",JSON.stringify(user));
+    const storeUser = user => {
+        localStorage.setItem("userData", JSON.stringify(user));
     }
-    const retrieveUser= ()=>{
-        if(token) return JSON.parse(localStorage.getItem("userData"));
-        else return {logged:false,role:undefined,username:'',pwd:''};
+    const retrieveUser = () => {
+        if (token) return JSON.parse(localStorage.getItem("userData"));
+        else return { logged: false, role: undefined, username: '', pwd: '' };
     }
     return { setAuthToken, getAuthToken, amILogged, removeAuthToken, getDecodedToken, getUser, storeUser, retrieveUser };
 };

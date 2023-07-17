@@ -3,6 +3,7 @@ import Product from "./product";
 import Profile from "./profile";
 import TokenManager from './TokenManager';
 import Ticket from "./ticket";
+import Expert from "./expert";
 
 const SERVER_URL = 'http://localhost:8080';
 
@@ -114,10 +115,10 @@ const login = async (username, password, setUser) => {
 
         // Salva il token utilizzando il TokenManager
         tokenManager.setAuthToken(token);
-        
+
         // Effettua ulteriori operazioni dopo il login, come la navigazione alla pagina successiva
-        const user=tokenManager.getUser();
-        user.pwd=password;
+        const user = tokenManager.getUser();
+        user.pwd = password;
         //console.log("User is "+JSON.stringify(user));
         tokenManager.storeUser(user);
         setUser(user);
@@ -127,56 +128,76 @@ const login = async (username, password, setUser) => {
     }
 };
 
-const logout = async () =>{
+const logout = async () => {
     return null;
 };
 
 
-const sendMessage=async (ticketId,fromUser,text,files) => {
-    const data=new FormData();
-    data.append("fromUser",fromUser);
-    data.append("text",text);
-    files.forEach(f=>data.append("attachments",f));
-    const res=await apiInstance.post("/API/tickets/"+ticketId+"/messages",data,{
+const sendMessage = async (ticketId, fromUser, text, files) => {
+    const data = new FormData();
+    data.append("fromUser", fromUser);
+    data.append("text", text);
+    files.forEach(f => data.append("attachments", f));
+    const res = await apiInstance.post("/API/tickets/" + ticketId + "/messages", data, {
         headers: {
             "Content-Type": "multipart/form-data",
         },
     });
-    if(res.status!==201){
-        const ret=await res.data;
-        throw new Error({status:res.status,detail:ret});
+    if (res.status !== 201) {
+        const ret = await res.data;
+        throw new Error({ status: res.status, detail: ret });
     }
 }
 
-const getMessages=async ticketId => {
-    const res=await apiInstance.get("/API/tickets/"+ticketId+"/messages");
-    const ret=await res.data;
-    if(res.status!==200) throw new Error({status:res.status,detail:ret});
+const getMessages = async ticketId => {
+    const res = await apiInstance.get("/API/tickets/" + ticketId + "/messages");
+    const ret = await res.data;
+    if (res.status !== 200) throw new Error({ status: res.status, detail: ret });
     else return ret;
 }
 
-const getTicketsOf=async (id,role) => {
+const getTicketsOf = async (id, role) => {
     const queryParams = new URLSearchParams('?');
-    let queryRole="profile";
+    let queryRole = "profile";
     switch (role) {
         case 'customer':
             break;
         case 'expert':
-            queryRole='expert';
+            queryRole = 'expert';
             break;
         case 'manager':
-            queryRole='expert';
+            queryRole = 'expert';
             break;
         default:
             break;
     }
-    queryParams.append(role+"Id",id);
-    const url="/API/tickets/"+queryParams.toString();
-    const res=await apiInstance.get(url);
-    const ret=await res.data;
-    if(res.status!==200) throw new Error({status:res.status,detail:ret});
-    else return ret.map(row=>new Ticket(row.ticketId, row.profile, row.product, row.priorityLevel, row.expert, row.status, row.creationDate, row.messages));
+    queryParams.append(role + "Id", id);
+    const url = "/API/tickets/" + queryParams.toString();
+    const res = await apiInstance.get(url);
+    const ret = await res.data;
+    if (res.status !== 200) throw new Error({ status: res.status, detail: ret });
+    else return ret.map(row => new Ticket(row.ticketId, row.profile, row.product, row.priorityLevel, row.expert, row.status, row.creationDate, row.messages));
 }
+
+const getExperts = async () => {
+    const response = await apiInstance.get('/API/experts');
+    const rows = response.data;
+    if (response.status === 200) {
+        return rows.map(row => {
+            return new Expert(row.id, row.name, row.surname, row.email, row.username);
+        });
+    } else {
+        throw new Error(rows.detail);
+    }
+};
+
+const updateExpert = async (expert) => {
+    try {
+        await apiInstance.put(`/API/experts/${expert.id}`, expert);
+    } catch (error) {
+        throw new Error(error.response.data.detail);
+    }
+};
 
 const API = {
     getTickets,
@@ -190,6 +211,8 @@ const API = {
     sendMessage,
     getMessages,
     getTicketsOf,
+    updateExpert,
+    getExperts
 };
 
 export default API;
