@@ -41,7 +41,7 @@ function ManageTicketForm() {
         setSelectedExpert(event.target.value);
     };
 
-    async function handleSave(){
+    async function handleSave(event){
         let changing_expert = false;
         let changing_priority = false
         if(selectedExpert !== null && selectedExpert !== 'null') {
@@ -54,6 +54,9 @@ function ManageTicketForm() {
             await API.changePriorityLevel(ticketId, parseInt(selectedPriorityLevel));
             await API.changeExpert(ticketId, selectedExpert);
             await API.changeStatus(ticketId, "in_progress");
+        }else{
+            event.preventDefault();
+            window.alert("Select both an expert and a priority level to save the ticket, otherwise just click 'Cancel' to go back to the tickets list")
         }
     }
 
