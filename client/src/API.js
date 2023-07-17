@@ -54,6 +54,16 @@ const getTickets = async () => {
     }
 };
 
+const getTicket = async (id) => {
+    const response = await apiInstance.get(`/API/tickets/${id}`);
+    const row = response.data;
+    if (response.status === 200) {
+        return new Ticket(row.ticketId, row.profile, row.product, row.priorityLevel, row.expert, row.status, row.creationDate, row.messages);
+    } else {
+        throw new Error(row.detail);
+    }
+};
+
 const getProducts = async () => {
     const response = await apiInstance.get('/API/products/');
     const rows = response.data;
@@ -133,6 +143,7 @@ const logout = async () =>{
 
 const API = {
     getTickets,
+    getTicket,
     getProducts,
     getProduct,
     getUserInfo,

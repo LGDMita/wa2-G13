@@ -9,7 +9,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { Chat, HomepagePage,LoginPage } from './pages';
 import TokenManager from './TokenManager';
 import {ProductTable} from "./components/ProductTable";
-
+import {ManageTicketForm} from "./components/ManageTicketForm";
 
 function App() {
     const tokenManager = TokenManager();
@@ -28,6 +28,7 @@ function App() {
                 <Route path="/tickets/:ticketId" element={<Chat/>}/>
                 <Route path="/tickets" element={<TicketList/>} />;
                 <Route path="/products" element={<ProductTable/>}/>;
+                <Route path="/tickets/manage/:ticketId" element={<ManageTicketForm/>}/>
             </Routes>
         </UserContext.Provider>
     );
