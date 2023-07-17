@@ -26,8 +26,8 @@ class Message (
     }
 }
 
-fun MessageDTO.toMessage(ticket: TicketDTO?): Message {
-    val mex=Message(ticket?.toTicket(),fromUser, text, datetime, mutableSetOf() ,messageId)
+fun MessageDTO.toMessage(ticket: Ticket?): Message {
+    val mex=Message(ticket,fromUser, text, datetime, mutableSetOf() ,messageId)
     mex.attachments=attachments.map{it.toAttachment(mex)}.toMutableSet()
     return mex
 }

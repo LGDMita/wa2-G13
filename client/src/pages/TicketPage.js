@@ -5,6 +5,7 @@ import UserContext from "../context/UserContext";
 import "../styles/TicketPage.css";
 import API from "../API";
 import { Route, Routes, useLocation, useNavigate, useParams } from "react-router";
+import TicketHistory from "./TicketHistory";
 
 function MyTicketList(props){
     const {user,setUser}=useContext(UserContext);
@@ -16,11 +17,11 @@ function MyTicketList(props){
             {
                 props.ticketList.map(tick=>{
                     return(
-                        <Card key={tick.ticketId} border={tick.ticketId===(props.selectedTicket?props.selectedTicket.ticketId:undefined)?"info":"dark"} onClick={e=>{
+                        <Card key={tick.ticketId} border={tick.ticketId===props.selectedTicket?"info":"dark"} onClick={e=>{
                             e.preventDefault();
                             e.stopPropagation();
                             // single route
-                            props.setSelectedTicket(tick.ticketId==(props.selectedTicket?props.selectedTicket.ticketId:undefined)?undefined:tick);
+                            props.setSelectedTicket(tick.ticketId===props.selectedTicket?-1:tick.ticketId);
                             // route when select
                             //navigate("/tickets/"+tick.ticketId);
                         }} className="ticket-card my-2">
@@ -92,7 +93,7 @@ function TicketPage(props){
     const [ticketList,setTicketList]=useState([]);
     const location=useLocation();
     // single route
-    const [selectedTicket,setSelectedTicket]=useState(location.state?location.state:undefined);
+    const [selectedTicket,setSelectedTicket]=useState(location.state?location.state:-1);
     // to clear location state without rerender
     window.history.replaceState({},document.title);
     // instead if we use a specific route when the ticket is opened
@@ -101,22 +102,22 @@ function TicketPage(props){
         const getTickets=async()=>{
             try {
                 const ticks=await API.getTicketsOf("032d838b-1b21-4154-8aac-315f2b0cc88c",user.role);
-                setTicketList(ticks);
+                setTicketList([...ticks]);
             } catch (error) {
                 setTicketList([]);
 
             }
         }
         getTickets();
-    },[]);
+    },[refresh]);
     return(
         <Container fluid className="ticket-page">
             <Row>
-                <Col xs={selectedTicket? 4 : 12}>
+                <Col xs={selectedTicket!==-1? 4 : 12}>
                     <MyTicketList ticketList={ticketList} setTicketList={setTicketList} selectedTicket={selectedTicket} setSelectedTicket={setSelectedTicket}/>
                 </Col>
-                {selectedTicket && <Col xs={8}>
-                    <Chat ticket={selectedTicket} refresh={refresh} setRefresh={setRefresh}/>
+                {ticketList.find(t=>t.ticketId===selectedTicket) && <Col xs={8}>
+                    <Chat ticket={ticketList.find(t=>t.ticketId===selectedTicket)} refresh={refresh} setRefresh={setRefresh}/>
                 </Col>}
             </Row>
         </Container>
@@ -130,14 +131,21 @@ function TicketPageBodySelectedTicket(props){
         <TicketPageBody selectedTicketId={ticketId}/>
     )
 }
-
-function TicketPage(props){
+*/
+/*function TicketPage(props){
     return(
         <Routes>
             <Route index element={<TicketPageBody selectedTicketId={-1}/>}/>
             <Route path=":ticketId" element={<TicketPageBodySelectedTicket/>}/>
         </Routes>
     )
-}
-*/
+    return(
+        <Container fluid className="ticket-page">
+            <Row>
+                <TicketHistory/>
+            </Row>
+        </Container>
+    )
+}*/
+
 export default TicketPage;

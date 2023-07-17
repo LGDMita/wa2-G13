@@ -1,10 +1,11 @@
 import { Button, Col, Container, Modal, Row } from "react-bootstrap";
 import { MessageBox,MessageList as MessageList_ } from "react-chat-elements";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import UserContext from "../context/UserContext";
 import "../styles/Chat.css";
 import { GallerySlider } from ".";
 import API from "../API";
+import time from "../lib/time";
 
 function Message(props){
     return(
@@ -19,7 +20,7 @@ function Message(props){
                 {props.message.data.length>0 && <div className="message-files">
                     <GallerySlider add={false} files={props.message.data}/>
                 </div>}
-                <div className="message-time">{props.message.datetime}</div>
+                <div className="message-time">{time.format(props.message.datetime)}</div>
             </div> 
         </div>
     )
@@ -27,11 +28,11 @@ function Message(props){
 
 function MessageList(props){
     return(
-        <div className="messages-container">
+        <div id="messages-list" className="messages-container">
             {
                 props.messages.map(m=>{
                     return(
-                        <Row>
+                        <Row key={m.messageId}>
                             <Message message={m}/>
                         </Row>
                     )
@@ -45,51 +46,48 @@ function NewMessage(props){
     const {user,setUser}=useContext(UserContext);
     const [newMessageText,setNewMessageText]=useState("");
     const [files,setFiles]=useState([]);
-    const [error,setError]=useState("");
     const handleMessage=async()=>{
         try {
             // modify file structure, actually useless now
             //const attachments=files.map(f=>{});
-            await API.sendMessage(props.ticketId,user.role==='CUSTOMER',newMessageText,files);
+            await API.sendMessage(props.ticket.ticketId,user.role==='customer',newMessageText,files);
             files.forEach(f=>URL.revokeObjectURL(f.url));
             setFiles([]);
-            props.setRefresh(!props.refresh);
-        } catch (error) {
-            setError(error);
+            setNewMessageText("");
+            props.handleNewMessage();
+        } catch (exc) {
+            console.log("Error sending message!! ",JSON.stringify(exc));
+            props.setError({title:"Couldn't send the message",detials:exc.detail});
         }
     }
+    //just to unmount URLs and fix leak memory
+    useEffect(()=>{
+        return ()=>files.forEach(f=>URL.revokeObjectURL(f.url));
+    },[]);
     return(
         <div className="newmessage-container">
             <Row>
                 <Col xs={10}>
                     <Row>
                         <Col xs={files.length>0?8:11}>
-                            <div className="newmessage-box">
-                                <textarea disabled={props.ticket.status!=="IN PROGRESS"} value={newMessageText} style={{border:"none", background: "transparent", "outline": 0,width:"100%",height:"100%"}}
+                            <div className="newmessage-box" disabled={props.disabled}>
+                                <textarea disabled={props.disabled} value={newMessageText} style={{border:"none", background: "transparent", "outline": 0,width:"100%",height:"100%"}}
                                 placeholder="Type here...!" onChange={e=>{e.preventDefault();e.stopPropagation();setNewMessageText(e.target.value);}}/>
                             </div>
                         </Col>
                         <Col xs={files.length>0?4:1}>
-                            <GallerySlider disabled={props.ticket.status!=="IN PROGRESS"} add={true} files={files} setFiles={setFiles}/>
+                            <GallerySlider disabled={props.disabled} add={true} files={files} setFiles={setFiles}/>
                         </Col>
                     </Row>
                 </Col>
                 <Col xs={2}>
-                    <div className="newmessage-send" onClick={e=>{e.preventDefault();e.stopPropagation();handleMessage();}}>
-                        <span disabled={props.ticket.status!=="IN PROGRESS"} className="material-icons-round md-36 sendmessagebutton">
+                    <div className="newmessage-send" disabled={props.disabled} onClick={e=>{e.preventDefault();e.stopPropagation();if(!props.disabled)handleMessage();}}>
+                        <span disabled={props.disabled} className="material-icons-round md-36 sendmessagebutton">
                             send
                         </span>
                     </div>
                 </Col>
             </Row>
-            {error!=="" &&
-                <Modal show={true} onHide={()=>setError("")} size="md" aria-labelledby="contained-modal-title-vcenter" centered>
-                    <Modal.Header closeButton>
-                        <Modal.Title id="contained-modal-title-vcenter">Couldn't send the message!</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>{error}</Modal.Body>
-                </Modal>
-            }
         </div>
     )
 }
@@ -98,36 +96,56 @@ function StatusBasedOptions(props){
     const {user,setUser}=useContext(UserContext);
     // All the buttons written once so they just have to be put together later
     function StartProgress(props){
-        return(
-            <Button size="sm" disabled={user.role==='CUSTOMER'} variant="success">
+        return( user.role!=="customer" &&
+            <Button size="sm" variant="success" onClick={e=>{
+                e.preventDefault();
+                e.stopPropagation();
+                props.handleChangeStatus("in_progress");
+            }}>
                 Start progress!
             </Button>
         );
     }
     function StopProgress(props){
         return(
-            <Button size="sm" variant="danger">
+            <Button size="sm" variant="danger" onClick={e=>{
+                e.preventDefault();
+                e.stopPropagation();
+                props.handleChangeStatus("open");
+            }}>
                 Stop progress!
             </Button>
         );
     }
     function ResolveIssue(props){
         return(
-            <Button size="sm" variant="info">
+            <Button size="sm" variant="info" onClick={e=>{
+                e.preventDefault();
+                e.stopPropagation();
+                props.handleChangeStatus("resolved");
+            }}>
                 Resolve issue!
             </Button>
         );
     }
     function ReopenIssue(props){
         return(
-            <Button size="sm" variant="dark">
+            <Button size="sm" variant="dark" onClick={e=>{
+                e.preventDefault();
+                e.stopPropagation();
+                props.handleChangeStatus("reopened");
+            }}>
                 Reopen issue!
             </Button>
         );
     }
     function CloseIssue(props){
         return(
-            <Button size="sm" variant="secondary">
+            <Button size="sm" variant="secondary" onClick={e=>{
+                e.preventDefault();
+                e.stopPropagation();
+                props.handleChangeStatus("closed");
+            }}>
                 Close issue!
             </Button>
         );
@@ -136,56 +154,56 @@ function StatusBasedOptions(props){
     function OpenTicketOptions(props){
         return(
             <>
-                <StartProgress/>
-                <ResolveIssue/>
-                <CloseIssue/>
+                <StartProgress handleChangeStatus={props.handleChangeStatus}/>
+                <ResolveIssue handleChangeStatus={props.handleChangeStatus}/>
+                <CloseIssue handleChangeStatus={props.handleChangeStatus}/>
             </>
         );
     }
     function InProgressTicketOptions(props){
         return(
             <>
-                <StopProgress/>
-                <CloseIssue/>
-                <ResolveIssue/>
+                <StopProgress handleChangeStatus={props.handleChangeStatus}/>
+                <CloseIssue handleChangeStatus={props.handleChangeStatus}/>
+                <ResolveIssue handleChangeStatus={props.handleChangeStatus}/>
             </>
         );
     }
     function ClosedTicketOptions(props){
         return(
             <>
-                <ReopenIssue/>
+                <ReopenIssue handleChangeStatus={props.handleChangeStatus}/>
             </>
         );
     }
     function ReopenedTicketOptions(props){
         return(
             <>
-                <StartProgress/>
-                <ResolveIssue/>
-                <CloseIssue/>
+                <StartProgress handleChangeStatus={props.handleChangeStatus}/>
+                <ResolveIssue handleChangeStatus={props.handleChangeStatus}/>
+                <CloseIssue handleChangeStatus={props.handleChangeStatus}/>
             </>
         );
     }
     function ResolvedTicketOptions(props){
         return(
             <>
-                <ReopenIssue/>
-                <CloseIssue/>
+                <ReopenIssue handleChangeStatus={props.handleChangeStatus}/>
+                <CloseIssue handleChangeStatus={props.handleChangeStatus}/>
             </>
         );
     }
     switch (props.ticket.status) {
-        case 'OPEN':
-            return (<OpenTicketOptions/>);
-        case 'IN PROGRESS':
-            return (<InProgressTicketOptions/>);
-        case 'CLOSED':
-            return (<ClosedTicketOptions/>);
-        case 'REOPENED':
-            return (<ReopenedTicketOptions/>);
-        case 'RESOLVED':
-            return (<ResolvedTicketOptions/>);
+        case 'open':
+            return (<OpenTicketOptions handleChangeStatus={props.handleChangeStatus}/>);
+        case 'in_progress':
+            return (<InProgressTicketOptions handleChangeStatus={props.handleChangeStatus}/>);
+        case 'closed':
+            return (<ClosedTicketOptions handleChangeStatus={props.handleChangeStatus}/>);
+        case 'reopened':
+            return (<ReopenedTicketOptions handleChangeStatus={props.handleChangeStatus}/>);
+        case 'resolved':
+            return (<ResolvedTicketOptions handleChangeStatus={props.handleChangeStatus}/>);
         default:
             break;
     }
@@ -199,12 +217,12 @@ function ChatHeader(props){
             <Row>
                 <Col xs={3}>
                     <div className="chat-header-receiver">
-                        {user.role==="CUSTOMER"?(props.ticket.status==="OPEN"?"Ticket needs to be assigned!":props.ticket.expert.username):props.ticket.profile.username}
+                        {user.role==="customer"?(props.ticketToAssign?"Ticket needs to be assigned!":props.ticket.expert.username):props.ticket.profile.username}
                     </div>
                 </Col>
                 <Col xs={9}>
                     <div className="chat-header-status-management">
-                        <StatusBasedOptions ticket={props.ticket}/>
+                        <StatusBasedOptions ticket={props.ticket} handleChangeStatus={props.handleChangeStatus}/>
                     </div>
                 </Col>
             </Row>
@@ -257,10 +275,60 @@ function Chat(props){
         fromUser:true,
         text:"I tried and it's working currently, thanks!"
     }];
-    const [messages,setMessages]=useState(frontendTestMessages)
+    const [messages,setMessages]=useState([]);
+    const [error,setError]=useState(undefined);
+    const cleanupFiles=()=>messages.forEach(m=>m.files.forEach(f=>URL.revokeObjectURL(f.url)));
+    const handleChangeStatus=async newStatus=>{
+        try {
+            await API.changeTicketStatus(props.ticket.ticketId,newStatus);
+            props.setRefresh(!props.refresh);
+        } catch (exc) {
+            setError({title:"Couldn't update the ticket status",details:exc.detail});
+        }
+    }
+    const handleNewMessage=()=>{
+        props.setRefresh(!props.refresh);
+        setTimeout(()=>document.getElementById("messages-list").scrollTop=document.getElementById("messages-list").scrollHeight,250);
+    }
+    const getNewMessages=async scrollDown=>{
+        try {
+            const mex=await API.getMessages(props.ticket.ticketId);
+            const newMexs=mex.filter(m=>!messages.find(me=>me.messageId===m.messageId));
+            const mexs=[];
+            for (const m of newMexs){
+                const mexa=m;
+                mexa.files=[];
+                for(const a of m.attachments){
+                    const base64Response = await fetch("data:"+a.type+";base64,"+a.dataBin);
+                    const byteblob = await base64Response.blob();
+                    const genurl=URL.createObjectURL(byteblob);
+                    mexa.files.push({url:genurl,type:a.type,name:"defaultFilename"});
+                }
+                mexs.push(mexa);
+            }
+            setMessages([...messages,...mexs]);
+            if(scrollDown) setTimeout(()=>document.getElementById("messages-list").scrollTop=document.getElementById("messages-list").scrollHeight,100);
+        } catch (error) {
+            cleanupFiles();
+            setMessages([]);
+        }
+    }
+    useEffect(()=>{
+        cleanupFiles();
+        setMessages([]);
+        getNewMessages(true);
+        setTimeout(()=>props.setRefresh(!props.refresh),1500);
+        return cleanupFiles;
+    },[props.ticket.ticketId]);
+    useEffect(()=>{
+        getNewMessages(document.getElementById("messages-list").scrollTop==document.getElementById("messages-list").scrollHeight);
+        setTimeout(()=>props.setRefresh(!props.refresh),1500);
+        return cleanupFiles;
+    },[props.refresh]);
     return(
         <Row>
-            <ChatHeader ticket={props.ticket}/>
+            <ChatHeader ticket={props.ticket} ticketToAssign={props.ticket.status === "open" || props.ticket.status === "reopened" || props.ticket.expert === null}
+            handleChangeStatus={handleChangeStatus}/>
             <MessageList className='message-list'
                 lockable={true}
                 toBottomHeight={'100%'}
@@ -274,7 +342,15 @@ function Chat(props){
                     data: m.files? m.files: [],
                     datetime: m.datetime,
                 }})}/>
-            <NewMessage ticket={props.ticket} refresh={props.refresh} setRefresh={props.setRefresh}/>
+            <NewMessage setError={setError} disabled={props.ticket.status !=="in_progress" || props.ticket.expert === null} ticket={props.ticket} handleNewMessage={handleNewMessage}/>
+            {error &&
+                <Modal show={true} onHide={()=>setError(undefined)} size="md" aria-labelledby="contained-modal-title-vcenter" centered>
+                    <Modal.Header closeButton>
+                        <Modal.Title id="contained-modal-title-vcenter">{error.title}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>{error.details}</Modal.Body>
+                </Modal>
+            }
         </Row>
     );
 }

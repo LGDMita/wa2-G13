@@ -32,7 +32,7 @@ interface TicketService {
     /**
      * Changes the status of an existing ticket
      */
-    fun changeStatus(ticketId: Long, newStatus: String): Boolean
+    fun changeStatus(ticketId: Long, newStatus: String, role: String?): Boolean
 
     /**
      * Changes the priority level of an existing ticket

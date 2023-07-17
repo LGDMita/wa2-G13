@@ -21,13 +21,13 @@ class MessageController(
     //post: /API/tickets/:id/messages
     //body: {from_user: from_user, text: text, attachments: attachments}
     @PostMapping("/API/tickets/{ticket}/messages", consumes = [org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE])
-    fun sendMessage(@RequestPart attachments: MutableList<MultipartFile>,
+    fun sendMessage(@RequestPart attachments: MutableList<MultipartFile>?,
                     @RequestParam fromUser: Boolean,
                     @RequestParam text: String,
                     @PathVariable ticket: Long) : Long? {
-        val attachmentsNew = attachments.joinToString(",", "[", "]") { it.toString() }
+        val attachmentsNew = attachments.orEmpty().joinToString(",", "[", "]") { it.toString() }
         log.info("Sending messages attachments:{}, fromUser:{}, text:{}, ticketId:{}", attachmentsNew, fromUser.toString(), text.replace(" ", "_"), ticket.toString())
-        return messageService.sendMessage(fromUser,text,attachments,ticket)
+        return messageService.sendMessage(fromUser,text,attachments.orEmpty(),ticket)
     }
     //get: /API/tickets/:id/messages
     @GetMapping("/API/tickets/{ticket}/messages")

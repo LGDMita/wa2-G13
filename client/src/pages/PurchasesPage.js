@@ -8,6 +8,7 @@ import "../styles/PurchasesPage.css";
 import { useNavigate } from "react-router";
 import UserContext from "../context/UserContext";
 import API from "../API";
+import time from "../lib/time";
 dayjs.extend(isSameOrBefore);
 
 function PurchaseSelection(props){
@@ -65,9 +66,9 @@ function PurchaseSelection(props){
     const navigate=useNavigate();
     const handleNewTicket=async ()=>{
         try {
-            //setError("Blabla");
+            //setError("Test test");
             const tick=await API.newTicket(undefined,props.purchase.product.ean);
-            navigate("/tickets",{state:tick});
+            navigate("/tickets",{state:tick.ticketId});
         } catch (error) {
             setError(error.detail);
         }
@@ -93,14 +94,14 @@ function PurchaseSelection(props){
                         props.setSelectedTicket(tick==props.selectedTicket?undefined:tick);
                     }} className="ticket-card my-2">
                         <Card.Body>
-                            Ticket created at {tick.creationDate}
+                            Ticket created at {time.format(tick.creationDate)}
                             <span class="material-icons-round md-36 purchase-link" onClick={e=>{
                                 e.preventDefault();
                                 e.stopPropagation();
                                 // more routes
                                 //navigate("/tickets/"+tick.ticketId);
                                 // single route, communication between pages
-                                navigate("/tickets",{state:tick});
+                                navigate("/tickets",{state:tick.ticketId});
                             }}>
                                 arrow_forward_ios
                             </span>
@@ -159,7 +160,7 @@ function PurchasesPage(props){
         <div className="purchase-list">
             {
                 purchases.map(purch=>{
-                    const isWarrantyValid=dayjs().isSameOrBefore(purch.warranty.datetimeExpire);
+                    const isWarrantyValid=time.isStillValid(purch.warranty.datetimeExpire);
                     return(
                         <Card border={purch===selectedPurchase?"info":"dark"} className="purchase-card my-2">
                             <Card.Header>
@@ -170,14 +171,14 @@ function PurchasesPage(props){
                                     <Col xs={4}>
                                         <div className="purchase-status">
                                             <Badge pill bg={isWarrantyValid?"success":"danger"}>
-                                                {isWarrantyValid?"Warranty still valid until "+purch.warranty.datetimeExpire:"No warranty on the product!"}
+                                                {isWarrantyValid?"Warranty still valid until "+time.format(purch.warranty.datetimeExpire):"No warranty on the product!"}
                                             </Badge>
                                         </div>
                                     </Col>
                                 </Row>
                             </Card.Header>
                             <Card.Body>
-                                Purchased in {purch.datetime}
+                                Purchased in {time.format(purch.datetime)}
                                 {selectedPurchase===purch &&
                                     <PurchaseSelection purchase={purch} isWarrantyValid={isWarrantyValid}/>
                                 }

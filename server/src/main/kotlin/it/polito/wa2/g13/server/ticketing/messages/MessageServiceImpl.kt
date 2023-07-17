@@ -6,6 +6,7 @@ import it.polito.wa2.g13.server.ticketing.tickets.TicketRepository
 import it.polito.wa2.g13.server.ticketing.tickets.TicketService
 import it.polito.wa2.g13.server.ticketing.tickets.toTicket
 import jakarta.transaction.Transactional
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.util.*
@@ -14,20 +15,19 @@ import java.util.*
 class MessageServiceImpl(
     private val messageRepository: MessageRepository,
     private val attachmentService: AttachmentService,
-    private val ticketService: TicketService,
     private val ticketRepository: TicketRepository
 ) : MessageService {
 
     override fun getMessages(ticketId: Long): List<MessageDTO> {
-        val ticket= ticketService.getTicket(ticketId) ?: throw TicketNotFoundException()
-        return messageRepository.findByTicket(ticketRepository.getReferenceById(ticketId)).map { it.toDTO() }
+        val ticket= ticketRepository.findByIdOrNull(ticketId) ?: throw TicketNotFoundException()
+        return messageRepository.findByTicket(ticket).map { it.toDTO() }
     }
     @Transactional
     override fun sendMessage(fromUser: Boolean,text: String, atts: List<MultipartFile>,ticketId: Long): Long? {
-        val ticket= ticketService.getTicket(ticketId) ?: throw TicketNotFoundException()
+        val ticket= ticketRepository.findByIdOrNull(ticketId) ?: throw TicketNotFoundException()
         val attachments=atts.map{a : MultipartFile -> attachmentService.createAttachment(a)}.toMutableSet()
         val message=Message(fromUser= fromUser, text = text, datetime = Date(), attachments = attachments)
-        ticket.toTicket().addMessage(message)
+        ticket.addMessage(message)
         messageRepository.save(message)
         return message.getId()
     }

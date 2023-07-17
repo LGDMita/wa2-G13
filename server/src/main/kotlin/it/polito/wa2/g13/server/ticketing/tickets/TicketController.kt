@@ -139,7 +139,8 @@ class TicketControllerValidated(
         @RequestBody req: Map<String, Any>
     ): Boolean {
         val status = req["status"] ?: throw InvalidTicketArgumentsException()
-
+        val role=
+            SecurityContextHolder.getContext().authentication.authorities.find { it.authority.substring(0,4) == "ROLE" } ?.authority?.substring(5);
         if(status !is String || !listOf("open", "in_progress", "reopened", "resolved", "closed").contains(status)) {
             log.warn("Ticket status not valid")
             throw InvalidTicketArgumentsException()
@@ -147,7 +148,7 @@ class TicketControllerValidated(
 
         log.info("Changing status of ticket  with id:{} to {}", ticketId, status)
 
-        return ticketService.changeStatus(ticketId.toLong(), status)
+        return ticketService.changeStatus(ticketId.toLong(), status, role)
     }
 
     @PutMapping("/API/tickets/{ticketId}/changePriority")

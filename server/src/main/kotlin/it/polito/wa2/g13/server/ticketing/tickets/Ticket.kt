@@ -38,6 +38,8 @@ class Ticket(
 }
 
 fun TicketDTO.toTicket(): Ticket {
-    return Ticket(profile.toProfile(), product.toProduct(), priorityLevel, expert?.toExpert(), status,
-        creationDate, messages.map { m -> m.toMessage(this) }.toMutableSet(), ticketId)
+    val tick=Ticket(profile.toProfile(), product.toProduct(), priorityLevel, expert?.toExpert(), status,
+        creationDate, mutableSetOf(), ticketId);
+    tick.messages=messages.map { it.toMessage(tick) }.toMutableSet();
+    return tick;
 }

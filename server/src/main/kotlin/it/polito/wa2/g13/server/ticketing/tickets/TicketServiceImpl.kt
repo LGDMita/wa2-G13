@@ -91,7 +91,7 @@ class TicketServiceImpl(
 
     }
 
-    override fun changeStatus(ticketId: Long, newStatus: String): Boolean {
+    override fun changeStatus(ticketId: Long, newStatus: String, role: String?): Boolean {
 
         // If the ticketId contained in the URI doesn't exist throws an exception
         val ticket = ticketRepository.findByIdOrNull(ticketId) ?: throw TicketNotFoundException()
@@ -104,7 +104,7 @@ class TicketServiceImpl(
             return true
 
         // If the state change is not allowed throws an exception
-        if(!stateChangeChecker(oldStatus, newStatus))
+        if(!stateChangeChecker(oldStatus, newStatus, role.toString()))
                 throw StateChangeNotAllowedException()
 
         // Updates the ticket with the new state and saves it

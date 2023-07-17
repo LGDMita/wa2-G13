@@ -37,6 +37,7 @@ apiInstance.interceptors.response.use(
         if (error.response && error.response.status === 401) {
             console.log('Errore di autenticazione. Effettua nuovamente il login.');
             // Esegui il logout o altre azioni di gestione dell'autenticazione
+            tokenManager.removeAuthToken();
         }
         return Promise.reject(error);
     }
@@ -136,14 +137,17 @@ const sendMessage=async (ticketId,fromUser,text,files) => {
     const data=new FormData();
     data.append("fromUser",fromUser);
     data.append("text",text);
-    files.forEach(f=>data.append("attachments",f));
-    const res=await apiInstance.post("/API/tickets/"+ticketId+"/messages",data,{
-        headers: {
-            "Content-Type": "multipart/form-data",
-        },
-    });
-    if(res.status!==201){
+    files.forEach(f=>data.append("attachments",f.file));
+    const res=await apiInstance.postForm("/API/tickets/"+ticketId+"/messages",data)
+    /*{
+        fromUser:fromUser,
+        text:text,
+        attachments:files.map(f=>f.file)
+    });*/
+    console.log("Sent message, status ",res.status);
+    if(res.status!==200){
         const ret=await res.data;
+        console.log("Sent message ret ",ret);
         throw new Error({status:res.status,detail:ret});
     }
 }
@@ -151,6 +155,7 @@ const sendMessage=async (ticketId,fromUser,text,files) => {
 const getMessages=async ticketId => {
     const res=await apiInstance.get("/API/tickets/"+ticketId+"/messages");
     const ret=await res.data;
+    console.log("Messages ",ret," status ",res.status);
     if(res.status!==200) throw new Error({status:res.status,detail:ret});
     else return ret;
 }
@@ -158,7 +163,7 @@ const getMessages=async ticketId => {
 const getTicketsOf=async (id,role) => {
     const queryParams = new URLSearchParams('?');
     let queryRole="profile";
-    switch (role) {
+    /*switch (role) {
         case 'customer':
             break;
         case 'expert':
@@ -169,8 +174,8 @@ const getTicketsOf=async (id,role) => {
             break;
         default:
             break;
-    }
-    queryParams.append(role+"Id",id);
+    }*/
+    queryParams.append(queryRole+"Id",id);
     const url="/API/tickets/?"+queryParams.toString();
     const res=await apiInstance.get(url);
     const ret=await res.data;
@@ -207,6 +212,22 @@ const getPurchasesOf=async ()=>{
     else return ret;
 }
 
+const changeTicketStatus = async (ticketId,newStatus) => {
+    const res=await apiInstance.put("/API/tickets/"+ticketId+"/changeStatus",{status:newStatus});
+    if(res.status!==200){
+        const ret=await res.data;
+        throw new Error({status:res.status,detail:ret});
+    }
+}
+
+const getTicketHistory = async ticketId => {
+    const res= await apiInstance.get("/API/tickets/"+ticketId+"/history");
+    const ret= await res.data;
+    console.log("History returned status "+res.status," and ret ",ret);
+    if(res.status!==200) throw new Error({status:res.status,detail:ret});
+    return ret;
+}
+
 const API = {
     getTickets,
     getProducts,
@@ -222,6 +243,8 @@ const API = {
     getTicketsOfCustomerOfPurchase,
     newTicket,
     getPurchasesOf,
+    changeTicketStatus,
+    getTicketHistory,
 };
 
 export default API;
