@@ -57,6 +57,28 @@ const getTickets = async () => {
     }
 };
 
+const getTicket = async (id) => {
+    const response = await apiInstance.get(`/API/tickets/${id}`);
+    const row = response.data;
+    if (response.status === 200) {
+        return new Ticket(row.ticketId, row.profile, row.product, row.priorityLevel, row.expert, row.status, row.creationDate, row.messages);
+    } else {
+        throw new Error(row.detail);
+    }
+};
+
+const getExpertsBySector = async (sector) => {
+    const response = await apiInstance.get(`/API/experts/?sectorName=${sector}`);
+    const rows = response.data;
+    if (response.status === 200) {
+        return rows.map(row => {
+            return new Expert(row.id, row.username, row.email, row.name, row.surname);
+        });
+    } else {
+        throw new Error(rows.detail);
+    }
+};
+
 const getProducts = async () => {
     const response = await apiInstance.get('/API/products/');
     const rows = response.data;
@@ -145,6 +167,30 @@ const modifyExpert = async (id, expert) => {
 
 const modifyManager = async (id, manager) => {
     const response = await apiInstance.put(`/API/managers/${id}`, manager);
+    if (response.status !== 200) {
+        const row = response.data;
+        throw new Error(`${response.status} - ${row.detail}`);
+    }
+};
+
+const changeStatus = async (ticketId, status) => {
+    const response = await apiInstance.put(`/API/tickets/${ticketId}/changeStatus`, {'status': status});
+    if (response.status !== 200) {
+        const row = response.data;
+        throw new Error(`${response.status} - ${row.detail}`);
+    }
+};
+
+const changePriorityLevel = async (ticketId, priorityLevel) => {
+    const response = await apiInstance.put(`/API/tickets/${ticketId}/changePriority`, {'priorityLevel': priorityLevel});
+    if (response.status !== 200) {
+        const row = response.data;
+        throw new Error(`${response.status} - ${row.detail}`);
+    }
+};
+
+const changeExpert = async (ticketId, expertId) => {
+    const response = await apiInstance.put(`/API/tickets/${ticketId}/changeExpert`, {'expertId': expertId});
     if (response.status !== 200) {
         const row = response.data;
         throw new Error(`${response.status} - ${row.detail}`);
@@ -297,9 +343,14 @@ const updateExpert = async (expert) => {
 
 const API = {
     getTickets,
+    getTicket,
     getProducts,
     getProduct,
     getProfileInfo,
+    getExpertsBySector,
+    changePriorityLevel,
+    changeStatus,
+    changeExpert,
     getExpertInfo,
     getManagerInfo,
     signup,

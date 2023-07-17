@@ -1,6 +1,9 @@
 package it.polito.wa2.g13.server.products
 
+import it.polito.wa2.g13.server.profiles.Profile
 import it.polito.wa2.g13.server.purchase.Purchase
+import it.polito.wa2.g13.server.ticketing.sectors.Sector
+import it.polito.wa2.g13.server.ticketing.sectors.toSector
 import jakarta.persistence.*
 
 @Entity
@@ -11,6 +14,9 @@ class Product (
     var ean: String,
     var name: String,
     var brand: String
+    @OneToOne
+    @JoinColumn(name = "sector_id")
+    var sector: Sector,
 ){
     @OneToMany(mappedBy = "product")
     val purchases: MutableSet<Purchase> = mutableSetOf()
@@ -24,5 +30,5 @@ class Product (
 }
 
 fun ProductDTO.toProduct(): Product {
-    return Product(ean, name, brand)
+    return Product(ean, name, brand, sector.toSector())
 }

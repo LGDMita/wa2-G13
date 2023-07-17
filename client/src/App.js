@@ -8,6 +8,7 @@ import { Navigate, Route, Routes,useLocation } from 'react-router-dom';
 import { HomepagePage,LoginPage, PurchasesPage, TicketPage,ExpertsPage,SignupPage, CreateExpertPage,  UserInfoPage } from './pages';
 import TokenManager from './TokenManager';
 import { ProductTable } from "./components/ProductTable";
+import {ManageTicketForm} from "./components/ManageTicketForm";
 import Logout from "./components/Logout";
 
 function CheckHeader(props) {
@@ -49,6 +50,7 @@ function App() {
                 <Route path="/products" element={<ProductTable/>}/>;
                 <Route path="/purchases" element={<PurchasesPage/>}/>;
                 <Route path='/experts' element={<ExpertsPage />} />;
+                <Route path="/tickets/manage/:ticketId" element={<ManageTicketForm/>}/>
             </Routes>
         </UserContext.Provider>
     );
