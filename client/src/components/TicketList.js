@@ -104,4 +104,4 @@ function TicketList() {
 
 }
 
-export {TicketList}
+export default TicketList;

@@ -1,7 +1,9 @@
 import { useContext } from "react";
 import UserContext from "../context/UserContext";
-import { Nav, Navbar, NavDropdown } from "react-bootstrap";
+import { Button, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { ReactComponent as Logo } from "../logo.svg";
+import { useNavigate } from "react-router-dom";
+import API from "../API";
 
 function Header(props){
     const {user,setUser}=useContext(UserContext);
@@ -25,7 +27,7 @@ function Header(props){
                         roleSpecificNavbar(user.logged, user.role)
                     }
                     <NavDropdown title="My Profile" id="collasible-nav-dropdown" className="mydropdown">
-                        <NavDropdown.Item href="/profile">My profile</NavDropdown.Item>
+                        <NavDropdown.Item href="/userInfo">My profile</NavDropdown.Item>
                         <NavDropdown.Divider />
                         <NavDropdown.Item href="/logout">Logout</NavDropdown.Item>
                     </NavDropdown>

@@ -5,5 +5,6 @@ import { SingleProduct } from "./SingleProduct";
 import { SingleProfile } from "./SingleProfile";
 import GallerySlider from "./GallerySlider";
 import Chat from "./Chat";
+import TicketList from "./TicketList";
 
-export { AddProfile, EditProfile, Header, ProductTable, SingleProduct, SingleProfile, GallerySlider, Chat };
+export { EditProfile, Header, ProductTable, SingleProduct, SingleProfile, GallerySlider, Chat,TicketList };

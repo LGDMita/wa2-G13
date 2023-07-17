@@ -10,6 +10,7 @@ import TokenManager from './TokenManager';
 import { ProductTable } from "./components/ProductTable";
 import {ManageTicketForm} from "./components/ManageTicketForm";
 import Logout from "./components/Logout";
+import { TicketList } from './components';
 
 function CheckHeader(props) {
     const location = useLocation();
@@ -43,14 +44,14 @@ function App() {
                 <Route path="/home" element={<HomepagePage/>}/>
                 <Route path="/login" element={<LoginPage/>}/>
                 <Route path="/logout" element={<Logout />} />;
-                <Route path="/tickets" element={<TicketPage/>} />;
+                <Route path="/tickets" element={user.logged?(user.role==="manager"?<TicketList/>:<TicketPage/>):<Navigate to="/home"/>} />
                 <Route path="/signup" element={<SignupPage/>}/>
                 <Route path="/createExpert" element={<CreateExpertPage/>}/>
                 <Route path="/userInfo" element={<UserInfoPage/>}/>
                 <Route path="/products" element={<ProductTable/>}/>;
                 <Route path="/purchases" element={<PurchasesPage/>}/>;
                 <Route path='/experts' element={<ExpertsPage />} />;
-                <Route path="/tickets/manage/:ticketId" element={<ManageTicketForm/>}/>
+                {user.logged && user.role==="manager" && <Route path="/tickets/manage/:ticketId" element={<ManageTicketForm/>}/>}
             </Routes>
         </UserContext.Provider>
     );

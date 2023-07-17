@@ -77,13 +77,10 @@ function LoginPage(props) {
                             <br />
                             <div className='text-center btn-login'>
                                 <Button variant="primary" type="button" onClick={handleLogin}>
-                                    Login
+                                    Submit
                                 </Button>
                                 <Button variant="info" type="button">
                                     Signup
-                                </Button>
-                                <Button variant="secondary" type="button">
-                                    Password forgotten?
                                 </Button>
                             </div>
                             <br />
