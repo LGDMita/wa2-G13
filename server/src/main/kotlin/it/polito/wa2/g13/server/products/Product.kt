@@ -13,7 +13,7 @@ class Product (
     @Column(updatable = false, nullable = false)
     var ean: String,
     var name: String,
-    var brand: String
+    var brand: String,
     @OneToOne
     @JoinColumn(name = "sector_id")
     var sector: Sector,
