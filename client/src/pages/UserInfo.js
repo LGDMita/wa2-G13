@@ -17,11 +17,11 @@ function UserInfoPage(props){
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
-    const [error, setError] = useState(false);
+    const [error, setError] = useState('');
     const [changed, setChanged]= useState(false);
     const [showMenu, setShowMenu] = useState(false);
     const [loading, setLoading]= useState(false);
-
+    //Aggiungere cambiamento delle user info (per expert) quando il manager le cambia
     useEffect(() => {
         if (!user.logged) {
             navigate('/home');
@@ -136,8 +136,7 @@ function UserInfoPage(props){
                                         setSurname('');
                                         togglePopupMenu()
                                     } catch (error) {
-                                        console.log(error)
-                                        setError(true);
+                                        setError(error);
                                         setLoading(false);
                                     }
                                 }}>
@@ -170,8 +169,7 @@ function UserInfoPage(props){
                                                       onChange={e => setSurname(e.target.value)}/>
                                     </Form.Group>
                                     <Button variant="success" type="submit">Submit</Button>
-                                    {error ? <Alert className="my-3" variant="danger">Something went
-                                        wrong!</Alert> : <></>}
+                                    {error!=="" ? <Alert className="my-3" variant="danger">Error during modification: {error}</Alert> : <></>}
                                 </Form>
                             </div>
                         )}

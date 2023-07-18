@@ -15,7 +15,7 @@ function SignupPage(props){
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
-    const [error, setError] = useState(false);
+    const [error, setError] = useState('');
     const [loading, setLoading]= useState(false);
 
     useEffect(() => {
@@ -50,8 +50,7 @@ function SignupPage(props){
                                 setLoading(false)
                                 navigate('/login');
                             } catch (error) {
-                                console.log(error)
-                                setError(true);
+                                setError(error);
                                 setLoading(false)
                             }
                         }}>
@@ -83,7 +82,7 @@ function SignupPage(props){
                                               onChange={e => setSurname(e.target.value)}/>
                             </Form.Group>
                             <Button variant="success" type="submit">Submit</Button>
-                            {error ? <Alert className="my-3" variant="danger">Something went wrong!</Alert> : <></>}
+                            {error!=='' ? <Alert className="my-3" variant="danger">Error during signup: {error}</Alert> : <></>}
                         </Form>
                     </div>
                 </div>

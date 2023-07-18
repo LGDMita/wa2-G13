@@ -15,7 +15,7 @@ function CreateExpertPage(props){
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
-    const [error, setError] = useState(false);
+    const [error, setError] = useState('');
     const [loading, setLoading]= useState(false);
 
     useEffect(() => {
@@ -52,9 +52,8 @@ function CreateExpertPage(props){
                                 setSurname('');
                                 window.alert("Expert successfully created!")
                             } catch (error) {
-                                console.log(error)
+                                setError(error);
                                 setLoading(false)
-                                setError(true);
                             }
                         }}>
                             <Form.Group className="mb-3">
@@ -85,7 +84,7 @@ function CreateExpertPage(props){
                                               onChange={e => setSurname(e.target.value)}/>
                             </Form.Group>
                             <Button className="mx-auto" variant="success" type="submit">Submit</Button>
-                            {error ? <Alert className="my-3" variant="danger">Something went wrong!</Alert> : <></>}
+                            {error!=='' ? <Alert className="my-3" variant="danger">Error during expert creation: {error}</Alert> : <></>}
                         </Form>
                     </div>
                 </div>
