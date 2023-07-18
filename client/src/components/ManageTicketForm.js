@@ -6,6 +6,7 @@ import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button'
+import Table from 'react-bootstrap/Table';
 
 function ManageTicketForm() {
 
@@ -60,48 +61,129 @@ function ManageTicketForm() {
         }
     }
 
+    const removeUnderscoresAndCapitalize = (str) => {
+        return str.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+    }
+
+    const reformatDate = (dateString) => {
+        let dateObj = new Date(dateString);
+
+        let year = dateObj.getFullYear();
+        let month = ("0" + (dateObj.getMonth() + 1)).slice(-2);
+        let day = ("0" + dateObj.getDate()).slice(-2);
+        let hours = ("0" + dateObj.getHours()).slice(-2);
+        let minutes = ("0" + dateObj.getMinutes()).slice(-2);
+
+        return `${year}-${month}-${day}, ${hours}:${minutes}`;
+    }
+
     if(!ticket || !sectorExperts)
         return <div>Loading...</div>
 
     return (
-        <Card style={{ width: '18rem' }}>
-            <ListGroup variant="flush">
-                <ListGroup.Item>Customer: {ticket.profile.username}</ListGroup.Item>
-                <ListGroup.Item>Product Brand: {ticket.product.brand}</ListGroup.Item>
-                <ListGroup.Item>Product Name: {ticket.product.name}</ListGroup.Item>
-                <ListGroup.Item>Product Sector: {ticket.product.sector.name}</ListGroup.Item>
-                <ListGroup.Item>Ticket Status: {ticket.status}</ListGroup.Item>
-                <ListGroup.Item>Ticket Creation Date: {ticket.creationDate}</ListGroup.Item>
-                <ListGroup.Item>Ticket Priority Level:
-                    <Form.Select value = {selectedPriorityLevel ? selectedPriorityLevel.toString(): "null"} onChange={handlePriorityChange}>
+        <div className="table-products">
+            <Table striped bordered hover>
+                <thead>
+                <tr>
+                    <th>Customer</th>
+                    <td>{ticket.profile.username}</td>
+                </tr>
+                <tr>
+                    <th>Product Brand</th>
+                    <td>{ticket.product.brand}</td>
+                </tr>
+                <tr>
+                    <th>Product Name</th>
+                    <td>{ticket.product.name}</td>
+                </tr>
+                <tr>
+                    <th>Product Sector</th>
+                    <td>{removeUnderscoresAndCapitalize(ticket.product.sector.name)}</td>
+                </tr>
+                <tr>
+                    <th>Ticket Status</th>
+                    <td>{removeUnderscoresAndCapitalize(ticket.status)}</td>
+                </tr>
+                <tr>
+                    <th>Ticket Creation Date</th>
+                    <td>{reformatDate(ticket.creationDate)}</td>
+                </tr>
+                <tr>
+                    <th>Ticket Priority Level</th>
+                    <td><Form.Select value = {selectedPriorityLevel ? selectedPriorityLevel.toString(): "null"} onChange={handlePriorityChange}>
                         <option value="null"></option>
                         <option value="0">0</option>
                         <option value="1">1</option>
                         <option value="2">2</option>
                         <option value="3">3</option>
                         <option value="4">4</option>
-                    </Form.Select>
-                </ListGroup.Item>
-                <ListGroup.Item>Expert:
-                    <Form.Select value = {selectedExpert ? selectedExpert.toString(): "null"} onChange={handleExpertChange}>
+                    </Form.Select></td>
+                </tr>
+                <tr>
+                    <th>Expert (only experts of the related sector can be selected):</th>
+                    <td><Form.Select value = {selectedExpert ? selectedExpert.toString(): "null"} onChange={handleExpertChange}>
                         <option value="null"></option>
                         {sectorExperts.map(exp => {
                             return <option value={exp.id.toString()}>{exp.username}</option>
                         })}
-                    </Form.Select>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                    <Link to={'/tickets'} onClick={handleSave}>
-                        <Button>Save</Button>
-                    </Link>
-                    <span>{' '}</span>
-                    <Link to={'/tickets'}>
-                        <Button>Cancel</Button>
-                    </Link>
-                </ListGroup.Item>
-            </ListGroup>
-        </Card>
+                    </Form.Select></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <Link to={'/tickets'} onClick={handleSave}>
+                             <Button>Save</Button>
+                        </Link>
+                        <span>{' '}</span>
+                        <Link to={'/tickets'}>
+                             <Button>Cancel</Button>
+                        </Link>
+                    </td>
+                </tr>
+                </thead>
+            </Table>
+        </div>
     );
+
+    // return (
+    //     <Card style={{ width: '18rem' }}>
+    //         <ListGroup variant="flush">
+    //             <ListGroup.Item>Customer: {ticket.profile.username}</ListGroup.Item>
+    //             <ListGroup.Item>Product Brand: {ticket.product.brand}</ListGroup.Item>
+    //             <ListGroup.Item>Product Name: {ticket.product.name}</ListGroup.Item>
+    //             <ListGroup.Item>Product Sector: {removeUnderscoresAndCapitalize(ticket.product.sector.name)}</ListGroup.Item>
+    //             <ListGroup.Item>Ticket Status: {removeUnderscoresAndCapitalize(ticket.status)}</ListGroup.Item>
+    //             <ListGroup.Item>Ticket Creation Date: {reformatDate(ticket.creationDate)}</ListGroup.Item>
+    //             <ListGroup.Item>Ticket Priority Level:
+    //                 <Form.Select value = {selectedPriorityLevel ? selectedPriorityLevel.toString(): "null"} onChange={handlePriorityChange}>
+    //                     <option value="null"></option>
+    //                     <option value="0">0</option>
+    //                     <option value="1">1</option>
+    //                     <option value="2">2</option>
+    //                     <option value="3">3</option>
+    //                     <option value="4">4</option>
+    //                 </Form.Select>
+    //             </ListGroup.Item>
+    //             <ListGroup.Item>Expert (only experts of the related sector can be selected):
+    //                 <Form.Select value = {selectedExpert ? selectedExpert.toString(): "null"} onChange={handleExpertChange}>
+    //                     <option value="null"></option>
+    //                     {sectorExperts.map(exp => {
+    //                         return <option value={exp.id.toString()}>{exp.username}</option>
+    //                     })}
+    //                 </Form.Select>
+    //             </ListGroup.Item>
+    //             <ListGroup.Item>
+    //                 <Link to={'/tickets'} onClick={handleSave}>
+    //                     <Button>Save</Button>
+    //                 </Link>
+    //                 <span>{' '}</span>
+    //                 <Link to={'/tickets'}>
+    //                     <Button>Cancel</Button>
+    //                 </Link>
+    //             </ListGroup.Item>
+    //         </ListGroup>
+    //     </Card>
+    // );
 }
 
 export {ManageTicketForm}
