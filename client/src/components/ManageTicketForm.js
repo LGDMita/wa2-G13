@@ -144,46 +144,6 @@ function ManageTicketForm() {
             </Table>
         </div>
     );
-
-    // return (
-    //     <Card style={{ width: '18rem' }}>
-    //         <ListGroup variant="flush">
-    //             <ListGroup.Item>Customer: {ticket.profile.username}</ListGroup.Item>
-    //             <ListGroup.Item>Product Brand: {ticket.product.brand}</ListGroup.Item>
-    //             <ListGroup.Item>Product Name: {ticket.product.name}</ListGroup.Item>
-    //             <ListGroup.Item>Product Sector: {removeUnderscoresAndCapitalize(ticket.product.sector.name)}</ListGroup.Item>
-    //             <ListGroup.Item>Ticket Status: {removeUnderscoresAndCapitalize(ticket.status)}</ListGroup.Item>
-    //             <ListGroup.Item>Ticket Creation Date: {reformatDate(ticket.creationDate)}</ListGroup.Item>
-    //             <ListGroup.Item>Ticket Priority Level:
-    //                 <Form.Select value = {selectedPriorityLevel ? selectedPriorityLevel.toString(): "null"} onChange={handlePriorityChange}>
-    //                     <option value="null"></option>
-    //                     <option value="0">0</option>
-    //                     <option value="1">1</option>
-    //                     <option value="2">2</option>
-    //                     <option value="3">3</option>
-    //                     <option value="4">4</option>
-    //                 </Form.Select>
-    //             </ListGroup.Item>
-    //             <ListGroup.Item>Expert (only experts of the related sector can be selected):
-    //                 <Form.Select value = {selectedExpert ? selectedExpert.toString(): "null"} onChange={handleExpertChange}>
-    //                     <option value="null"></option>
-    //                     {sectorExperts.map(exp => {
-    //                         return <option value={exp.id.toString()}>{exp.username}</option>
-    //                     })}
-    //                 </Form.Select>
-    //             </ListGroup.Item>
-    //             <ListGroup.Item>
-    //                 <Link to={'/tickets'} onClick={handleSave}>
-    //                     <Button>Save</Button>
-    //                 </Link>
-    //                 <span>{' '}</span>
-    //                 <Link to={'/tickets'}>
-    //                     <Button>Cancel</Button>
-    //                 </Link>
-    //             </ListGroup.Item>
-    //         </ListGroup>
-    //     </Card>
-    // );
 }
 
 export {ManageTicketForm}
