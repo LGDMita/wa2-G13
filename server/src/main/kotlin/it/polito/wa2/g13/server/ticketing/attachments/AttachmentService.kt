@@ -5,5 +5,5 @@ import org.springframework.web.multipart.MultipartFile
 
 @Service
 interface AttachmentService {
-    fun createAttachment(attachment: MultipartFile) : Attachment
+    fun createAttachment(attachment: MultipartFile): Attachment
 }

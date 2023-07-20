@@ -10,16 +10,16 @@ import jakarta.persistence.Table
 import java.util.*
 
 @Entity
-@Table(name="warranty")
+@Table(name = "warranty")
 class Warranty(
     @OneToOne
     val purchase: Purchase,
     val datetimeBuy: Date,
     val datetimeExpire: Date,
     val type: String,
-    setId: Long?=null
+    setId: Long? = null
 ) : EntityBase<Long>(setId)
 
-fun WarrantyDTO.toWarranty(purch: Purchase) : Warranty{
-    return Warranty(purch,datetimeBuy,datetimeExpire,type,warrantyId)
+fun WarrantyDTO.toWarranty(purch: Purchase): Warranty {
+    return Warranty(purch, datetimeBuy, datetimeExpire, type, warrantyId)
 }

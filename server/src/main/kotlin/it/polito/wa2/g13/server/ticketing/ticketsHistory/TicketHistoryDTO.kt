@@ -1,6 +1,7 @@
 package it.polito.wa2.g13.server.ticketing.ticketsHistory
 
 import java.util.Date
+
 data class TicketHistoryDTO(
     var historyId: Long?,
     var ticket: Long?,

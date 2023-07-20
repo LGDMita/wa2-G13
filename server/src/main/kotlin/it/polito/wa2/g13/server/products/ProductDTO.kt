@@ -10,6 +10,6 @@ data class ProductDTO(
     val sector: SectorDTO
 )
 
-fun Product.toDTO(): ProductDTO{
+fun Product.toDTO(): ProductDTO {
     return ProductDTO(ean, name, brand, sector.toDTO())
 }

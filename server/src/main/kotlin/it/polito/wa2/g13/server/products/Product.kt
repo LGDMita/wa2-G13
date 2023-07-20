@@ -7,23 +7,24 @@ import it.polito.wa2.g13.server.ticketing.sectors.toSector
 import jakarta.persistence.*
 
 @Entity
-@Table(name="products")
-class Product (
+@Table(name = "products")
+class Product(
     @Id
     @Column(updatable = false, nullable = false)
     var ean: String,
     var name: String,
-    var brand: String
+    var brand: String,
     @OneToOne
     @JoinColumn(name = "sector_id")
-    var sector: Sector,
-){
+    var sector: Sector
+) {
     @OneToMany(mappedBy = "product")
     val purchases: MutableSet<Purchase> = mutableSetOf()
 
-    fun addPurchase(purch: Purchase): Unit{
+    fun addPurchase(purch: Purchase): Unit {
         purchases.add(purch)
     }
+
     override fun toString(): String {
         return "ean=${ean} name=${name} brand=${brand}"
     }

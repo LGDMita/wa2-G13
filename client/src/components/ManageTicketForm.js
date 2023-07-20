@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import UserContext from "../context/UserContext";
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import API from "../API";
@@ -10,18 +10,19 @@ import Button from 'react-bootstrap/Button'
 function ManageTicketForm() {
 
     const [ticket, setTicket] = useState(null);
-    const {user, setUser}= useContext(UserContext);
+    const { user } = useContext(UserContext);
     const navigate = useNavigate();
-    const {ticketId} = useParams();
+    const { ticketId } = useParams();
     const [sectorExperts, setSectorExperts] = useState(null);
     const [selectedPriorityLevel, setSelectedPriorityLevel] = useState(null);
     const [selectedExpert, setSelectedExpert] = useState(null)
 
-    async function load(){
+    async function load() {
         await API.getTicket(ticketId).then(res => {
             setTicket(res);
-            if(res.expert) setSelectedExpert(res.expert.id);
-            if(res.priorityLevel) setSelectedPriorityLevel(res.priorityLevel);
+            if (res.expert) setSelectedExpert(res.expert.id);
+            if (res.priorityLevel) setSelectedPriorityLevel(res.priorityLevel);
+            console.log(res.product.sector.name)
             API.getExpertsBySector(res.product.sector.name).then(res => setSectorExperts(res))
         });
     }
@@ -41,26 +42,26 @@ function ManageTicketForm() {
         setSelectedExpert(event.target.value);
     };
 
-    async function handleSave(event){
+    async function handleSave(event) {
         let changing_expert = false;
         let changing_priority = false
-        if(selectedExpert !== null && selectedExpert !== 'null') {
+        if (selectedExpert !== null && selectedExpert !== 'null') {
             changing_expert = true;
         }
-        if(selectedPriorityLevel !== null && selectedPriorityLevel !== 'null') {
+        if (selectedPriorityLevel !== null && selectedPriorityLevel !== 'null') {
             changing_priority = true;
         }
-        if(ticket.status === 'open' && changing_expert && changing_priority) {
+        if (ticket.status === 'open' && changing_expert && changing_priority) {
             await API.changePriorityLevel(ticketId, parseInt(selectedPriorityLevel));
             await API.changeExpert(ticketId, selectedExpert);
             await API.changeStatus(ticketId, "in_progress");
-        }else{
+        } else {
             event.preventDefault();
             window.alert("Select both an expert and a priority level to save the ticket, otherwise just click 'Cancel' to go back to the tickets list")
         }
     }
 
-    if(!ticket || !sectorExperts)
+    if (!ticket || !sectorExperts)
         return <div>Loading...</div>
 
     return (
@@ -73,7 +74,8 @@ function ManageTicketForm() {
                 <ListGroup.Item>Ticket Status: {ticket.status}</ListGroup.Item>
                 <ListGroup.Item>Ticket Creation Date: {ticket.creationDate}</ListGroup.Item>
                 <ListGroup.Item>Ticket Priority Level:
-                    <Form.Select value = {selectedPriorityLevel ? selectedPriorityLevel.toString(): "null"} onChange={handlePriorityChange}>
+                    <Form.Select value={selectedPriorityLevel ? selectedPriorityLevel.toString() : "null"}
+                        onChange={handlePriorityChange}>
                         <option value="null"></option>
                         <option value="0">0</option>
                         <option value="1">1</option>
@@ -83,7 +85,8 @@ function ManageTicketForm() {
                     </Form.Select>
                 </ListGroup.Item>
                 <ListGroup.Item>Expert:
-                    <Form.Select value = {selectedExpert ? selectedExpert.toString(): "null"} onChange={handleExpertChange}>
+                    <Form.Select value={selectedExpert ? selectedExpert.toString() : "null"}
+                        onChange={handleExpertChange}>
                         <option value="null"></option>
                         {sectorExperts.map(exp => {
                             return <option value={exp.id.toString()}>{exp.username}</option>
@@ -104,4 +107,4 @@ function ManageTicketForm() {
     );
 }
 
-export {ManageTicketForm}
+export { ManageTicketForm }

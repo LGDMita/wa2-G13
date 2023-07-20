@@ -1,0 +1,44 @@
+/* TableWithFilterAndSort.css */
+
+/* Stili per il componente TableWithFilterAndSort */
+.productTable {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.productTable table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.productTable th,
+.productTable td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+.productTable th {
+    background-color: #0d6efd;
+    /* Colore blu fisso per l'header */
+    color: #fff;
+    cursor: pointer;
+}
+
+/* Stili per le righe alternate */
+.productTable tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* Stili per l'input di filtro */
+.productTable input {
+    margin-bottom: 10px;
+    padding: 5px;
+    width: 100%;
+}
+
+.productTable-cnt {
+    margin-top: 20px;
+}

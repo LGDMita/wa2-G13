@@ -8,4 +8,14 @@ import SignupPage from "./Signup";
 import CreateExpertPage from "./CreateExpert";
 import UserInfoPage from "./UserInfo";
 
-export {HomepagePage,LoginPage,TicketPage,PurchasesPage,TicketHistory,ExpertsPage,SignupPage, CreateExpertPage, UserInfoPage};
+export {
+    HomepagePage,
+    LoginPage,
+    TicketPage,
+    PurchasesPage,
+    TicketHistory,
+    ExpertsPage,
+    SignupPage,
+    CreateExpertPage,
+    UserInfoPage
+};

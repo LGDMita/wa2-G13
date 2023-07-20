@@ -49,13 +49,11 @@ class TicketController(
             if (ticketService.getTicket(ticketDTO.ticketId!!) != null) {
                 log.info("Editing ticket: {}", ticketDTO.toString())
                 return ticketService.modifyTicket(ticketDTO)
-            }
-            else {
+            } else {
                 log.info("Edit ticket, not ticket found with id: {}", ticketDTO.ticketId)
                 throw TicketNotFoundException()
             }
-        }
-        else {
+        } else {
             log.warn("Filed constraint not satisfied for DTO: {}", ticketDTO.toString())
             throw InvalidTicketException()
         }
@@ -85,7 +83,7 @@ class TicketControllerValidated(
     @GetMapping("/API/tickets/")
     fun getFilteredTickets(
         @RequestParam("ean")
-        @Size(min=1, max=15, message = "Ean MUST be a NON empty string of max 15 chars")
+        @Size(min = 1, max = 15, message = "Ean MUST be a NON empty string of max 15 chars")
         ean: String?,
         @RequestParam("profileId")
         profileId: String?,
@@ -96,7 +94,7 @@ class TicketControllerValidated(
         @RequestParam("expertId")
         expertId: String?,
         @RequestParam("status")
-        @Size(min=1, max=15, message = "Status MUST be a NON empty string of max 15 chars")
+        @Size(min = 1, max = 15, message = "Status MUST be a NON empty string of max 15 chars")
         @Pattern(regexp = "(open|closed|resolved|in_progress|reopened)")
         status: String?,
         @RequestParam("creationDateStart")
@@ -106,7 +104,16 @@ class TicketControllerValidated(
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         creationDateStop: Date?,
     ): List<TicketDTO> {
-        log.info("Get ticket filtered by ean:{} profileId:{} priorityLevel:{} expertId:{} status:{} creationDateStart:{} creationDateStop:{}", ean, profileId, priorityLevel, expertId, status, creationDateStart, creationDateStop)
+        log.info(
+            "Get ticket filtered by ean:{} profileId:{} priorityLevel:{} expertId:{} status:{} creationDateStart:{} creationDateStop:{}",
+            ean,
+            profileId,
+            priorityLevel,
+            expertId,
+            status,
+            creationDateStart,
+            creationDateStop
+        )
         return ticketService.getFilteredTickets(
             ean,
             profileId,
@@ -117,6 +124,7 @@ class TicketControllerValidated(
             creationDateStop
         )
     }
+
     @PostMapping("/API/tickets")
     @ResponseStatus(HttpStatus.CREATED)
     fun createTicket(
@@ -126,8 +134,7 @@ class TicketControllerValidated(
         if (!br.hasErrors()) {
             log.info("Creating ticket: {}", ticketPostDTO.toString())
             return ticketService.createTicket(ticketPostDTO, SecurityContextHolder.getContext().authentication.name, br)
-        }
-        else {
+        } else {
             log.warn("Filed constraint not satisfied for DTO: {}", ticketPostDTO.toString())
             throw InvalidTicketArgumentsException()
         }
@@ -139,9 +146,14 @@ class TicketControllerValidated(
         @RequestBody req: Map<String, Any>
     ): Boolean {
         val status = req["status"] ?: throw InvalidTicketArgumentsException()
-        val role=
-            SecurityContextHolder.getContext().authentication.authorities.find { it.authority.substring(0,4) == "ROLE" } ?.authority?.substring(5);
-        if(status !is String || !listOf("open", "in_progress", "reopened", "resolved", "closed").contains(status)) {
+        val role =
+            SecurityContextHolder.getContext().authentication.authorities.find {
+                it.authority.substring(
+                    0,
+                    4
+                ) == "ROLE"
+            }?.authority?.substring(5);
+        if (status !is String || !listOf("open", "in_progress", "reopened", "resolved", "closed").contains(status)) {
             log.warn("Ticket status not valid")
             throw InvalidTicketArgumentsException()
         }
@@ -158,7 +170,7 @@ class TicketControllerValidated(
     ): Boolean {
         val priorityLevel = req["priorityLevel"] ?: throw InvalidTicketArgumentsException()
 
-        if(priorityLevel !is Int || priorityLevel > 4 || priorityLevel < 0){
+        if (priorityLevel !is Int || priorityLevel > 4 || priorityLevel < 0) {
             log.warn("Ticket priorityLevel not valid")
             throw InvalidTicketArgumentsException()
         }
@@ -175,7 +187,7 @@ class TicketControllerValidated(
     ): Boolean {
         val expertId = req["expertId"] ?: throw InvalidTicketArgumentsException()
 
-        if(expertId !is String){
+        if (expertId !is String) {
             log.warn("Ticket expertId not valid")
             throw InvalidTicketArgumentsException()
         }

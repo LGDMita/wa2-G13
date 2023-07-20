@@ -30,6 +30,6 @@ fun Expert.toDTO(): ExpertDTO {
     return ExpertDTO(id, username, email, name, surname)
 }
 
-fun ExpertDTO.toRegisterDTO(): RegisterDTO{
-    return RegisterDTO(username,"",email,name,surname)
+fun ExpertDTO.toRegisterDTO(): RegisterDTO {
+    return RegisterDTO(username, "", email, name, surname)
 }

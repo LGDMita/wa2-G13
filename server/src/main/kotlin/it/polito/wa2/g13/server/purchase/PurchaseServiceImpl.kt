@@ -13,7 +13,7 @@ class PurchaseServiceImpl(
     private val warrantyRepository: WarrantyRepository
 ) : PurchaseService {
     override fun getPurchasesOf(username: String): List<PurchaseWithWarrantyDTO> {
-        val profile= profileRepository.findProfileByUsername(username) ?: throw ProfileNotFoundException()
-        return purchaseRepository.findAllByProfile(profile).map{it.toPWWDTO(warrantyRepository.findByPurchase(it))}
+        val profile = profileRepository.findProfileByUsername(username) ?: throw ProfileNotFoundException()
+        return purchaseRepository.findAllByProfile(profile).map { it.toPWWDTO(warrantyRepository.findByPurchase(it)) }
     }
 }

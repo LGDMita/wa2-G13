@@ -14,5 +14,5 @@ interface ExpertService {
 
     fun deleteExpertById(id: String)
 
-    fun getExperts() : List<ExpertDTO>
+    fun getExperts(): List<ExpertDTO>
 }

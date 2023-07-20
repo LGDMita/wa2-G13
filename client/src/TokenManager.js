@@ -29,8 +29,7 @@ const TokenManager = () => {
                 //console.log("Token not expired");
                 return true;
             }
-        }
-        else {
+        } else {
             return false
         }
     };
@@ -50,12 +49,20 @@ const TokenManager = () => {
     }
 
     // get decoded token
-    const getDecodedToken= () => token ? jwt_decode(token) : {id:'', logged:false, role:undefined, username:'', email: '', name: '', surname:''}
+    const getDecodedToken = () => token ? jwt_decode(token) : {
+        id: '',
+        logged: false,
+        role: undefined,
+        username: '',
+        email: '',
+        name: '',
+        surname: ''
+    }
 
-    const getUser= () => {
-        if(token){
-            const decodedToken= jwt_decode(token);
-            let userRole="";
+    const getUser = () => {
+        if (token) {
+            const decodedToken = jwt_decode(token);
+            let userRole = "";
             switch (decodedToken.resource_access["spring-client"].roles[0]) {
                 case "client":
                     userRole = "customer";
@@ -76,19 +83,22 @@ const TokenManager = () => {
                 username: decodedToken.preferred_username,
                 email: '',
                 name: '',
-                surname:'',
+                surname: '',
             }
         }
-        return {id:'', logged:false, role:undefined, username:'', email: '', name: '', surname:''}
+        return { id: '', logged: false, role: undefined, username: '', email: '', name: '', surname: '' }
     }
     const storeUser = user => {
         localStorage.setItem("userData", JSON.stringify(user));
     }
-    const retrieveUser= ()=>{
-        if(token) return JSON.parse(localStorage.getItem("userData"));
-        else return {id:'', logged:false, role:undefined, username:'', email: '', name: '', surname:''};
+    const retrieveUser = () => {
+        if (token) return JSON.parse(localStorage.getItem("userData"));
+        else return { id: '', logged: false, role: undefined, username: '', email: '', name: '', surname: '' };
     }
-    return { setAuthToken, getAuthToken, amILogged, removeAuthToken, getDecodedToken, getUser, storeUser, retrieveUser };
+    const clearUser = () => {
+        return { id: '', logged: false, role: undefined, username: '', email: '', name: '', surname: '' };
+    }
+    return { setAuthToken, getAuthToken, amILogged, removeAuthToken, getDecodedToken, getUser, storeUser, retrieveUser, clearUser };
 };
 
 export default TokenManager;

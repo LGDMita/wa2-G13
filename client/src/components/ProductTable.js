@@ -1,46 +1,51 @@
 import API from '../API';
-import React, {useEffect, useState} from 'react';
-import Table from 'react-bootstrap/Table';
-import "../styles/Products.css";
+import React, { useEffect, useState } from 'react';
+import TableWithFilterAndSort from "./TableWithFilterAndSort"
+
+import "../styles/TableWithFilterAndSort.css"
+import { Col, Container, Row } from 'react-bootstrap';
 
 function ProductTable() {
+    const columns = [
+        {
+            Header: "EAN",
+            accessor: "ean",
+        },
+        {
+            Header: "Name",
+            accessor: "name",
+            Filter: ({ column }) => <input {...column.filterProps} />,
+        },
+        {
+            Header: "Brand",
+            accessor: "Brand",
+            Filter: ({ column }) => <input {...column.filterProps} />,
+        }
+    ];
 
     const [products, setProducts] = useState([]);
-    async function load(){
+
+    async function load() {
         setProducts(await API.getProducts());
     }
+
     useEffect(() => {
         void load();
     }, []);
 
     return (
-        <div className="table-products">
-            <h3>All products</h3>
-            <Table className="m-3" striped bordered hover>
-                <thead>
-                <tr>
-                    <th>EAN</th>
-                    <th>NAME</th>
-                    <th>BRAND</th>
-                </tr>
-                </thead>
-                <tbody>
-                {
-                    products.map(p => {
-                        return (
-                            <tr key={p.ean}>
-                                <td>{p.ean}</td>
-                                <td>{p.name}</td>
-                                <td>{p.brand}</td>
-                            </tr>
-                        )
-                    })
-                }
-                </tbody>
-            </Table>
-        </div>
+        <Container className='productTable-cnt'>
+            <Row>
+                <Col>
+                    <h4 className='text-center'>Here you can find the list of products managed by our system</h4>
+                    <div className='productTable'>
+                        <TableWithFilterAndSort data={products} />
+                    </div>
+                </Col>
+            </Row>
+        </Container >
     );
+};
 
-}
 
-export {ProductTable}
+export { ProductTable }
