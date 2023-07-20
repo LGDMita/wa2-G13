@@ -352,6 +352,15 @@ const updateExpert = async (expert) => {
     }
 };
 
+const getSectorsOfExpert = async (id) =>{
+    try{
+        await apiInstance.get(`/API/experts/${id}/sectors`)
+    } catch (error){
+        console.log(error.response.data.detail)
+        throw new Error(error.response.data.detail);
+    }
+}
+
 const API = {
     getTickets,
     getTicket,
@@ -380,7 +389,8 @@ const API = {
     changeTicketStatus,
     getTicketHistory,
     updateExpert,
-    getExperts
+    getExperts,
+    getSectorsOfExpert
 };
 
 export default API;

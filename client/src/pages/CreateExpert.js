@@ -8,7 +8,7 @@ import RegistrationData from "../registrationData";
 import UserContext from "../context/UserContext";
 
 function CreateExpertPage(props){
-    const {user, setUser}= useContext(UserContext);
+    const {user}= useContext(UserContext);
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -20,7 +20,7 @@ function CreateExpertPage(props){
 
     useEffect(() => {
         if (!user.logged || user.role!=='manager') {
-            navigate('/home');
+            navigate('/login');
         }
     }, [user.logged, user.role, navigate]);
 
@@ -84,7 +84,7 @@ function CreateExpertPage(props){
                                               onChange={e => setSurname(e.target.value)}/>
                             </Form.Group>
                             <Button className="mx-auto" variant="success" type="submit">Submit</Button>
-                            {error!=='' ? <Alert className="my-3" variant="danger">Error during expert creation: {error}</Alert> : <></>}
+                            {error!=='' ? <Alert className="my-3" variant="danger">Error during expert creation: {error.message}</Alert> : <></>}
                         </Form>
                     </div>
                 </div>

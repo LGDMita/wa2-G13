@@ -1,4 +1,4 @@
-import {useContext, useEffect, useState, useRef} from "react";
+import {useContext, useEffect, useState} from "react";
 import UserContext from "../context/UserContext";
 import API from "../API";
 import "../styles/Loading.css";
@@ -9,29 +9,29 @@ import Profile from "../profile";
 import Manager from "../manager";
 import Expert from "../expert";
 import {MdAddCircleOutline, MdRemoveCircleOutline} from 'react-icons/md'
+import SectorsContext from "../context/SectorsContext";
 
 function UserInfoPage(props){
     const {user, setUser}= useContext(UserContext);
+    const {sectors, setSectors}= useContext(SectorsContext);
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
     const [error, setError] = useState('');
-    const [changed, setChanged]= useState(false);
     const [showMenu, setShowMenu] = useState(false);
     const [loading, setLoading]= useState(false);
-    //Aggiungere cambiamento delle user info (per expert) quando il manager le cambia
+
     useEffect(() => {
         if (!user.logged) {
-            navigate('/home');
+            navigate('/login');
         }else{
-            setChanged(false)
             fetchUserInfo().catch((error) => {
                 console.error(error);
             });
         }
-    }, [user.logged, changed]);
+    }, [user.logged]);
 
     const togglePopupMenu = () => {
         setShowMenu(!showMenu);
@@ -40,10 +40,19 @@ function UserInfoPage(props){
     const fetchUserInfo = async () => {
         try {
             let userInfo;
+
             if (user.role === 'customer') {
                 userInfo = await API.getProfileInfo(user.id);
             } else if (user.role === 'expert') {
                 userInfo = await API.getExpertInfo(user.id);
+
+                let sectorsList;
+                sectorsList = await API.getSectorsOfExpert(user.id);
+                const updatedSectors={
+                    ...sectors,
+                    sectors: sectorsList
+                }
+                setSectors(updatedSectors);
             } else if (user.role === 'manager'){
                 userInfo = await API.getManagerInfo(user.id);
             }
@@ -106,6 +115,17 @@ function UserInfoPage(props){
                                 <span>{user.surname}</span>
                             </Col>
                         </Row>
+                        {user.role==="expert" && (
+                            <Row className="user-info-row">
+                                <Col xs={12} sm={4}>
+                                    <strong>Sectors:</strong>
+                                </Col>
+                                <Col xs={12} sm={8}>
+                                    <span>{sectors.sectors===[] ? "" : sectors.sectors.join(", ")}</span>
+                                </Col>
+                            </Row>
+                        )
+                        }
                     </Container>
 
                     <Container className="modify-user-info">
@@ -128,13 +148,14 @@ function UserInfoPage(props){
                                         } else if (user.role === 'manager') {
                                             await API.modifyManager(user.id, new Manager(user.id, username, email, name, surname))
                                         }
-                                        setChanged(true);
-                                        setLoading(false);
-                                        setUsername('');
-                                        setEmail('');
-                                        setName('');
-                                        setSurname('');
-                                        togglePopupMenu()
+                                        window.alert("Modifications correctly saved. LOGIN is needed!")
+                                        setUsername('')
+                                        setEmail('')
+                                        setName('')
+                                        setSurname('')
+                                        await API.logout()
+                                        setLoading(false)
+                                        navigate("/login")
                                     } catch (error) {
                                         setError(error);
                                         setLoading(false);
@@ -169,7 +190,7 @@ function UserInfoPage(props){
                                                       onChange={e => setSurname(e.target.value)}/>
                                     </Form.Group>
                                     <Button variant="success" type="submit">Submit</Button>
-                                    {error!=="" ? <Alert className="my-3" variant="danger">Error during modification: {error}</Alert> : <></>}
+                                    {error!=="" ? <Alert className="my-3" variant="danger">Error during modification: {error.message}</Alert> : <></>}
                                 </Form>
                             </div>
                         )}

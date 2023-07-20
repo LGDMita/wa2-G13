@@ -20,11 +20,7 @@ class SectorServiceImpl(
 
     override fun getSectorsOfExpert(id: String): List<SectorDTO>? {
         val expert = expertRepository.findByIdOrNull(id)
-        val listOfSectorDTOs =
-            expert?.let { sectorRepository.findSectorsByExperts(it).map { s -> s.toDTO() } }
-        return listOfSectorDTOs!!.ifEmpty {
-            null
-        }
+        return expert?.let { sectorRepository.findSectorsByExperts(it).map { s -> s.toDTO() } }
     }
 
     @Transactional

@@ -8,7 +8,7 @@ import RegistrationData from "../registrationData";
 import UserContext from "../context/UserContext";
 
 function SignupPage(props){
-    const {user, setUser}= useContext(UserContext);
+    const {user}= useContext(UserContext);
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -24,7 +24,6 @@ function SignupPage(props){
         }
     }, [user.logged, navigate]);
 
-
     if (!user.logged){
         if(loading){
             return(
@@ -39,14 +38,14 @@ function SignupPage(props){
                 <div  className="container-sign-up-parent">
                     <div className="container-sign-up">
                         <h1 className="container-sign-up-h1">Signup</h1>
-                        <Form className="container-sign-up-form"
+                        <Form className="container-sign-up-form"public
                               onSubmit={async e => {
                             e.preventDefault();
                             e.stopPropagation();
                             setLoading(true)
                             try {
                                 await API.signup(new RegistrationData(username, password, email, name, surname));
-                                window.alert("User successfully created!")
+                                window.alert("User successfully created! Now, you can LOGIN!")
                                 setLoading(false)
                                 navigate('/login');
                             } catch (error) {
@@ -82,7 +81,7 @@ function SignupPage(props){
                                               onChange={e => setSurname(e.target.value)}/>
                             </Form.Group>
                             <Button variant="success" type="submit">Submit</Button>
-                            {error!=='' ? <Alert className="my-3" variant="danger">Error during signup: {error}</Alert> : <></>}
+                            {error!=='' ? <Alert className="my-3" variant="danger">Error during signup: {error.message}</Alert> : <></>}
                         </Form>
                     </div>
                 </div>
