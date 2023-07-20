@@ -14,7 +14,7 @@ import jakarta.persistence.*
 import java.util.Date
 
 @Entity
-@Table(name= "tickets")
+@Table(name = "tickets")
 class Ticket(
     @ManyToOne
     @JoinColumn(name = "profile_id")
@@ -29,17 +29,20 @@ class Ticket(
     var status: String,
     var creationDate: Date,
     @OneToMany(mappedBy = "ticket")
-    var messages : MutableSet<Message> = mutableSetOf(),
-    setId: Long?=null) : EntityBase<Long>(setId) {
-    fun addMessage(message: Message){
-        message.ticket=this
+    var messages: MutableSet<Message> = mutableSetOf(),
+    setId: Long? = null
+) : EntityBase<Long>(setId) {
+    fun addMessage(message: Message) {
+        message.ticket = this
         messages.add(message)
     }
 }
 
 fun TicketDTO.toTicket(): Ticket {
-    val tick=Ticket(profile.toProfile(), product.toProduct(), priorityLevel, expert?.toExpert(), status,
-        creationDate, mutableSetOf(), ticketId);
-    tick.messages=messages.map { it.toMessage(tick) }.toMutableSet();
+    val tick = Ticket(
+        profile.toProfile(), product.toProduct(), priorityLevel, expert?.toExpert(), status,
+        creationDate, mutableSetOf(), ticketId
+    );
+    tick.messages = messages.map { it.toMessage(tick) }.toMutableSet();
     return tick;
 }

@@ -8,6 +8,7 @@ import it.polito.wa2.g13.server.profiles.Profile
 import it.polito.wa2.g13.server.profiles.ProfileRepository
 import it.polito.wa2.g13.server.ticketing.experts.Expert
 import it.polito.wa2.g13.server.ticketing.experts.ExpertRepository
+import it.polito.wa2.g13.server.ticketing.sectors.Sector
 import it.polito.wa2.g13.server.ticketing.tickets.Ticket
 import it.polito.wa2.g13.server.ticketing.tickets.TicketRepository
 import it.polito.wa2.g13.server.ticketing.ticketsHistory.TicketHistory
@@ -77,9 +78,10 @@ class TicketHistoryTests {
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    fun t1TestGetTicketHistory(){
+    fun t1TestGetTicketHistory() {
         val baseUrl = "http://localhost:$port/API/tickets/1/history"
         val uri = URI(baseUrl)
+        val mySector = Sector("Informatics")
         val myProfile = Profile(
             id = "id",
             username = "moyne",
@@ -90,7 +92,8 @@ class TicketHistoryTests {
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
-            "JMT"
+            "JMT",
+            mySector
         )
         val myExpert = Expert(
             id = "id",
@@ -103,7 +106,7 @@ class TicketHistoryTests {
             profile = myProfile, product = myProduct, priorityLevel = 1, expert = myExpert,
             status = "open", creationDate = Date(), messages = mutableSetOf()
         )
-        val myHistory= TicketHistory(myTicket,"OPEN","CLOSED",Date())
+        val myHistory = TicketHistory(myTicket, "OPEN", "CLOSED", Date())
 
         profileRepository.save(myProfile)
         productRepository.save(myProduct)
@@ -111,8 +114,8 @@ class TicketHistoryTests {
         ticketRepository.save(myTicket)
         ticketHistoryRepository.save(myHistory)
 
-        val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO)?.jwtAccessToken
+        val loginDTO = LoginDTO(username = "expert", password = "password")
+        val token = authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
         if (token != null) {
             headers.setBearerAuth(token)
@@ -134,12 +137,12 @@ class TicketHistoryTests {
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    fun t2TestGetHistoryOfNotExistentTicket(){
+    fun t2TestGetHistoryOfNotExistentTicket() {
         val baseUrl = "http://localhost:$port/API/tickets/1000/history"
         val uri = URI(baseUrl)
 
-        val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO)?.jwtAccessToken
+        val loginDTO = LoginDTO(username = "expert", password = "password")
+        val token = authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
         if (token != null) {
             headers.setBearerAuth(token)
@@ -148,6 +151,6 @@ class TicketHistoryTests {
         val request = HttpEntity(null, headers)
         val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
 
-        Assertions.assertEquals(result.statusCode,HttpStatus.NOT_FOUND)
+        Assertions.assertEquals(result.statusCode, HttpStatus.NOT_FOUND)
     }
 }

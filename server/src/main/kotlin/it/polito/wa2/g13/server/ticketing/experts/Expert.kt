@@ -4,7 +4,7 @@ import it.polito.wa2.g13.server.ticketing.sectors.Sector
 import jakarta.persistence.*
 
 @Entity
-@Table(name= "experts")
+@Table(name = "experts")
 class Expert(
     @Id
     @Column(updatable = false, nullable = false)
@@ -13,12 +13,13 @@ class Expert(
     var email: String,
     var name: String,
     var surname: String,
-    ) {
+) {
 
     @ManyToMany
-    @JoinTable(name="expert_sector",
-        joinColumns = [JoinColumn(name="expert_id")],
-        inverseJoinColumns = [JoinColumn(name="sector_id")]
+    @JoinTable(
+        name = "expert_sector",
+        joinColumns = [JoinColumn(name = "expert_id")],
+        inverseJoinColumns = [JoinColumn(name = "sector_id")]
     )
     val sectors: MutableSet<Sector> = mutableSetOf()
 
@@ -27,7 +28,7 @@ class Expert(
         s.experts.add(this)
     }
 
-    fun removeSector(s: Sector){
+    fun removeSector(s: Sector) {
         sectors.remove(s)
         s.experts.remove(this)
     }
@@ -38,6 +39,6 @@ fun ExpertDTO.toExpert(): Expert {
     return Expert(id, username, email, name, surname)
 }
 
-fun ExpertDTO.toExpertWithId(id: String) : Expert{
+fun ExpertDTO.toExpertWithId(id: String): Expert {
     return Expert(id, username, email, name, surname)
 }

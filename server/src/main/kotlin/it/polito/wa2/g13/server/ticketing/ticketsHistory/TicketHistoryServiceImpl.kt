@@ -14,8 +14,8 @@ class TicketHistoryServiceImpl(
 ) : TicketHistoryService {
 
 
-    override fun getHistory(ticketId: Long): List<TicketHistoryDTO>{
-        val ticket= ticketRepository.findByIdOrNull(ticketId)?:throw TicketNotFoundException()
-        return ticketHistoryRepository.findByTicketOrderByDateTime(ticket).map{it.toDTO()}
+    override fun getHistory(ticketId: Long): List<TicketHistoryDTO> {
+        val ticket = ticketRepository.findByIdOrNull(ticketId) ?: throw TicketNotFoundException()
+        return ticketHistoryRepository.findByTicketOrderByDateTime(ticket).map { it.toDTO() }
     }
 }

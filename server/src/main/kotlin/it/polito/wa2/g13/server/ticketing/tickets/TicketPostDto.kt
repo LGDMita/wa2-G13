@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 
 data class TicketPostDTO(
-    @field:Size(min=13, max=13, message = "The inserted input is not valid!")
+    @field:Size(min = 13, max = 13, message = "The inserted input is not valid!")
     var ean: String
 ) {
     override fun toString(): String {

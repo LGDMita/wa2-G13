@@ -24,4 +24,8 @@
         right: 0;
         margin-right: 50px;
     }
+
+    .login-signup-btn {
+        margin-top: -25px;
+    }
 }

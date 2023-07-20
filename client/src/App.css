@@ -1,37 +1,46 @@
 .main-div {
-  padding: 0 15%;
+    padding: 0 15%;
 }
 
 .table-products {
-  height: 500px;
-  overflow-y: scroll;
-  padding-top: 30px;
+    height: 500px;
+    overflow-y: scroll;
+    padding-top: 30px;
 }
 
 .single-product,
 .single-profile,
 .add-profile,
 .edit-profile {
-  margin-top: 50px;
-  border-top: 1px black solid;
-  padding-top: 20px;
+    margin-top: 50px;
+    border-top: 1px black solid;
+    padding-top: 20px;
 }
 
 .edit-profile {
-  padding-bottom: 30px;
+    padding-bottom: 30px;
 }
 
 /* google fonts */
 
 .material-icons-round.md-18 {
-  font-size: 18px;
+    font-size: 18px;
 }
+
 .material-icons-round.md-24 {
-  font-size: 24px;
-} /* Default */
-.material-icons-round.md-36 {
-  font-size: 36px;
+    font-size: 24px;
 }
+
+/* Default */
+.material-icons-round.md-36 {
+    font-size: 36px;
+}
+
 .material-icons-round.md-48 {
-  font-size: 48px;
+    font-size: 48px;
+}
+
+.content-container {
+    padding-top: 70px;
+    /* Adjust the value based on the height of your header */
 }

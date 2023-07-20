@@ -40,8 +40,7 @@ class AuthController(
         val jwt = authService.login(loginDTO)
         if (jwt != null) {
             return jwt
-        }
-        else {
+        } else {
             log.warn("Login - Username or password not correct: {}", loginDTO.toString())
             throw InvalidCredentialArgumentsException()
         }
@@ -52,16 +51,25 @@ class AuthController(
     fun registerUser(@RequestBody @Valid registerDTO: RegisterDTO, br: BindingResult): ResponseEntity<Any> {
         return if (!br.hasErrors()) {
             log.info("User tried to register: {}", registerDTO.toString())
-            val id= authService.register(registerDTO)
+            val id = authService.register(registerDTO)
             if (id == null) {
                 log.warn("User with same email or username already present in the system: {}", registerDTO.toString())
                 throw DuplicateProfileException()
-            }
-            else{
-                profileService.setProfile(ProfileDTO(id, registerDTO.username, registerDTO.email, registerDTO.name, registerDTO.surname))
-                transformResponse(status(Response.Status.CREATED)
-                    .entity("Customer successfully created")
-                    .build())
+            } else {
+                profileService.setProfile(
+                    ProfileDTO(
+                        id,
+                        registerDTO.username,
+                        registerDTO.email,
+                        registerDTO.name,
+                        registerDTO.surname
+                    )
+                )
+                transformResponse(
+                    status(Response.Status.CREATED)
+                        .entity("Customer successfully created")
+                        .build()
+                )
             }
         } else {
             log.error("Invalid arguments in registerDTO: field constraint NOT satisfied: {}", registerDTO.toString())
@@ -73,16 +81,25 @@ class AuthController(
     fun createExpert(@RequestBody @Valid registerDTO: RegisterDTO, br: BindingResult): ResponseEntity<Any> {
         return if (!br.hasErrors()) {
             log.info("Manager tried to register: {}", registerDTO.toString())
-            val id= authService.createExpert(registerDTO)
+            val id = authService.createExpert(registerDTO)
             if (id == null) {
                 log.warn("User with same email or username already present in the system")
                 throw DuplicateProfileException()
-            }
-            else{
-                expertService.setExpert(ExpertDTO(id, registerDTO.username, registerDTO.email, registerDTO.name, registerDTO.surname))
-                transformResponse(status(Response.Status.CREATED)
-                    .entity("Expert successfully created")
-                    .build())
+            } else {
+                expertService.setExpert(
+                    ExpertDTO(
+                        id,
+                        registerDTO.username,
+                        registerDTO.email,
+                        registerDTO.name,
+                        registerDTO.surname
+                    )
+                )
+                transformResponse(
+                    status(Response.Status.CREATED)
+                        .entity("Expert successfully created")
+                        .build()
+                )
             }
         } else {
             log.error("Invalid arguments in registerDTO -  field constraint NOT satisfied: {}", registerDTO.toString())

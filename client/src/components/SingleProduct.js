@@ -13,8 +13,7 @@ function SingleProduct() {
                 if (product.ean !== undefined) {
                     alert(`Product with ean ${ean} found!\nName: ${product.name}\nBrand: ${product.brand}`);
                 }
-            }
-            else {
+            } else {
                 alert(`Please, insert EAN before continue!`);
             }
         } catch (error) {

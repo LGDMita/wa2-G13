@@ -21,17 +21,20 @@ function LoginPage(props) {
         try {
             console.log("Trying login");
             await API.login(username, password, setUser);
+            props.setLogged(true);
             navigate("/home");
-        }
-        catch (status) {
+        } catch (status) {
             setShowError(true);
             if (parseInt(status.message) === 500) {
                 setErrorMessage("Failed to contact the server.")
-            }
-            else if (parseInt(status.message) === 401) {
+            } else if (parseInt(status.message) === 401) {
                 setErrorMessage('Username or password is incorrect.');
             }
         }
+    }
+
+    const handleSignUp = async () => {
+        navigate("/signup");
     }
 
     const handleErrorClose = () => {
@@ -77,10 +80,13 @@ function LoginPage(props) {
                             <br />
                             <div className='text-center btn-login'>
                                 <Button variant="primary" type="button" onClick={handleLogin}>
-                                    Submit
+                                    Login
                                 </Button>
-                                <Button variant="info" type="button">
+                                <Button variant="info" type="button" onClick={handleSignUp}>
                                     Signup
+                                </Button>
+                                <Button variant="secondary" type="button">
+                                    Password forgotten?
                                 </Button>
                             </div>
                             <br />

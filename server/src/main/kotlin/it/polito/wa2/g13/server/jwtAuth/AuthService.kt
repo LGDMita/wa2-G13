@@ -11,7 +11,7 @@ interface AuthService {
 
     fun createExpert(registerDTO: RegisterDTO): String?
 
-    fun updateUser(id: String,oldRegisterDTO: RegisterDTO,registerDTO: RegisterDTO): Boolean
+    fun updateUser(id: String, oldRegisterDTO: RegisterDTO, registerDTO: RegisterDTO): Boolean
 
     fun deleteUser(id: String): Unit
 }

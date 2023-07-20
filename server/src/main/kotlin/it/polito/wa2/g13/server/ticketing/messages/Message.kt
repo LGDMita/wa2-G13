@@ -10,8 +10,8 @@ import jakarta.persistence.*
 import java.util.Date
 
 @Entity
-@Table(name= "messages")
-class Message (
+@Table(name = "messages")
+class Message(
     @ManyToOne
     var ticket: Ticket? = null,
     var fromUser: Boolean,
@@ -19,15 +19,15 @@ class Message (
     var datetime: Date,
     @OneToMany(mappedBy = "message", cascade = [CascadeType.ALL])
     var attachments: MutableSet<Attachment>,
-    setId: Long?=null
+    setId: Long? = null
 ) : EntityBase<Long>(setId) {
     init {
-        attachments.forEach{it.message=this}
+        attachments.forEach { it.message = this }
     }
 }
 
 fun MessageDTO.toMessage(ticket: Ticket?): Message {
-    val mex=Message(ticket,fromUser, text, datetime, mutableSetOf() ,messageId)
-    mex.attachments=attachments.map{it.toAttachment(mex)}.toMutableSet()
+    val mex = Message(ticket, fromUser, text, datetime, mutableSetOf(), messageId)
+    mex.attachments = attachments.map { it.toAttachment(mex) }.toMutableSet()
     return mex
 }

@@ -37,7 +37,7 @@ class ManagerController(
     ): Boolean {
         log.info("Edited manager with id: {} and managerDTO: {}", id, managerDTO.toString())
         return if (!br.hasErrors()) {
-            val oldProfile=managerService.getManager(id)?.toRegisterDTO()?:throw ManagerNotFoundException()
+            val oldProfile = managerService.getManager(id)?.toRegisterDTO() ?: throw ManagerNotFoundException()
             authService.updateUser(id, oldProfile, managerDTO.toRegisterDTO())
             managerService.modifyManager(id, managerDTO)
             true

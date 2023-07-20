@@ -29,7 +29,7 @@ class AuthServiceImpl : AuthService {
 
         return try {
             JwtResponse(keycloak.tokenManager().grantToken().token)
-        }catch(e: NotAuthorizedException){
+        } catch (e: NotAuthorizedException) {
             null
         }
     }
@@ -44,7 +44,7 @@ class AuthServiceImpl : AuthService {
             .password("admin")
             .build()
 
-        val realmResource= keycloak.realm("wa2-g13")
+        val realmResource = keycloak.realm("wa2-g13")
 
         existsByUsernameOrEmail(realmResource, registerDTO.username, registerDTO.email)
 
@@ -73,12 +73,12 @@ class AuthServiceImpl : AuthService {
             .users()
             .search(newUser.username)
             .first()
-        val id= userRepresentation.id
-        val userResource= realmResource
+        val id = userRepresentation.id
+        val userResource = realmResource
             .users()
             .get(id)
 
-        val roleRepresentation= realmResource
+        val roleRepresentation = realmResource
             .roles()
             .get("app_client")
             .toRepresentation()
@@ -99,7 +99,7 @@ class AuthServiceImpl : AuthService {
             .password("admin")
             .build()
 
-        val realmResource= keycloak.realm("wa2-g13")
+        val realmResource = keycloak.realm("wa2-g13")
 
         existsByUsernameOrEmail(realmResource, registerDTO.username, registerDTO.email)
 
@@ -128,12 +128,12 @@ class AuthServiceImpl : AuthService {
             .users()
             .search(newUser.username)
             .first()
-        val id= userRepresentation.id
-        val userResource= realmResource
+        val id = userRepresentation.id
+        val userResource = realmResource
             .users()
             .get(id)
 
-        val roleRepresentation= realmResource
+        val roleRepresentation = realmResource
             .roles()
             .get("app_expert")
             .toRepresentation()
@@ -158,23 +158,27 @@ class AuthServiceImpl : AuthService {
         realmResource: RealmResource,
         username: String
     ): Unit {
-        if(realmResource.users().searchByUsername(username,true).size>0)    throw DuplicateUsernameException()
+        if (realmResource.users().searchByUsername(username, true).size > 0) throw DuplicateUsernameException()
     }
 
-    fun existsByEmail(realmResource: RealmResource,
-                      email: String): Unit {
-        if(realmResource.users().searchByEmail(email,true).size>0)  throw DuplicateEmailException()
+    fun existsByEmail(
+        realmResource: RealmResource,
+        email: String
+    ): Unit {
+        if (realmResource.users().searchByEmail(email, true).size > 0) throw DuplicateEmailException()
     }
 
-    fun existsByUsernameOrEmail(realmResource: RealmResource,
-                                username: String,
-                                email: String): Unit {
-        existsByUsername(realmResource,username)
-        existsByEmail(realmResource,email)
+    fun existsByUsernameOrEmail(
+        realmResource: RealmResource,
+        username: String,
+        email: String
+    ): Unit {
+        existsByUsername(realmResource, username)
+        existsByEmail(realmResource, email)
     }
 
     @Transactional
-    override fun updateUser(id: String,oldRegisterDTO: RegisterDTO,registerDTO: RegisterDTO): Boolean{
+    override fun updateUser(id: String, oldRegisterDTO: RegisterDTO, registerDTO: RegisterDTO): Boolean {
         val keycloak = KeycloakBuilder.builder()
             .serverUrl("http://${keycloakPath}")
             .realm("wa2-g13")
@@ -183,14 +187,14 @@ class AuthServiceImpl : AuthService {
             .password("admin")
             .build()
 
-        val realmResource= keycloak.realm("wa2-g13")
+        val realmResource = keycloak.realm("wa2-g13")
 
         val existingUser = findUserByUsernameAndEmail(realmResource, oldRegisterDTO.username, oldRegisterDTO.email)
             ?: throw UserNotFoundException()
 
-        if (existingUser.email!=registerDTO.email) existsByEmail(realmResource,registerDTO.email)
+        if (existingUser.email != registerDTO.email) existsByEmail(realmResource, registerDTO.email)
 
-        if (existingUser.username!=registerDTO.username) existsByUsername(realmResource,registerDTO.username)
+        if (existingUser.username != registerDTO.username) existsByUsername(realmResource, registerDTO.username)
 
         existingUser.username = registerDTO.username
         existingUser.email = registerDTO.email
@@ -215,7 +219,7 @@ class AuthServiceImpl : AuthService {
             .password("admin")
             .build()
 
-        val realmResource= keycloak.realm("wa2-g13")
+        val realmResource = keycloak.realm("wa2-g13")
 
         realmResource.users().delete(id)
     }
