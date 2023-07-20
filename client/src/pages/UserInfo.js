@@ -30,6 +30,11 @@ function UserInfoPage(props){
             fetchUserInfo().catch((error) => {
                 console.error(error);
             });
+            if (user.role=== 'expert'){
+                fetchSectors().catch((error) => {
+                    console.error(error);
+                });
+            }
         }
     }, [user.logged]);
 
@@ -40,20 +45,11 @@ function UserInfoPage(props){
     const fetchUserInfo = async () => {
         try {
             let userInfo;
-
-            if (user.role === 'customer') {
+            if (user.role=== 'customer') {
                 userInfo = await API.getProfileInfo(user.id);
-            } else if (user.role === 'expert') {
+            } else if (user.role=== 'expert') {
                 userInfo = await API.getExpertInfo(user.id);
-
-                let sectorsList;
-                sectorsList = await API.getSectorsOfExpert(user.id);
-                const updatedSectors={
-                    ...sectors,
-                    sectors: sectorsList
-                }
-                setSectors(updatedSectors);
-            } else if (user.role === 'manager'){
+            } else if (user.role=== 'manager'){
                 userInfo = await API.getManagerInfo(user.id);
             }
             const updatedUser = {
@@ -68,6 +64,16 @@ function UserInfoPage(props){
             console.error(error);
         }
     };
+
+    const fetchSectors = async () =>{
+        try{
+            const sectorsList= await API.getSectorsOfExpert(user.id);
+            const updatedSectors= {sectors: sectorsList}
+            setSectors(updatedSectors);
+        }catch(error){
+            console.error(error);
+        }
+    }
 
     if (user.logged) {
         if (loading) {
@@ -121,7 +127,7 @@ function UserInfoPage(props){
                                     <strong>Sectors:</strong>
                                 </Col>
                                 <Col xs={12} sm={8}>
-                                    <span>{sectors.sectors===[] ? "" : sectors.sectors.join(", ")}</span>
+                                    <span>{sectors.sectors===[] ? "" : sectors.sectors.map((sector) => sector.name).join(", ")}</span>
                                 </Col>
                             </Row>
                         )
@@ -161,28 +167,28 @@ function UserInfoPage(props){
                                         setLoading(false);
                                     }
                                 }}>
-                                    <Form.Group className="mb-3">
+                                    <Form.Group className="mb-4">
                                         <Form.Label style={{fontWeight: "bolder"}}>Username : </Form.Label>
                                         <Form.Control type="text"
                                                       placeholder="insert the new username or confirm the old one"
                                                       name="username" required value={username}
                                                       onChange={e => setUsername(e.target.value)}/>
                                     </Form.Group>
-                                    <Form.Group className="mb-3">
+                                    <Form.Group className="mb-4">
                                         <Form.Label style={{fontWeight: "bolder"}}>Email : </Form.Label>
                                         <Form.Control type="email"
                                                       placeholder="insert the new email or confirm the old one"
                                                       name="email" required
                                                       onChange={p => setEmail(p.target.value)}/>
                                     </Form.Group>
-                                    <Form.Group className="mb-3">
+                                    <Form.Group className="mb-4">
                                         <Form.Label style={{fontWeight: "bolder"}}>Name : </Form.Label>
                                         <Form.Control type="text"
                                                       placeholder="insert the new name or confirm the old one"
                                                       name="name" required value={name}
                                                       onChange={e => setName(e.target.value)}/>
                                     </Form.Group>
-                                    <Form.Group className="mb-3">
+                                    <Form.Group className="mb-4">
                                         <Form.Label style={{fontWeight: "bolder"}}>Surname : </Form.Label>
                                         <Form.Control type="text"
                                                       placeholder="insert the new surname or confirm the old one"

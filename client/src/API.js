@@ -5,6 +5,7 @@ import Profile from "./profile";
 import TokenManager from './TokenManager';
 import Ticket from "./ticket";
 import Manager from "./manager";
+import Sector from "./sector";
 
 const SERVER_URL = 'http://localhost:8080';
 
@@ -354,9 +355,12 @@ const updateExpert = async (expert) => {
 
 const getSectorsOfExpert = async (id) =>{
     try{
-        await apiInstance.get(`/API/experts/${id}/sectors`)
+        const response = await apiInstance.get(`/API/experts/${id}/sectors`)
+        const rows = response.data;
+        return rows.map(row => {
+            return new Sector(row.id, row.name);
+        });
     } catch (error){
-        console.log(error.response.data.detail)
         throw new Error(error.response.data.detail);
     }
 }
