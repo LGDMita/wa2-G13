@@ -13,7 +13,7 @@ import SectorsContext from "../context/SectorsContext";
 
 function UserInfoPage(props){
     const {user, setUser}= useContext(UserContext);
-    const {sectors, setSectors}= useContext(SectorsContext);
+    let {sectors} = useContext(SectorsContext);
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
@@ -30,25 +30,24 @@ function UserInfoPage(props){
             fetchUserInfo().catch((error) => {
                 console.error(error);
             });
-            if (user.role=== 'expert'){
-                fetchSectors().catch((error) => {
-                    console.error(error);
-                });
-            }
         }
-    }, [user.logged]);
+    }, [user.logged, user.role]);
 
     const togglePopupMenu = () => {
         setShowMenu(!showMenu);
     };
 
     const fetchUserInfo = async () => {
+        setLoading(true)
         try {
             let userInfo;
             if (user.role=== 'customer') {
                 userInfo = await API.getProfileInfo(user.id);
             } else if (user.role=== 'expert') {
                 userInfo = await API.getExpertInfo(user.id);
+                const sectorsList= await API.getSectorsOfExpert(user.id);
+                sectors= sectorsList;
+                console.log(sectors);
             } else if (user.role=== 'manager'){
                 userInfo = await API.getManagerInfo(user.id);
             }
@@ -60,20 +59,11 @@ function UserInfoPage(props){
                 surname: userInfo.surname,
             };
             setUser(updatedUser);
+            setLoading(false);
         } catch (error) {
             console.error(error);
         }
     };
-
-    const fetchSectors = async () =>{
-        try{
-            const sectorsList= await API.getSectorsOfExpert(user.id);
-            const updatedSectors= {sectors: sectorsList}
-            setSectors(updatedSectors);
-        }catch(error){
-            console.error(error);
-        }
-    }
 
     if (user.logged) {
         if (loading) {
@@ -121,13 +111,13 @@ function UserInfoPage(props){
                                 <span>{user.surname}</span>
                             </Col>
                         </Row>
-                        {user.role==="expert" && (
+                        {user.role==='expert' && (
                             <Row className="user-info-row">
                                 <Col xs={12} sm={4}>
                                     <strong>Sectors:</strong>
                                 </Col>
                                 <Col xs={12} sm={8}>
-                                    <span>{sectors.sectors===[] ? "" : sectors.sectors.map((sector) => sector.name).join(", ")}</span>
+                                    <span>{(sectors && sectors.length > 0) ? sectors.map(sector => sector.name).join(", ") : "No sectors available"}</span>
                                 </Col>
                             </Row>
                         )
@@ -135,11 +125,13 @@ function UserInfoPage(props){
                     </Container>
 
                     <Container className="modify-user-info">
-                        <h1 className="mx-auto">Modify User Info</h1>
-                        <button className="open-menu-button" onClick={togglePopupMenu}>
-                            {showMenu ? <MdRemoveCircleOutline className="button-icon"/> :
-                                <MdAddCircleOutline className="button-icon"/>}
-                        </button>
+                        <div className="modify-user-info-h1-button">
+                            <h1>Modify User Info</h1>
+                            <button className="open-menu-button" onClick={togglePopupMenu}>
+                                {showMenu ? <MdRemoveCircleOutline className="button-icon"/> :
+                                    <MdAddCircleOutline className="button-icon"/>}
+                            </button>
+                        </div>
                         {showMenu && (
                             <div className="popup-menu">
                                 <Form onSubmit={async e => {
@@ -154,7 +146,7 @@ function UserInfoPage(props){
                                         } else if (user.role === 'manager') {
                                             await API.modifyManager(user.id, new Manager(user.id, username, email, name, surname))
                                         }
-                                        window.alert("Modifications correctly saved. LOGIN is needed!")
+                                        window.alert("Modifications correctly saved. LOGIN is required!")
                                         setUsername('')
                                         setEmail('')
                                         setName('')
@@ -188,7 +180,7 @@ function UserInfoPage(props){
                                                       name="name" required value={name}
                                                       onChange={e => setName(e.target.value)}/>
                                     </Form.Group>
-                                    <Form.Group className="mb-4">
+                                    <Form.Group className="mb-5">
                                         <Form.Label style={{fontWeight: "bolder"}}>Surname : </Form.Label>
                                         <Form.Control type="text"
                                                       placeholder="insert the new surname or confirm the old one"
