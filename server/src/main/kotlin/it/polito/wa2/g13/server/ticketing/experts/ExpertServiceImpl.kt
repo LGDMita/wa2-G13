@@ -13,21 +13,21 @@ class ExpertServiceImpl(
 ) : ExpertService {
 
     override fun getExperts(): List<ExpertDTO> {
-        return expertRepository.findAll().map{it.toDTO()}
+        return expertRepository.findAll().map { it.toDTO() }
     }
 
     @Transactional
     override fun setExpert(expertDTO: ExpertDTO): Boolean {
 
-        val expert= expertDTO.toExpert()
-        return if (!expertRepository.existsByEmail(expert.email)){
+        val expert = expertDTO.toExpert()
+        return if (!expertRepository.existsByEmail(expert.email)) {
             expertRepository.save(expert)
             true
-        }else false
+        } else false
 
     }
 
-    override fun getExpertById(id: String): ExpertDTO?{
+    override fun getExpertById(id: String): ExpertDTO? {
         return expertRepository.findByIdOrNull(id)?.toDTO()
     }
 
@@ -38,9 +38,9 @@ class ExpertServiceImpl(
 
     override fun getExpertsBySector(sectorName: String): List<ExpertDTO>? {
 
-        val sector= sectorRepository.findByName(sectorName)
-        val listOfExpertDTOs=
-            expertRepository.findExpertsBySectors(sector).map{e -> e.toDTO()}
+        val sector = sectorRepository.findByName(sectorName)
+        val listOfExpertDTOs =
+            expertRepository.findExpertsBySectors(sector).map { e -> e.toDTO() }
         return listOfExpertDTOs.ifEmpty {
             null
         }
@@ -48,7 +48,7 @@ class ExpertServiceImpl(
     }
 
     @Transactional
-    override fun deleteExpertById(id: String){
+    override fun deleteExpertById(id: String) {
         expertRepository.deleteById(id)
     }
 

@@ -26,6 +26,6 @@ data class MessageDTO(
     }
 }
 
-fun Message.toDTO(): MessageDTO{
-    return MessageDTO(getId(),ticket?.getId(),fromUser,text,datetime, attachments.map{it.toDTO()}.toMutableSet())
+fun Message.toDTO(): MessageDTO {
+    return MessageDTO(getId(), ticket?.getId(), fromUser, text, datetime, attachments.map { it.toDTO() }.toMutableSet())
 }

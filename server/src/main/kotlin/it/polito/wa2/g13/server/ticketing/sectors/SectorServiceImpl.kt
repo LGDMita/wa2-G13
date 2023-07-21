@@ -11,15 +11,15 @@ class SectorServiceImpl(
     private val expertRepository: ExpertRepository
 ) : SectorService {
     override fun getAllSectors(): List<SectorDTO>? {
-        val listOfSectorDTOs=
-            sectorRepository.findAll().map{s -> s.toDTO()}
+        val listOfSectorDTOs =
+            sectorRepository.findAll().map { s -> s.toDTO() }
         return listOfSectorDTOs.ifEmpty {
             null
         }
     }
 
     override fun getSectorsOfExpert(id: String): List<SectorDTO>? {
-        val expert= expertRepository.findByIdOrNull(id)
+        val expert = expertRepository.findByIdOrNull(id)
         val listOfSectorDTOs =
             expert?.let { sectorRepository.findSectorsByExperts(it).map { s -> s.toDTO() } }
         return listOfSectorDTOs!!.ifEmpty {
@@ -29,34 +29,34 @@ class SectorServiceImpl(
 
     @Transactional
     override fun setSectorForExpert(id: String, sectorDTO: SectorDTO): Boolean {
-        val expert= expertRepository.findByIdOrNull(id)
-        return if(expert != null){
-            if(sectorRepository.existsByName(sectorDTO.name.lowercase())){
-                val sector= sectorRepository.findByName(sectorDTO.name.lowercase())
+        val expert = expertRepository.findByIdOrNull(id)
+        return if (expert != null) {
+            if (sectorRepository.existsByName(sectorDTO.name.lowercase())) {
+                val sector = sectorRepository.findByName(sectorDTO.name.lowercase())
                 expert.addSector(sector)
                 sector.addExpert(expert)
                 sectorRepository.save(sector)
                 expertRepository.save(expert)
-            }else{
-                val sector= sectorDTO.toSector() //generate new id
-                sector.name= sector.name.lowercase() // To have all lower case names
+            } else {
+                val sector = sectorDTO.toSector() //generate new id
+                sector.name = sector.name.lowercase() // To have all lower case names
                 expert.addSector(sector)
                 sector.addExpert(expert)
                 sectorRepository.save(sector)
                 expertRepository.save(expert)
             }
             true
-        }else{
+        } else {
             false//Expert not found
         }
     }
 
     @Transactional
     override fun deleteSectorForExpert(expertId: String, sectorId: Long) {
-        val expert= expertRepository.findByIdOrNull(expertId)
+        val expert = expertRepository.findByIdOrNull(expertId)
         if (expert != null) {
-            val sectors= sectorRepository.findSectorsByExperts(expert)
-            val sector= sectors.find { s-> s.getId() == sectorId }
+            val sectors = sectorRepository.findSectorsByExperts(expert)
+            val sector = sectors.find { s -> s.getId() == sectorId }
             if (sector != null) {
                 expert.removeSector(sector)
                 sector.removeExpert(expert)

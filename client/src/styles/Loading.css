@@ -1,8 +1,8 @@
 .spin-load {
     position: fixed;
     margin: auto;
-    height: 5rem!important;
-    width: 5rem!important;
+    height: 5rem !important;
+    width: 5rem !important;
     bottom: 0;
     right: 0;
     left: 0;

@@ -7,7 +7,7 @@ import API from "../API";
 
 import "../styles/LoginPage.css"
 
-function ExpertsListPage(props) {
+function ExpertsListPage() {
     const navigate = useNavigate();
     const { user } = useContext(UserContext);
     const [experts, setExperts] = useState([])
@@ -28,16 +28,6 @@ function ExpertsListPage(props) {
             fetchExperts();
         }
     }, [user.role, navigate]);
-
-    const handleEdit = (expert) => {
-        try {
-            API.updateExpert(expert);
-            setExperts(API.getExperts());
-        }
-        catch (error) {
-            console.log(error)
-        }
-    }
 
     return (
         <Container>
@@ -68,7 +58,7 @@ function ExpertsListPage(props) {
                                 <td>{expert.email}</td>
                                 <td>{expert.username}</td>
                                 <td>
-                                    <Button variant="primary" onClick={() => handleEdit(expert)}>
+                                    <Button variant="primary">
                                         Modify
                                     </Button>
                                 </td>

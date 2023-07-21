@@ -11,19 +11,19 @@ import jakarta.persistence.Table
 import java.util.*
 
 @Entity
-@Table(name="purchase")
+@Table(name = "purchase")
 class Purchase(
     @ManyToOne
     val product: Product,
     @ManyToOne
     var profile: Profile?,
     val datetime: Date,
-    setId: Long?=null
-) : EntityBase<Long>(setId){
+    setId: Long? = null
+) : EntityBase<Long>(setId) {
     @OneToOne(mappedBy = "purchase")
-    val warranty: Warranty?=null
+    val warranty: Warranty? = null
 }
 
-fun PurchaseDTO.toPurchase(prod: Product,prof: Profile?): Purchase{
-    return Purchase(prod,prof,datetime,purchaseId)
+fun PurchaseDTO.toPurchase(prod: Product, prof: Profile?): Purchase {
+    return Purchase(prod, prof, datetime, purchaseId)
 }

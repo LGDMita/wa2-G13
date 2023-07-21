@@ -65,11 +65,17 @@ class ExpertAndSectorTests {
     @Autowired
     lateinit var authService: AuthService
 
-    data class CreateExpertData(val dto: ExpertDTO?,val result: ResponseEntity<String>,val headers: HttpHeaders)
-    fun createExpert(token: String,username: String="test-expert",email: String="will@gmail.com"): CreateExpertData{
+    data class CreateExpertData(val dto: ExpertDTO?, val result: ResponseEntity<String>, val headers: HttpHeaders)
+
+    fun createExpert(
+        token: String,
+        username: String = "test-expert",
+        email: String = "will@gmail.com"
+    ): CreateExpertData {
         val baseUrl = "http://localhost:$port/API/createExpert"
         val uri = URI(baseUrl)
-        val regDTO= RegisterDTO(username= username, password = "password", email = email,name = "Will", surname = "Hunting")
+        val regDTO =
+            RegisterDTO(username = username, password = "password", email = email, name = "Will", surname = "Hunting")
 
         val headers = HttpHeaders()
         headers.setBearerAuth(token)
@@ -77,10 +83,10 @@ class ExpertAndSectorTests {
 
         var request = HttpEntity(regDTO, headers)
 
-        val result=restTemplate.postForEntity(uri, request, String::class.java)
+        val result = restTemplate.postForEntity(uri, request, String::class.java)
 
-        var expertDTO= expertRepository.findAll().find { it.username==username && it.email==email}?.toDTO()
-        return CreateExpertData(expertDTO,result,headers)
+        var expertDTO = expertRepository.findAll().find { it.username == username && it.email == email }?.toDTO()
+        return CreateExpertData(expertDTO, result, headers)
     }
 
     @Test
@@ -89,20 +95,34 @@ class ExpertAndSectorTests {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
         var token = authService.login(loginDTO)?.jwtAccessToken
 
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
 
-        val postDTO= RegisterDTO(username= "test-expert", password = "password", email = "will@gmail.com",name = "Will", surname = "Hunting")
+        val postDTO = RegisterDTO(
+            username = "test-expert",
+            password = "password",
+            email = "will@gmail.com",
+            name = "Will",
+            surname = "Hunting"
+        )
 
-        val res=createExpert(token!!)
+        val res = createExpert(token!!)
 
-        Assertions.assertEquals(HttpStatus.CREATED,res.result.statusCode)
-        Assertions.assertEquals(RegisterDTO(postDTO.username,"",postDTO.email,postDTO.name,postDTO.surname), res.dto?.toRegisterDTO())
+        Assertions.assertEquals(HttpStatus.CREATED, res.result.statusCode)
+        Assertions.assertEquals(
+            RegisterDTO(postDTO.username, "", postDTO.email, postDTO.name, postDTO.surname),
+            res.dto?.toRegisterDTO()
+        )
 
-        val deleteExpertUrl="http://localhost:$port/API/experts/${res.dto?.id}"
+        val deleteExpertUrl = "http://localhost:$port/API/experts/${res.dto?.id}"
 
-        val deleteResult=restTemplate.exchange(deleteExpertUrl, HttpMethod.DELETE,HttpEntity<Object>(res.headers),String::class.java)
+        val deleteResult = restTemplate.exchange(
+            deleteExpertUrl,
+            HttpMethod.DELETE,
+            HttpEntity<Object>(res.headers),
+            String::class.java
+        )
 
-        Assertions.assertEquals(HttpStatus.OK,deleteResult.statusCode)
+        Assertions.assertEquals(HttpStatus.OK, deleteResult.statusCode)
     }
 
     @Test
@@ -111,22 +131,28 @@ class ExpertAndSectorTests {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
         var token = authService.login(loginDTO)?.jwtAccessToken
 
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
 
         val baseUrl = "http://localhost:$port/API/createExpert"
         val uri = URI(baseUrl)
 
-        val originalRes=createExpert(token!!)
-        Assertions.assertEquals(HttpStatus.CREATED,originalRes.result.statusCode)
+        val originalRes = createExpert(token!!)
+        Assertions.assertEquals(HttpStatus.CREATED, originalRes.result.statusCode)
 
-        val postDTO= RegisterDTO(username= "test-expert-2", password = "password", email = "will@gmail.com",name = "Will", surname = "Hunting")
+        val postDTO = RegisterDTO(
+            username = "test-expert-2",
+            password = "password",
+            email = "will@gmail.com",
+            name = "Will",
+            surname = "Hunting"
+        )
 
         val headers = HttpHeaders()
         headers.setBearerAuth(token!!)
         headers.set("X-COM-PERSIST", "true")
-        val request= HttpEntity(postDTO, headers)
+        val request = HttpEntity(postDTO, headers)
 
-        val result= restTemplate.postForEntity(uri,request,String::class.java)
+        val result = restTemplate.postForEntity(uri, request, String::class.java)
 
         Assertions.assertEquals(HttpStatus.CONFLICT, result.statusCode)
         /*Assertions.assertEquals(
@@ -134,11 +160,12 @@ class ExpertAndSectorTests {
             result.body.toString().split(",")[3]
         )*/
 
-        val deleteExpertUrl="http://localhost:$port/API/experts/${originalRes.dto?.id}"
+        val deleteExpertUrl = "http://localhost:$port/API/experts/${originalRes.dto?.id}"
 
-        val deleteResult=restTemplate.exchange(deleteExpertUrl, HttpMethod.DELETE,HttpEntity<Object>(headers),String::class.java)
+        val deleteResult =
+            restTemplate.exchange(deleteExpertUrl, HttpMethod.DELETE, HttpEntity<Object>(headers), String::class.java)
 
-        Assertions.assertEquals(HttpStatus.OK,deleteResult.statusCode)
+        Assertions.assertEquals(HttpStatus.OK, deleteResult.statusCode)
     }
 
     @Test
@@ -147,11 +174,17 @@ class ExpertAndSectorTests {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
         var token = authService.login(loginDTO)?.jwtAccessToken
 
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
 
         val baseUrl = "http://localhost:$port/API/createExpert"
         val uri = URI(baseUrl)
-        val postDTO= RegisterDTO(username= "test-expert-2", password = "testpwd", email = "will@ gmail.com",name = "Will", surname = "Hunting")
+        val postDTO = RegisterDTO(
+            username = "test-expert-2",
+            password = "testpwd",
+            email = "will@ gmail.com",
+            name = "Will",
+            surname = "Hunting"
+        )
 
         val headers = HttpHeaders()
         headers.setBearerAuth(token!!)
@@ -174,10 +207,16 @@ class ExpertAndSectorTests {
         val loginDTO = LoginDTO(username = "expert", password = "password") //it is an expert
         var token = authService.login(loginDTO)?.jwtAccessToken
 
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
         val baseUrl = "http://localhost:$port/API/createExpert"
         val uri = URI(baseUrl)
-        val postDTO= RegisterDTO(username= "test-expert-2", password = "testpwd", email = "will@gmail.com",name = "Will", surname = "Hunting")
+        val postDTO = RegisterDTO(
+            username = "test-expert-2",
+            password = "testpwd",
+            email = "will@gmail.com",
+            name = "Will",
+            surname = "Hunting"
+        )
 
         val headers = HttpHeaders()
         headers.setBearerAuth(token!!)
@@ -196,10 +235,16 @@ class ExpertAndSectorTests {
         val loginDTO = LoginDTO(username = "client", password = "password") //it is a client
         var token = authService.login(loginDTO)?.jwtAccessToken
 
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
         val baseUrl = "http://localhost:$port/API/createExpert"
         val uri = URI(baseUrl)
-        val postDTO= RegisterDTO(username= "test-expert-2", password = "testpwd", email = "will@gmail.com",name = "Will", surname = "Hunting")
+        val postDTO = RegisterDTO(
+            username = "test-expert-2",
+            password = "testpwd",
+            email = "will@gmail.com",
+            name = "Will",
+            surname = "Hunting"
+        )
 
         val headers = HttpHeaders()
         headers.setBearerAuth(token!!)
@@ -217,7 +262,13 @@ class ExpertAndSectorTests {
     fun expertSetUnauthorizedTest3() {
         val baseUrl = "http://localhost:$port/API/createExpert"
         val uri = URI(baseUrl)
-        val postDTO= RegisterDTO(username= "test-expert-2", password = "testpwd", email = "will@gmail.com",name = "Will", surname = "Hunting")
+        val postDTO = RegisterDTO(
+            username = "test-expert-2",
+            password = "testpwd",
+            email = "will@gmail.com",
+            name = "Will",
+            surname = "Hunting"
+        )
 
         val headers = HttpHeaders()
         headers.set("X-COM-PERSIST", "true")
@@ -235,8 +286,8 @@ class ExpertAndSectorTests {
     fun expertGetSuccess() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is an expert
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
-        val res=createExpert(token!!)
+        Assertions.assertNotEquals(null, token)
+        val res = createExpert(token!!)
         val baseUrl = "http://localhost:$port/API/experts/${res.dto?.id}"
         val uri = URI(baseUrl)
 
@@ -244,11 +295,16 @@ class ExpertAndSectorTests {
 
         Assertions.assertEquals(HttpStatus.OK, result.statusCode)
 
-        val deleteExpertUrl="http://localhost:$port/API/experts/${res.dto?.id}"
+        val deleteExpertUrl = "http://localhost:$port/API/experts/${res.dto?.id}"
 
-        val deleteResult=restTemplate.exchange(deleteExpertUrl, HttpMethod.DELETE,HttpEntity<Object>(res.headers),String::class.java)
+        val deleteResult = restTemplate.exchange(
+            deleteExpertUrl,
+            HttpMethod.DELETE,
+            HttpEntity<Object>(res.headers),
+            String::class.java
+        )
 
-        Assertions.assertEquals(HttpStatus.OK,deleteResult.statusCode)
+        Assertions.assertEquals(HttpStatus.OK, deleteResult.statusCode)
     }
 
     @Test
@@ -257,7 +313,7 @@ class ExpertAndSectorTests {
         val loginDTO = LoginDTO(username = "expert", password = "password") //it is an expert
         var token = authService.login(loginDTO)?.jwtAccessToken
 
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
 
         val baseUrl = "http://localhost:$port/API/experts/aaaaaa-aaaaa-aaaaa-aaaaa"
         val uri = URI(baseUrl)
@@ -281,12 +337,18 @@ class ExpertAndSectorTests {
     fun expertModifySuccessTest1() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //It is a manager
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
-        val res=createExpert(token!!)
-        Assertions.assertEquals(HttpStatus.CREATED,res.result.statusCode)
+        Assertions.assertNotEquals(null, token)
+        val res = createExpert(token!!)
+        Assertions.assertEquals(HttpStatus.CREATED, res.result.statusCode)
         val baseUrl = "http://localhost:$port/API/experts/${res.dto?.id}"
         val uri = URI(baseUrl)
-        val expertDTO = ExpertDTO(id= res.dto!!.id, username = res.dto!!.username,name = res.dto!!.name, surname = "News", email = res.dto!!.email)
+        val expertDTO = ExpertDTO(
+            id = res.dto!!.id,
+            username = res.dto!!.username,
+            name = res.dto!!.name,
+            surname = "News",
+            email = res.dto!!.email
+        )
 
         val headers = HttpHeaders()
         headers.setBearerAuth(token!!)
@@ -300,11 +362,16 @@ class ExpertAndSectorTests {
         val expert = expertRepository.findByIdOrNull(res.dto!!.id)
         Assertions.assertEquals("Will", expert?.name)
         Assertions.assertEquals("News", expert?.surname)
-        val deleteExpertUrl="http://localhost:$port/API/experts/${res.dto?.id}"
+        val deleteExpertUrl = "http://localhost:$port/API/experts/${res.dto?.id}"
 
-        val deleteResult=restTemplate.exchange(deleteExpertUrl, HttpMethod.DELETE,HttpEntity<Object>(res.headers),String::class.java)
+        val deleteResult = restTemplate.exchange(
+            deleteExpertUrl,
+            HttpMethod.DELETE,
+            HttpEntity<Object>(res.headers),
+            String::class.java
+        )
 
-        Assertions.assertEquals(HttpStatus.OK,deleteResult.statusCode)
+        Assertions.assertEquals(HttpStatus.OK, deleteResult.statusCode)
     }
 
     @Test
@@ -312,12 +379,18 @@ class ExpertAndSectorTests {
     fun expertModifySuccessTest2() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //It is a manager
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
-        val res=createExpert(token!!)
-        Assertions.assertEquals(HttpStatus.CREATED,res.result.statusCode)
+        Assertions.assertNotEquals(null, token)
+        val res = createExpert(token!!)
+        Assertions.assertEquals(HttpStatus.CREATED, res.result.statusCode)
         val baseUrl = "http://localhost:$port/API/experts/${res.dto?.id}"
         val uri = URI(baseUrl)
-        val expertDTO = ExpertDTO(id= res.dto!!.id, username = res.dto!!.username,name = res.dto!!.name, surname = res.dto!!.surname, email = "william@gmail.com")
+        val expertDTO = ExpertDTO(
+            id = res.dto!!.id,
+            username = res.dto!!.username,
+            name = res.dto!!.name,
+            surname = res.dto!!.surname,
+            email = "william@gmail.com"
+        )
 
         val headers = HttpHeaders()
         headers.setBearerAuth(token!!)
@@ -330,11 +403,16 @@ class ExpertAndSectorTests {
         Assertions.assertEquals(HttpStatus.OK, result.statusCode)
         Assertions.assertEquals("william@gmail.com", expertRepository.findByIdOrNull(res.dto!!.id)?.email)
 
-        val deleteExpertUrl="http://localhost:$port/API/experts/${res.dto?.id}"
+        val deleteExpertUrl = "http://localhost:$port/API/experts/${res.dto?.id}"
 
-        val deleteResult=restTemplate.exchange(deleteExpertUrl, HttpMethod.DELETE,HttpEntity<Object>(res.headers),String::class.java)
+        val deleteResult = restTemplate.exchange(
+            deleteExpertUrl,
+            HttpMethod.DELETE,
+            HttpEntity<Object>(res.headers),
+            String::class.java
+        )
 
-        Assertions.assertEquals(HttpStatus.OK,deleteResult.statusCode)
+        Assertions.assertEquals(HttpStatus.OK, deleteResult.statusCode)
     }
 
     @Test
@@ -342,12 +420,18 @@ class ExpertAndSectorTests {
     fun expertModifyUnprocessableEntityTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //It is a manager
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
-        val res=createExpert(token!!)
-        Assertions.assertEquals(HttpStatus.CREATED,res.result.statusCode)
+        Assertions.assertNotEquals(null, token)
+        val res = createExpert(token!!)
+        Assertions.assertEquals(HttpStatus.CREATED, res.result.statusCode)
         val baseUrl = "http://localhost:$port/API/experts/${res.dto?.id}"
         val uri = URI(baseUrl)
-        val expertDTO = ExpertDTO(id= res.dto!!.id, username = res.dto!!.username,name = res.dto!!.name, surname = res.dto!!.surname, email = "william @gmail.com")
+        val expertDTO = ExpertDTO(
+            id = res.dto!!.id,
+            username = res.dto!!.username,
+            name = res.dto!!.name,
+            surname = res.dto!!.surname,
+            email = "william @gmail.com"
+        )
 
         val headers = HttpHeaders()
         headers.setBearerAuth(token!!)
@@ -362,11 +446,16 @@ class ExpertAndSectorTests {
             "\"detail\":\"The inserted input for the expert is not valid!\"",
             result.body.toString().split(",")[3]
         )
-        val deleteExpertUrl="http://localhost:$port/API/experts/${res.dto?.id}"
+        val deleteExpertUrl = "http://localhost:$port/API/experts/${res.dto?.id}"
 
-        val deleteResult=restTemplate.exchange(deleteExpertUrl, HttpMethod.DELETE,HttpEntity<Object>(res.headers),String::class.java)
+        val deleteResult = restTemplate.exchange(
+            deleteExpertUrl,
+            HttpMethod.DELETE,
+            HttpEntity<Object>(res.headers),
+            String::class.java
+        )
 
-        Assertions.assertEquals(HttpStatus.OK,deleteResult.statusCode)
+        Assertions.assertEquals(HttpStatus.OK, deleteResult.statusCode)
     }
 
     @Test
@@ -374,10 +463,16 @@ class ExpertAndSectorTests {
     fun expertModifyNotFoundTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //It is a manager
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
         val baseUrl = "http://localhost:$port/API/experts/aaaaaaa"
         val uri = URI(baseUrl)
-        val expertDTO = ExpertDTO(id= "aaaaaaa", username = "will",name = "William", surname = "Hunt", email = "william@gmail.com")
+        val expertDTO = ExpertDTO(
+            id = "aaaaaaa",
+            username = "will",
+            name = "William",
+            surname = "Hunt",
+            email = "william@gmail.com"
+        )
 
         val headers = HttpHeaders()
         headers.setBearerAuth(token!!)
@@ -399,14 +494,20 @@ class ExpertAndSectorTests {
     fun expertModifyConflictTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //It is a manager
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
-        val res=createExpert(token!!)
-        Assertions.assertEquals(HttpStatus.CREATED,res.result.statusCode)
-        val resNew=createExpert(token!!,username="text-expert2",email="will-2@gmail.com")
-        Assertions.assertEquals(HttpStatus.CREATED,resNew.result.statusCode)
+        Assertions.assertNotEquals(null, token)
+        val res = createExpert(token!!)
+        Assertions.assertEquals(HttpStatus.CREATED, res.result.statusCode)
+        val resNew = createExpert(token!!, username = "text-expert2", email = "will-2@gmail.com")
+        Assertions.assertEquals(HttpStatus.CREATED, resNew.result.statusCode)
         val baseUrl = "http://localhost:$port/API/experts/${resNew.dto?.id}"
         val uri = URI(baseUrl)
-        val expertDTO = ExpertDTO(id= resNew.dto!!.id, username = resNew.dto!!.username,name = resNew.dto!!.name, surname = resNew.dto!!.surname, email = res.dto!!.email)
+        val expertDTO = ExpertDTO(
+            id = resNew.dto!!.id,
+            username = resNew.dto!!.username,
+            name = resNew.dto!!.name,
+            surname = resNew.dto!!.surname,
+            email = res.dto!!.email
+        )
 
         val headers = HttpHeaders()
         headers.setBearerAuth(token!!)
@@ -418,17 +519,27 @@ class ExpertAndSectorTests {
 
         Assertions.assertEquals(HttpStatus.CONFLICT, result.statusCode)
 
-        var deleteExpertUrl="http://localhost:$port/API/experts/${res.dto?.id}"
+        var deleteExpertUrl = "http://localhost:$port/API/experts/${res.dto?.id}"
 
-        var deleteResult=restTemplate.exchange(deleteExpertUrl, HttpMethod.DELETE,HttpEntity<Object>(res.headers),String::class.java)
+        var deleteResult = restTemplate.exchange(
+            deleteExpertUrl,
+            HttpMethod.DELETE,
+            HttpEntity<Object>(res.headers),
+            String::class.java
+        )
 
-        Assertions.assertEquals(HttpStatus.OK,deleteResult.statusCode)
+        Assertions.assertEquals(HttpStatus.OK, deleteResult.statusCode)
 
-        deleteExpertUrl="http://localhost:$port/API/experts/${resNew.dto?.id}"
+        deleteExpertUrl = "http://localhost:$port/API/experts/${resNew.dto?.id}"
 
-        deleteResult=restTemplate.exchange(deleteExpertUrl, HttpMethod.DELETE,HttpEntity<Object>(res.headers),String::class.java)
+        deleteResult = restTemplate.exchange(
+            deleteExpertUrl,
+            HttpMethod.DELETE,
+            HttpEntity<Object>(res.headers),
+            String::class.java
+        )
 
-        Assertions.assertEquals(HttpStatus.OK,deleteResult.statusCode)
+        Assertions.assertEquals(HttpStatus.OK, deleteResult.statusCode)
     }
 
     @Test
@@ -436,10 +547,16 @@ class ExpertAndSectorTests {
     fun expertModifyUnauthorizedTest1() {
         val loginDTO = LoginDTO(username = "expert", password = "password") //It is an expert
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
         val baseUrl = "http://localhost:$port/API/experts/aaaaaaa"
         val uri = URI(baseUrl)
-        val expertDTO = ExpertDTO(id= "aaaaaaa", username = "will",name = "William", surname = "Hunt", email = "william@gmail.com")
+        val expertDTO = ExpertDTO(
+            id = "aaaaaaa",
+            username = "will",
+            name = "William",
+            surname = "Hunt",
+            email = "william@gmail.com"
+        )
 
         val headers = HttpHeaders()
         headers.setBearerAuth(token!!)
@@ -457,10 +574,16 @@ class ExpertAndSectorTests {
     fun expertModifyUnauthorizedTest2() {
         val loginDTO = LoginDTO(username = "client", password = "password") //It is a client
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
         val baseUrl = "http://localhost:$port/API/experts/aaaaaaa"
         val uri = URI(baseUrl)
-        val expertDTO = ExpertDTO(id= "aaaaaaa", username = "will",name = "William", surname = "Hunt", email = "william@gmail.com")
+        val expertDTO = ExpertDTO(
+            id = "aaaaaaa",
+            username = "will",
+            name = "William",
+            surname = "Hunt",
+            email = "william@gmail.com"
+        )
 
         val headers = HttpHeaders()
         headers.setBearerAuth(token!!)
@@ -478,7 +601,13 @@ class ExpertAndSectorTests {
     fun expertModifyUnauthorizedTest3() {
         val baseUrl = "http://localhost:$port/API/experts/aaaaaaa"
         val uri = URI(baseUrl)
-        val expertDTO = ExpertDTO(id= "aaaaaaa", username = "will",name = "William", surname = "Hunt", email = "william@gmail.com")
+        val expertDTO = ExpertDTO(
+            id = "aaaaaaa",
+            username = "will",
+            name = "William",
+            surname = "Hunt",
+            email = "william@gmail.com"
+        )
 
         val headers = HttpHeaders()
         headers.set("X-COM-PERSIST", "true")
@@ -495,7 +624,7 @@ class ExpertAndSectorTests {
     fun expertDeleteNotFoundTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //It is a client
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
         val baseUrl = "http://localhost:$port/API/experts/aaaaaa"
         val uri = URI(baseUrl)
 
@@ -517,7 +646,7 @@ class ExpertAndSectorTests {
     fun expertDeleteUnauthorizedTest1() {
         val loginDTO = LoginDTO(username = "expert", password = "password") //It is a expert
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
         val baseUrl = "http://localhost:$port/API/experts/aaaaaa"
         val uri = URI(baseUrl)
 
@@ -535,7 +664,7 @@ class ExpertAndSectorTests {
     fun expertDeleteUnauthorizedTest2() {
         val loginDTO = LoginDTO(username = "client", password = "password") //It is a client
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
         val baseUrl = "http://localhost:$port/API/experts/aaaaaa"
         val uri = URI(baseUrl)
 
@@ -567,10 +696,12 @@ class ExpertAndSectorTests {
     fun expertsBySectorGetSuccessTest() {
         val loginDTO = LoginDTO(username = "expert", password = "password") //It is an expert
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
 
-        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
-        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
+        val expert1 =
+            Expert(id = "aaaa", username = "aaaa", email = "aaaa@gmail.com", name = "William", surname = "Hunt")
+        val expert2 =
+            Expert(id = "bbbb", username = "bbbb", email = "bbbb@gmail.com", name = "Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
         val sector = Sector(name = "linux")
@@ -601,10 +732,12 @@ class ExpertAndSectorTests {
     fun expertsBySectorGetSectorsNotFoundTest() {
         val loginDTO = LoginDTO(username = "client", password = "password") //It is a client
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
 
-        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
-        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
+        val expert1 =
+            Expert(id = "aaaa", username = "aaaa", email = "aaaa@gmail.com", name = "William", surname = "Hunt")
+        val expert2 =
+            Expert(id = "bbbb", username = "bbbb", email = "bbbb@gmail.com", name = "Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
 
@@ -632,10 +765,12 @@ class ExpertAndSectorTests {
     fun expertsBySectorGetSectorNotFoundTest() {
         val loginDTO = LoginDTO(username = "client", password = "password") //It is a client
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
 
-        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
-        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
+        val expert1 =
+            Expert(id = "aaaa", username = "aaaa", email = "aaaa@gmail.com", name = "William", surname = "Hunt")
+        val expert2 =
+            Expert(id = "bbbb", username = "bbbb", email = "bbbb@gmail.com", name = "Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
         val sector = Sector(name = "Hardware")
@@ -667,10 +802,12 @@ class ExpertAndSectorTests {
     fun expertsBySectorGetExpertOfSelectedSectorNotFoundTest() {
         val loginDTO = LoginDTO(username = "client", password = "password") //It is a client
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
 
-        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
-        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
+        val expert1 =
+            Expert(id = "aaaa", username = "aaaa", email = "aaaa@gmail.com", name = "William", surname = "Hunt")
+        val expert2 =
+            Expert(id = "bbbb", username = "bbbb", email = "bbbb@gmail.com", name = "Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
         val sector = Sector(name = "linux")
@@ -699,10 +836,12 @@ class ExpertAndSectorTests {
     fun sectorsAllGetSuccessTest() {
         val loginDTO = LoginDTO(username = "client", password = "password") //It is a client
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
 
-        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
-        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
+        val expert1 =
+            Expert(id = "aaaa", username = "aaaa", email = "aaaa@gmail.com", name = "William", surname = "Hunt")
+        val expert2 =
+            Expert(id = "bbbb", username = "bbbb", email = "bbbb@gmail.com", name = "Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
         val sector1 = Sector(name = "linux")
@@ -739,10 +878,12 @@ class ExpertAndSectorTests {
     fun sectorsAllGetNotFoundTest() {
         val loginDTO = LoginDTO(username = "client", password = "password") //It is a client
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
 
-        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
-        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
+        val expert1 =
+            Expert(id = "aaaa", username = "aaaa", email = "aaaa@gmail.com", name = "William", surname = "Hunt")
+        val expert2 =
+            Expert(id = "bbbb", username = "bbbb", email = "bbbb@gmail.com", name = "Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
 
@@ -769,10 +910,12 @@ class ExpertAndSectorTests {
     fun sectorsOfExpertGetSuccessTest() {
         val loginDTO = LoginDTO(username = "client", password = "password") //It is a client
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
 
-        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
-        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
+        val expert1 =
+            Expert(id = "aaaa", username = "aaaa", email = "aaaa@gmail.com", name = "William", surname = "Hunt")
+        val expert2 =
+            Expert(id = "bbbb", username = "bbbb", email = "bbbb@gmail.com", name = "Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
         val sector1 = Sector(name = "linux")
@@ -808,10 +951,12 @@ class ExpertAndSectorTests {
     fun sectorsOfExpertGetExpertNotFoundTest() {
         val loginDTO = LoginDTO(username = "client", password = "password") //It is a client
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
 
-        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
-        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
+        val expert1 =
+            Expert(id = "aaaa", username = "aaaa", email = "aaaa@gmail.com", name = "William", surname = "Hunt")
+        val expert2 =
+            Expert(id = "bbbb", username = "bbbb", email = "bbbb@gmail.com", name = "Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
         val sector1 = Sector(name = "linux")
@@ -847,10 +992,12 @@ class ExpertAndSectorTests {
     fun sectorsOfExpertGetExpertSectorsNotFoundTest() {
         val loginDTO = LoginDTO(username = "client", password = "password") //It is a client
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
 
-        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
-        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
+        val expert1 =
+            Expert(id = "aaaa", username = "aaaa", email = "aaaa@gmail.com", name = "William", surname = "Hunt")
+        val expert2 =
+            Expert(id = "bbbb", username = "bbbb", email = "bbbb@gmail.com", name = "Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
         val sector1 = Sector(name = "linux")
@@ -886,9 +1033,10 @@ class ExpertAndSectorTests {
     fun sectorForExpertSetSuccessTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
 
-        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
+        val expert1 =
+            Expert(id = "aaaa", username = "aaaa", email = "aaaa@gmail.com", name = "William", surname = "Hunt")
         expertRepository.save(expert1)
         val sectorDTO = SectorDTO(sectorId = 1, name = "linux")
         val baseUrl = "http://localhost:$port/API/experts/aaaa/sectors"
@@ -912,9 +1060,10 @@ class ExpertAndSectorTests {
     fun sectorForExpertSetUnprocessableEntityTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
 
-        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
+        val expert1 =
+            Expert(id = "aaaa", username = "aaaa", email = "aaaa@gmail.com", name = "William", surname = "Hunt")
         expertRepository.save(expert1)
         val sectorDTO = SectorDTO(sectorId = 1, name = "")
         val baseUrl = "http://localhost:$port/API/experts/aaaa/sectors"
@@ -940,9 +1089,10 @@ class ExpertAndSectorTests {
     fun sectorForExpertSetExpertNotFoundTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
 
-        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
+        val expert1 =
+            Expert(id = "aaaa", username = "aaaa", email = "aaaa@gmail.com", name = "William", surname = "Hunt")
         expertRepository.save(expert1)
         val sectorDTO = SectorDTO(sectorId = 1, name = "cellular network")
         val baseUrl = "http://localhost:$port/API/experts/bbbb/sectors"
@@ -968,9 +1118,10 @@ class ExpertAndSectorTests {
     fun sectorForExpertSetExpertUnauthorizedTest1() {
         val loginDTO = LoginDTO(username = "client", password = "password")
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
 
-        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
+        val expert1 =
+            Expert(id = "aaaa", username = "aaaa", email = "aaaa@gmail.com", name = "William", surname = "Hunt")
         expertRepository.save(expert1)
         val sectorDTO = SectorDTO(sectorId = 1, name = "cellular network")
         val baseUrl = "http://localhost:$port/API/experts/aaaa/sectors"
@@ -992,9 +1143,10 @@ class ExpertAndSectorTests {
     fun sectorForExpertSetExpertUnauthorizedTest2() {
         val loginDTO = LoginDTO(username = "client", password = "password") //it is a client
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
 
-        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
+        val expert1 =
+            Expert(id = "aaaa", username = "aaaa", email = "aaaa@gmail.com", name = "William", surname = "Hunt")
         expertRepository.save(expert1)
         val sectorDTO = SectorDTO(sectorId = 1, name = "cellular network")
         val baseUrl = "http://localhost:$port/API/experts/aaaa/sectors"
@@ -1014,7 +1166,8 @@ class ExpertAndSectorTests {
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorForExpertSetExpertUnauthorizedTest3() {
-        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
+        val expert1 =
+            Expert(id = "aaaa", username = "aaaa", email = "aaaa@gmail.com", name = "William", surname = "Hunt")
         expertRepository.save(expert1)
         val sectorDTO = SectorDTO(sectorId = 1, name = "cellular network")
         val baseUrl = "http://localhost:$port/API/experts/aaaa/sectors"
@@ -1035,10 +1188,12 @@ class ExpertAndSectorTests {
     fun sectorForExpertDeleteSuccessTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
 
-        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
-        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
+        val expert1 =
+            Expert(id = "aaaa", username = "aaaa", email = "aaaa@gmail.com", name = "William", surname = "Hunt")
+        val expert2 =
+            Expert(id = "bbbb", username = "bbbb", email = "bbbb@gmail.com", name = "Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
         val sector1 = Sector(name = "linux")
@@ -1069,10 +1224,12 @@ class ExpertAndSectorTests {
     fun sectorForExpertDeleteExpertNotFoundTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
 
-        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
-        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
+        val expert1 =
+            Expert(id = "aaaa", username = "aaaa", email = "aaaa@gmail.com", name = "William", surname = "Hunt")
+        val expert2 =
+            Expert(id = "bbbb", username = "bbbb", email = "bbbb@gmail.com", name = "Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
         val sector1 = Sector(name = "linux")
@@ -1107,10 +1264,12 @@ class ExpertAndSectorTests {
     fun sectorForExpertDeleteSectorsNotFoundTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
 
-        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
-        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
+        val expert1 =
+            Expert(id = "aaaa", username = "aaaa", email = "aaaa@gmail.com", name = "William", surname = "Hunt")
+        val expert2 =
+            Expert(id = "bbbb", username = "bbbb", email = "bbbb@gmail.com", name = "Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
 
@@ -1137,10 +1296,12 @@ class ExpertAndSectorTests {
     fun sectorForExpertDeleteSectorNotFoundTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
 
-        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
-        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
+        val expert1 =
+            Expert(id = "aaaa", username = "aaaa", email = "aaaa@gmail.com", name = "William", surname = "Hunt")
+        val expert2 =
+            Expert(id = "bbbb", username = "bbbb", email = "bbbb@gmail.com", name = "Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
         val sector1 = Sector(name = "linux")
@@ -1173,10 +1334,12 @@ class ExpertAndSectorTests {
     fun sectorForExpertDeleteExpertSectorsNotFoundTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
 
-        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
-        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
+        val expert1 =
+            Expert(id = "aaaa", username = "aaaa", email = "aaaa@gmail.com", name = "William", surname = "Hunt")
+        val expert2 =
+            Expert(id = "bbbb", username = "bbbb", email = "bbbb@gmail.com", name = "Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
         val sector1 = Sector(name = "linux")
@@ -1209,10 +1372,12 @@ class ExpertAndSectorTests {
     fun sectorForExpertDeleteExpertSectorNotFoundTest() {
         val loginDTO = LoginDTO(username = "manager", password = "password") //it is a manager
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
 
-        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
-        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
+        val expert1 =
+            Expert(id = "aaaa", username = "aaaa", email = "aaaa@gmail.com", name = "William", surname = "Hunt")
+        val expert2 =
+            Expert(id = "bbbb", username = "bbbb", email = "bbbb@gmail.com", name = "Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
         val sector1 = Sector(name = "linux")
@@ -1245,10 +1410,12 @@ class ExpertAndSectorTests {
     fun sectorForExpertDeleteUnauthorizedTest1() {
         val loginDTO = LoginDTO(username = "expert", password = "password") //it is an expert
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
 
-        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
-        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
+        val expert1 =
+            Expert(id = "aaaa", username = "aaaa", email = "aaaa@gmail.com", name = "William", surname = "Hunt")
+        val expert2 =
+            Expert(id = "bbbb", username = "bbbb", email = "bbbb@gmail.com", name = "Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
         val sector1 = Sector(name = "linux")
@@ -1279,10 +1446,12 @@ class ExpertAndSectorTests {
     fun sectorForExpertDeleteUnauthorizedTest2() {
         val loginDTO = LoginDTO(username = "client", password = "password") //it is a client
         val token = authService.login(loginDTO)?.jwtAccessToken
-        Assertions.assertNotEquals(null,token)
+        Assertions.assertNotEquals(null, token)
 
-        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
-        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
+        val expert1 =
+            Expert(id = "aaaa", username = "aaaa", email = "aaaa@gmail.com", name = "William", surname = "Hunt")
+        val expert2 =
+            Expert(id = "bbbb", username = "bbbb", email = "bbbb@gmail.com", name = "Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
         val sector1 = Sector(name = "linux")
@@ -1311,8 +1480,10 @@ class ExpertAndSectorTests {
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     fun sectorForExpertDeleteUnauthorizedTest3() {
-        val expert1 = Expert(id="aaaa",username="aaaa",email="aaaa@gmail.com",name="William", surname = "Hunt")
-        val expert2 = Expert(id="bbbb",username="bbbb",email="bbbb@gmail.com",name="Matthew", surname = "Luck")
+        val expert1 =
+            Expert(id = "aaaa", username = "aaaa", email = "aaaa@gmail.com", name = "William", surname = "Hunt")
+        val expert2 =
+            Expert(id = "bbbb", username = "bbbb", email = "bbbb@gmail.com", name = "Matthew", surname = "Luck")
         expertRepository.save(expert1)
         expertRepository.save(expert2)
         val sector1 = Sector(name = "linux")

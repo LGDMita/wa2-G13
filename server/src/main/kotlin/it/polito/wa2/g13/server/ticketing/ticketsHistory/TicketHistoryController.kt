@@ -15,7 +15,7 @@ class TicketHistoryController(
     private val log = LoggerFactory.getLogger(TicketHistoryController::class.java)
 
     @GetMapping("/API/tickets/{ticket}/history")
-    fun getHistory(@PathVariable ticket: Long): List<TicketHistoryDTO>{
+    fun getHistory(@PathVariable ticket: Long): List<TicketHistoryDTO> {
         log.info("Requiring history of ticket with ticketId: {}", ticket)
         return ticketHistoryService.getHistory(ticket)
     }

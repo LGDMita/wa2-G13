@@ -8,7 +8,7 @@ import jakarta.persistence.*
 import java.util.*
 
 @Entity
-@Table(name= "tickets_history")
+@Table(name = "tickets_history")
 class TicketHistory(
     @ManyToOne
     @JoinColumn(name = "ticketId")
@@ -16,7 +16,8 @@ class TicketHistory(
     var oldStatus: String,
     var newStatus: String,
     var dateTime: Date,
-    setId: Long?=null) : EntityBase<Long>(setId) {
+    setId: Long? = null
+) : EntityBase<Long>(setId) {
 }
 
 fun TicketHistoryDTO.toTicket(ticket: TicketDTO): TicketHistory {

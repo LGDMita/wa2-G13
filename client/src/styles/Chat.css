@@ -19,10 +19,9 @@
     min-height: 2.25rem;
     width: fit-content;
     max-width: 66%;
-    
-    box-shadow: 
-        0 0 2rem rgba(black, 0.075),
-        0rem 1rem 1rem -1rem rgba(black, 0.1);
+
+    box-shadow: 0 0 2rem rgba(black, 0.075),
+    0rem 1rem 1rem -1rem rgba(black, 0.1);
 }
 
 .newmessage-container {
@@ -43,10 +42,9 @@
     border-radius: 1.125rem 1.125rem 1.125rem 0;
     min-height: 2.25rem;
     width: 100%;
-    
-    box-shadow: 
-        0 0 2rem rgba(black, 0.075),
-        0rem 1rem 1rem -1rem rgba(black, 0.1);
+
+    box-shadow: 0 0 2rem rgba(black, 0.075),
+    0rem 1rem 1rem -1rem rgba(black, 0.1);
 }
 
 .newmessage-send {
@@ -72,9 +70,9 @@
 }
 
 .message-box.message-right {
-    margin: 1rem 1rem 1rem auto ;
-	border-radius: 1.125rem 1.125rem 0 1.125rem;
-    background-color:cadetblue;
+    margin: 1rem 1rem 1rem auto;
+    border-radius: 1.125rem 1.125rem 0 1.125rem;
+    background-color: cadetblue;
 }
 
 .message-box.message-right.message-header {

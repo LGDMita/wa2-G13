@@ -9,7 +9,7 @@ import java.util.*
 @Repository
 interface TicketRepository : JpaRepository<Ticket, Long> {
 
-   @Query(
+    @Query(
         "Select t from Ticket t where (:ean is null or t.product.ean=:ean) " +
                 "and (:profileId is null or t.profile.id=:profileId) " +
                 "and (:priorityLevel is null or t.priorityLevel=:priorityLevel) " +

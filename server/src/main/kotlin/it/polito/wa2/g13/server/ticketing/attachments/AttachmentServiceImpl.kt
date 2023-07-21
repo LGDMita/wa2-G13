@@ -9,7 +9,12 @@ class AttachmentServiceImpl(
     private val attachmentRepository: AttachmentRepository
 ) : AttachmentService {
 
-    override fun createAttachment(attachment: MultipartFile) : Attachment {
-        return Attachment(size=attachment.size, type = attachment.contentType!!, dataBin = attachment.bytes, datetime = Date())
+    override fun createAttachment(attachment: MultipartFile): Attachment {
+        return Attachment(
+            size = attachment.size,
+            type = attachment.contentType!!,
+            dataBin = attachment.bytes,
+            datetime = Date()
+        )
     }
 }

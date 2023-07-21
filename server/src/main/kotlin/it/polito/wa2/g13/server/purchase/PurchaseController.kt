@@ -21,7 +21,8 @@ class PurchaseController(
     private val jwtAuthConverter: JwtAuthConverter
 ) {
     @GetMapping("/API/customer/purchases")
-    fun getPurchasesOf():List<PurchaseWithWarrantyDTO>{
+    fun getPurchasesOf(): List<PurchaseWithWarrantyDTO> {
+        println("Qui ci sono")
         return purchaseService.getPurchasesOf(SecurityContextHolder.getContext().authentication.name)
     }
 }

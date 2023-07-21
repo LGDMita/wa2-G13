@@ -5,12 +5,12 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface SectorRepository  : JpaRepository<Sector, Long> {
+interface SectorRepository : JpaRepository<Sector, Long> {
 
-    fun findSectorsByExperts(expert: Expert) :List<Sector>
+    fun findSectorsByExperts(expert: Expert): List<Sector>
 
-    fun existsByName(name: String) : Boolean
+    fun existsByName(name: String): Boolean
 
-    fun findByName(name: String) : Sector
+    fun findByName(name: String): Sector
 
 }

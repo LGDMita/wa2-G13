@@ -6,7 +6,7 @@ import org.springframework.validation.BindingResult
 
 @Service
 interface TicketService {
-    fun ticketExist(id: Long) : Boolean
+    fun ticketExist(id: Long): Boolean
 
     fun getTickets(): List<Ticket>
 

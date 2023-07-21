@@ -9,11 +9,10 @@ function SingleProfile() {
         try {
             if (email !== "") {
                 const profile = await API.getUserInfo(email);
-                if (profile.email!== undefined) {
+                if (profile.email !== undefined) {
                     alert(`User with email ${email} found!\nName: ${profile.name}\nSurname: ${profile.surname}`);
                 }
-            }
-            else {
+            } else {
                 alert(`Please, insert email before continue!`);
             }
         } catch (error) {

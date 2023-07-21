@@ -17,18 +17,18 @@ import org.springframework.web.bind.annotation.RestController
 @Validated
 class ProductController(
     private val productService: ProductService
-){
+) {
 
     private val log = LoggerFactory.getLogger(ProductController::class.java)
 
     @GetMapping("/API/products/")
-    fun getAll(): List<ProductDTO>{
+    fun getAll(): List<ProductDTO> {
         log.info("All products listed")
         return productService.getAll()
     }
 
     @GetMapping("/API/products/{ean}")
-    fun getProduct(@PathVariable @NotNull @NotBlank @Size(min=13, max=13) ean: String): ProductDTO? {
+    fun getProduct(@PathVariable @NotNull @NotBlank @Size(min = 13, max = 13) ean: String): ProductDTO? {
         log.info("Product searched with ean: {}", ean)
         return productService.getProduct(ean) ?: throw ProductNotFoundException()
     }

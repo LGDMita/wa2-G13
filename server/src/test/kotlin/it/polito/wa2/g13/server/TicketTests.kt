@@ -12,6 +12,7 @@ import it.polito.wa2.g13.server.purchase.Purchase
 import it.polito.wa2.g13.server.purchase.PurchaseRepository
 import it.polito.wa2.g13.server.ticketing.experts.Expert
 import it.polito.wa2.g13.server.ticketing.experts.ExpertRepository
+import it.polito.wa2.g13.server.ticketing.sectors.Sector
 import it.polito.wa2.g13.server.ticketing.tickets.*
 import it.polito.wa2.g13.server.warranty.Warranty
 import it.polito.wa2.g13.server.warranty.WarrantyRepository
@@ -109,10 +110,12 @@ class TicketTests {
         val baseUrl = "http://localhost:$port/API/tickets"
         val uri = URI(baseUrl)
         val myProfile = quickProfile()
+        val mySector = Sector("Informatics")
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
-            "JMT"
+            "JMT",
+            mySector
         )
         val myExpert = quickExpert()
         val myTicket = Ticket(
@@ -130,8 +133,8 @@ class TicketTests {
         ticketRepository.save(myTicket)
         ticketRepository.save(myTicket2)
 
-        val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO)?.jwtAccessToken
+        val loginDTO = LoginDTO(username = "expert", password = "password")
+        val token = authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
         if (token != null) {
             headers.setBearerAuth(token)
@@ -160,10 +163,12 @@ class TicketTests {
         val baseUrl = "http://localhost:$port/API/tickets"
         val uri = URI(baseUrl)
         val myProfile = quickProfile()
+        val mySector = Sector("Informatics")
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
-            "JMT"
+            "JMT",
+            mySector
         )
         val myExpert = quickExpert()
         val myTicket = Ticket(
@@ -201,10 +206,12 @@ class TicketTests {
         val baseUrl = "http://localhost:$port/API/tickets/2"
         val uri = URI(baseUrl)
         val myProfile = quickProfile()
+        val mySector = Sector("Informatics")
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
-            "JMT"
+            "JMT",
+            mySector
         )
         val myExpert = quickExpert()
         val myTicket = Ticket(
@@ -222,8 +229,8 @@ class TicketTests {
         ticketRepository.save(myTicket)
         ticketRepository.save(myTicket2)
 
-        val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO)?.jwtAccessToken
+        val loginDTO = LoginDTO(username = "expert", password = "password")
+        val token = authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
         if (token != null) {
             headers.setBearerAuth(token)
@@ -252,10 +259,12 @@ class TicketTests {
         val baseUrl = "http://localhost:$port/API/tickets/5"
         val uri = URI(baseUrl)
         val myProfile = quickProfile()
+        val mySector = Sector("Informatics")
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
-            "JMT"
+            "JMT",
+            mySector
         )
         val myExpert = quickExpert()
         val myTicket = Ticket(
@@ -273,8 +282,8 @@ class TicketTests {
         ticketRepository.save(myTicket)
         ticketRepository.save(myTicket2)
 
-        val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO)?.jwtAccessToken
+        val loginDTO = LoginDTO(username = "expert", password = "password")
+        val token = authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
         if (token != null) {
             headers.setBearerAuth(token)
@@ -299,10 +308,12 @@ class TicketTests {
             "http://localhost:$port/API/tickets/?ean=4935531465706&profileId=luigimolinengo@gmail.com&priorityLevel=2"
         val uri = URI(baseUrl)
         val myProfile = quickProfile()
+        val mySector = Sector("Informatics")
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
-            "JMT"
+            "JMT",
+            mySector
         )
         val myExpert = quickExpert()
         val myTicket = Ticket(
@@ -320,8 +331,8 @@ class TicketTests {
         ticketRepository.save(myTicket)
         ticketRepository.save(myTicket2)
 
-        val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO)?.jwtAccessToken
+        val loginDTO = LoginDTO(username = "expert", password = "password")
+        val token = authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
         if (token != null) {
             headers.setBearerAuth(token)
@@ -351,10 +362,12 @@ class TicketTests {
             "http://localhost:$port/API/tickets/?ean=4935531465706&profileId=luigimolinengo@gmail.com&priorityLevel=5"
         val uri = URI(baseUrl)
         val myProfile = quickProfile()
+        val mySector = Sector("Informatics")
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
-            "JMT"
+            "JMT",
+            mySector
         )
         val myExpert = quickExpert()
         val myTicket = Ticket(
@@ -372,8 +385,8 @@ class TicketTests {
         ticketRepository.save(myTicket)
         ticketRepository.save(myTicket2)
 
-        val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO)?.jwtAccessToken
+        val loginDTO = LoginDTO(username = "expert", password = "password")
+        val token = authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
         if (token != null) {
             headers.setBearerAuth(token)
@@ -397,8 +410,8 @@ class TicketTests {
         val baseUrl = "http://localhost:$port/API/tickets/"
         val uri = URI(baseUrl)
 
-        val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO)?.jwtAccessToken
+        val loginDTO = LoginDTO(username = "expert", password = "password")
+        val token = authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
         if (token != null) {
             headers.setBearerAuth(token)
@@ -420,12 +433,13 @@ class TicketTests {
     fun t7TestEditTicket() {
         val baseUrl = "http://localhost:$port/API/ticket/"
         val uri = URI(baseUrl)
-
+        val mySector = Sector("Informatics")
         val myProfile = quickProfile()
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
-            "JMT"
+            "JMT",
+            mySector
         )
         val myExpert = quickExpert()
         val myTicket = Ticket(
@@ -439,8 +453,8 @@ class TicketTests {
         ticketRepository.save(myTicket)
 
         myTicket.status = "closed"
-        val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO)?.jwtAccessToken
+        val loginDTO = LoginDTO(username = "expert", password = "password")
+        val token = authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
         if (token != null) {
             headers.setBearerAuth(token)
@@ -464,10 +478,12 @@ class TicketTests {
         val baseUrl = "http://localhost:$port/API/ticket/"
         val uri = URI(baseUrl)
         val myProfile = quickProfile()
+        val mySector = Sector("Informatics")
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
-            "JMT"
+            "JMT",
+            mySector
         )
         val myExpert = quickExpert()
         val myTicket = Ticket(
@@ -483,8 +499,8 @@ class TicketTests {
         val t = myTicket.toDTO()
         t.ticketId = 5000
 
-        val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO)?.jwtAccessToken
+        val loginDTO = LoginDTO(username = "expert", password = "password")
+        val token = authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
         if (token != null) {
             headers.setBearerAuth(token)
@@ -507,11 +523,13 @@ class TicketTests {
         val baseUrl = "http://localhost:$port/API/ticket/"
         val uri = URI(baseUrl)
 
+        val mySector = Sector("Informatics")
         val myProfile = quickProfile()
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
-            "JMT"
+            "JMT",
+            mySector
         )
         val myExpert = quickExpert()
         val myTicket = Ticket(
@@ -526,8 +544,8 @@ class TicketTests {
 
         myTicket.status = "aa"
 
-        val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO)?.jwtAccessToken
+        val loginDTO = LoginDTO(username = "expert", password = "password")
+        val token = authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
         if (token != null) {
             headers.setBearerAuth(token)
@@ -550,11 +568,13 @@ class TicketTests {
         val baseUrl = "http://localhost:$port/API/ticket/"
         val uri = URI(baseUrl)
 
+        val mySector = Sector("Informatics")
         val myProfile = quickProfile()
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
-            "JMT"
+            "JMT",
+            mySector
         )
         val myExpert = quickExpert()
         val myTicket = Ticket(
@@ -569,8 +589,8 @@ class TicketTests {
 
         myTicket.priorityLevel = 10
 
-        val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO)?.jwtAccessToken
+        val loginDTO = LoginDTO(username = "expert", password = "password")
+        val token = authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
         if (token != null) {
             headers.setBearerAuth(token)
@@ -594,10 +614,12 @@ class TicketTests {
             "http://localhost:$port/API/tickets/?ean=4935531465706&profileId=luigimolinengo&priorityLevel=2"
         val uri = URI(baseUrl)
         val myProfile = quickProfile()
+        val mySector = Sector("Informatics")
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
-            "JMT"
+            "JMT",
+            mySector
         )
         val myExpert = quickExpert()
         val myTicket = Ticket(
@@ -615,8 +637,8 @@ class TicketTests {
         ticketRepository.save(myTicket)
         ticketRepository.save(myTicket2)
 
-        val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO)?.jwtAccessToken
+        val loginDTO = LoginDTO(username = "expert", password = "password")
+        val token = authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
         if (token != null) {
             headers.setBearerAuth(token)
@@ -641,10 +663,12 @@ class TicketTests {
             "http://localhost:$port/API/tickets/?ean=4935531465706&profileId=luigimolinengo@gmail.com&priorityLevel=2&status=aaa"
         val uri = URI(baseUrl)
         val myProfile = quickProfile()
+        val mySector = Sector("Informatics")
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
-            "JMT"
+            "JMT",
+            mySector
         )
         val myExpert = quickExpert()
         val myTicket = Ticket(
@@ -662,8 +686,8 @@ class TicketTests {
         ticketRepository.save(myTicket)
         ticketRepository.save(myTicket2)
 
-        val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO)?.jwtAccessToken
+        val loginDTO = LoginDTO(username = "expert", password = "password")
+        val token = authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
         if (token != null) {
             headers.setBearerAuth(token)
@@ -690,7 +714,7 @@ class TicketTests {
         expectedStatus: HttpStatus,
         expectedErrorMessage: String = ""
     ) {
-        val myProduct=Product(ean = "0000000000000", name= "name", brand="brand")
+        val myProduct = Product(ean = "0000000000000", name = "name", brand = "brand", sector = Sector("Informatics"))
         val profile = Profile(
             id = "id",
             username = "username",
@@ -700,27 +724,31 @@ class TicketTests {
         )
         productRepository.save(myProduct)
         profileRepository.save(profile)
-        expertRepository.save(Expert(
-            id = "id",
-            username = "username",
-            email = "expert@email.com",
-            name = "super",
-            surname = "expert")
+        expertRepository.save(
+            Expert(
+                id = "id",
+                username = "username",
+                email = "expert@email.com",
+                name = "super",
+                surname = "expert"
+            )
         )
-        ticketRepository.save(Ticket(
-            creationDate = Date(),
-            expert = null,
-            priorityLevel = null,
-            product = myProduct,
-            profile = profile,
-            status = "open"
-        ))
+        ticketRepository.save(
+            Ticket(
+                creationDate = Date(),
+                expert = null,
+                priorityLevel = null,
+                product = myProduct,
+                profile = profile,
+                status = "open"
+            )
+        )
 
         val baseUrl = "http://localhost:$port/API/tickets/$ticketId/$operationUrl"
         val uri = URI(baseUrl)
 
-        val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO)?.jwtAccessToken
+        val loginDTO = LoginDTO(username = "expert", password = "password")
+        val token = authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
         if (token != null) {
             headers.setBearerAuth(token)
@@ -731,7 +759,7 @@ class TicketTests {
 
         //Verify request succeed
         Assertions.assertEquals(expectedStatus, result.statusCode)
-        if(expectedErrorMessage != "")
+        if (expectedErrorMessage != "")
             Assertions.assertEquals(expectedErrorMessage, JSONObject(result.body).get("detail"))
     }
 
@@ -768,9 +796,9 @@ class TicketTests {
         expectedStatus: HttpStatus,
         expectedErrorMessage: String = ""
     ) {
-        val myProduct=Product(ean = "0000000000000", name= "name", brand="brand")
+        val myProduct = Product(ean = "0000000000000", name = "name", brand = "brand", sector = Sector("Informatics"))
         productRepository.save(myProduct)
-        val myProfile=Profile(
+        val myProfile = Profile(
             id = "id",
             username = "username",
             email = "this@exists.com",
@@ -778,16 +806,16 @@ class TicketTests {
             surname = "exists"
         )
         profileRepository.save(myProfile)
-        val myPurchase = Purchase(myProduct,myProfile,Date(),1)
+        val myPurchase = Purchase(myProduct, myProfile, Date(), 1)
         purchaseRepository.save(myPurchase)
-        val myWarranty = Warranty(myPurchase,Date(),Date(2999,12,1),"type",1)
+        val myWarranty = Warranty(myPurchase, Date(), Date(2999, 12, 1), "type", 1)
         warrantyRepository.save(myWarranty)
         val uri = URI(baseUrl)
 
-        val ticketPost = TicketPostDTO(profileId, ean)
+        val ticketPost = TicketPostDTO(ean)
 
-        val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO)?.jwtAccessToken
+        val loginDTO = LoginDTO(username = "expert", password = "password")
+        val token = authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
         if (token != null) {
             headers.setBearerAuth(token)
@@ -798,7 +826,7 @@ class TicketTests {
 
         //Verify request succeed
         Assertions.assertEquals(expectedStatus, result.statusCode)
-        if(expectedErrorMessage != "")
+        if (expectedErrorMessage != "")
             Assertions.assertEquals(expectedErrorMessage, JSONObject(result.body).get("detail"))
     }
 

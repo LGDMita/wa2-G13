@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface TicketHistoryRepository : JpaRepository<TicketHistory, Long> {
-    fun findByTicketOrderByDateTime(ticket: Ticket) : List<TicketHistory>
+    fun findByTicketOrderByDateTime(ticket: Ticket): List<TicketHistory>
 }

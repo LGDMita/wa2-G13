@@ -5,17 +5,19 @@ import org.springframework.data.util.ProxyUtils
 import java.io.Serializable
 
 @MappedSuperclass
-abstract class EntityBase<T: Serializable> (setId:T?=null) {
+abstract class EntityBase<T : Serializable>(setId: T? = null) {
     companion object {
         private const val serialVersionUID = -43869754L
     }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private var id:T? = setId
+    private var id: T? = setId
     fun getId(): T? = id
     override fun toString(): String {
         return "@Entity ${this.javaClass.name}(id=$id)"
     }
+
     override fun equals(other: Any?): Boolean {
         if (other == null) return false
         if (other === this) return true
@@ -25,6 +27,7 @@ abstract class EntityBase<T: Serializable> (setId:T?=null) {
         return if (null == id) false
         else this.id == other.id
     }
+
     override fun hashCode(): Int {
         return 31 //any value will do
     }

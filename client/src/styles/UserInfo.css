@@ -23,11 +23,12 @@
     margin-top: 0.1em;
     margin-bottom: 1.5em;
 }
-.open-menu-button{
-    border: none ;
+
+.open-menu-button {
+    border: none;
 }
 
-.button-icon{
+.button-icon {
     font-size: 2em;
     margin-bottom: 0.05em;
 }

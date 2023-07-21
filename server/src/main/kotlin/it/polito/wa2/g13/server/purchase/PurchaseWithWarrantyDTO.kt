@@ -8,13 +8,13 @@ import it.polito.wa2.g13.server.warranty.toDTO
 import java.util.*
 
 data class PurchaseWithWarrantyDTO(
-    val purchaseId: Long?=null,
+    val purchaseId: Long? = null,
     val product: ProductDTO,
-    val profileId: String?=null,
+    val profileId: String? = null,
     val datetime: Date,
     val warranty: WarrantyDTO?,
 )
 
-fun Purchase.toPWWDTO(warranty: Warranty?): PurchaseWithWarrantyDTO{
-    return PurchaseWithWarrantyDTO(getId(), product.toDTO(), profile?.id, datetime,warranty?.toDTO())
+fun Purchase.toPWWDTO(warranty: Warranty?): PurchaseWithWarrantyDTO {
+    return PurchaseWithWarrantyDTO(getId(), product.toDTO(), profile?.id, datetime, warranty?.toDTO())
 }

@@ -22,7 +22,7 @@ class TicketServiceImpl(
     private val productRepository: ProductRepository,
     private val ticketHistoryRepository: TicketHistoryRepository
 ) : TicketService {
-    override fun ticketExist(id: Long) : Boolean {
+    override fun ticketExist(id: Long): Boolean {
         return ticketRepository.existsById(id)
     }
 
@@ -52,8 +52,17 @@ class TicketServiceImpl(
         creationDateStart: Date?,
         creationDateStop: Date?
     ): List<TicketDTO> {
-        return ticketRepository.getFilteredTickets(ean, profileId, priorityLevel, expertId, status, creationDateStart, creationDateStop).map { t -> t.toDTO() }
+        return ticketRepository.getFilteredTickets(
+            ean,
+            profileId,
+            priorityLevel,
+            expertId,
+            status,
+            creationDateStart,
+            creationDateStop
+        ).map { t -> t.toDTO() }
     }
+
     override fun createTicket(ticketPostDTO: TicketPostDTO, username: String, br: BindingResult): TicketDTO? {
 
         // If the email contained in the request doesn't exist throws exception
@@ -63,29 +72,34 @@ class TicketServiceImpl(
         val product = productRepository.findByIdOrNull(ticketPostDTO.ean) ?: throw ProductNotFoundException()
 
         // If warranty not present can't open ticket
-        if(!product.purchases.filter { it.profile==profile && it.warranty!=null }.any { it.warranty?.datetimeExpire?.after(Date()) == true }) throw WarrantyNotBoughtException()
+        if (!product.purchases.filter { it.profile == profile && it.warranty != null }
+                .any { it.warranty?.datetimeExpire?.after(Date()) == true }) throw WarrantyNotBoughtException()
 
         // Contains the current date and time, that will be associated to the ticket
         val date = Date()
 
         // Saves the ticket in the repository
-        val ticket = ticketRepository.save(Ticket(
-            profile = profile,
-            product = product,
-            priorityLevel = null,
-            expert = null,
-            status = "open",
-            creationDate = date,
-            messages = mutableSetOf(),
-        ))
+        val ticket = ticketRepository.save(
+            Ticket(
+                profile = profile,
+                product = product,
+                priorityLevel = null,
+                expert = null,
+                status = "open",
+                creationDate = date,
+                messages = mutableSetOf(),
+            )
+        )
 
         // Saves the ticket state change in the repository. This is not a real state change, both old and new status are "open", but it's useful to have it for debugging reasons
-        ticketHistoryRepository.save(TicketHistory(
-            ticket = ticket,
-            oldStatus = ticket.status,
-            newStatus = "open",
-            dateTime = date
-        ))
+        ticketHistoryRepository.save(
+            TicketHistory(
+                ticket = ticket,
+                oldStatus = ticket.status,
+                newStatus = "open",
+                dateTime = date
+            )
+        )
 
         return ticket.toDTO()
 
@@ -100,24 +114,26 @@ class TicketServiceImpl(
         val oldStatus = ticket.status
 
         // If the ticket is already in the state contained in the request, just return true
-        if(oldStatus == newStatus)
+        if (oldStatus == newStatus)
             return true
 
         // If the state change is not allowed throws an exception
-        if(!stateChangeChecker(oldStatus, newStatus, role.toString()))
-                throw StateChangeNotAllowedException()
+        if (!stateChangeChecker(oldStatus, newStatus, role.toString()))
+            throw StateChangeNotAllowedException()
 
         // Updates the ticket with the new state and saves it
         ticket.status = newStatus
         val updatedTicket = ticketRepository.save(ticket)
 
         // Saves the state change in the repository
-        ticketHistoryRepository.save(TicketHistory(
-            ticket = updatedTicket,
-            oldStatus = oldStatus,
-            newStatus = newStatus,
-            dateTime = Date()
-        ))
+        ticketHistoryRepository.save(
+            TicketHistory(
+                ticket = updatedTicket,
+                oldStatus = oldStatus,
+                newStatus = newStatus,
+                dateTime = Date()
+            )
+        )
 
         return true
     }
@@ -128,7 +144,7 @@ class TicketServiceImpl(
         val ticket = ticketRepository.findByIdOrNull(ticketId) ?: throw TicketNotFoundException()
 
         // If the ticket has already the priority level contained in the request, just return true
-        if(ticket.priorityLevel == priorityLevel)
+        if (ticket.priorityLevel == priorityLevel)
             return true
 
         // Updates the ticket with the new priority level and saves it
@@ -147,7 +163,7 @@ class TicketServiceImpl(
         val expert = expertRepository.findByIdOrNull((expertId)) ?: throw ExpertNotFoundException()
 
         // If the ticket is already managed by the expert whose id is contained in the request, just return true
-        if(ticket.expert?.id == expertId)
+        if (ticket.expert?.id == expertId)
             return true
 
         // Updates the ticket with the new priority level and saves it.

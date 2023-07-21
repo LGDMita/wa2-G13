@@ -19,14 +19,15 @@ class MessageServiceImpl(
 ) : MessageService {
 
     override fun getMessages(ticketId: Long): List<MessageDTO> {
-        val ticket= ticketRepository.findByIdOrNull(ticketId) ?: throw TicketNotFoundException()
+        val ticket = ticketRepository.findByIdOrNull(ticketId) ?: throw TicketNotFoundException()
         return messageRepository.findByTicket(ticket).map { it.toDTO() }
     }
+
     @Transactional
-    override fun sendMessage(fromUser: Boolean,text: String, atts: List<MultipartFile>,ticketId: Long): Long? {
-        val ticket= ticketRepository.findByIdOrNull(ticketId) ?: throw TicketNotFoundException()
-        val attachments=atts.map{a : MultipartFile -> attachmentService.createAttachment(a)}.toMutableSet()
-        val message=Message(fromUser= fromUser, text = text, datetime = Date(), attachments = attachments)
+    override fun sendMessage(fromUser: Boolean, text: String, atts: List<MultipartFile>, ticketId: Long): Long? {
+        val ticket = ticketRepository.findByIdOrNull(ticketId) ?: throw TicketNotFoundException()
+        val attachments = atts.map { a: MultipartFile -> attachmentService.createAttachment(a) }.toMutableSet()
+        val message = Message(fromUser = fromUser, text = text, datetime = Date(), attachments = attachments)
         ticket.addMessage(message)
         messageRepository.save(message)
         return message.getId()

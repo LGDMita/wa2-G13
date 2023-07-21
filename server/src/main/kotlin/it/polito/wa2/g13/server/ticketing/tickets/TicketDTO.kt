@@ -25,8 +25,8 @@ data class TicketDTO(
     var priorityLevel: Int?,
     @Valid
     var expert: ExpertDTO?,
-    @field:Size(min=1, max=15, message = "Status MUST be a NON empty string of max 15 chars")
-    @field:NotBlank(message="Status can NOT be blank")
+    @field:Size(min = 1, max = 15, message = "Status MUST be a NON empty string of max 15 chars")
+    @field:NotBlank(message = "Status can NOT be blank")
     @field:Pattern(regexp = "(open|closed|resolved|in_progress|reopened)")
     var status: String,
     @field:NotNull
@@ -41,5 +41,6 @@ data class TicketDTO(
 
 fun Ticket.toDTO(): TicketDTO {
     return TicketDTO(getId(), profile.toDTO(), product.toDTO(), priorityLevel, expert?.toDTO(), status, creationDate,
-        messages.map { m -> m.toDTO() }.toMutableSet())
+        messages.map { m -> m.toDTO() }.toMutableSet()
+    )
 }

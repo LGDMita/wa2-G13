@@ -68,14 +68,20 @@ const getTicket = async (id) => {
 };
 
 const getExpertsBySector = async (sector) => {
-    const response = await apiInstance.get(`/API/experts/?sectorName=${sector}`);
-    const rows = response.data;
-    if (response.status === 200) {
-        return rows.map(row => {
-            return new Expert(row.id, row.username, row.email, row.name, row.surname);
-        });
-    } else {
-        throw new Error(rows.detail);
+    try {
+        const response = await apiInstance.get(`/API/experts/?sectorName=${sector}`);
+        const rows = response.data;
+        if (response.status === 200) {
+            return rows.map(row => {
+                return new Expert(row.id, row.username, row.email, row.name, row.surname);
+            });
+        } else {
+            console.log(rows)
+            throw new Error(rows.detail);
+        }
+    }
+    catch (error) {
+        console.log(error)
     }
 };
 
@@ -132,18 +138,18 @@ const getManagerInfo = async (id) => {
 };
 
 const signup = async (registrationData) => {
-    try{
+    try {
         await apiInstance.post('/API/signup', registrationData);
-    }catch (error) {
+    } catch (error) {
         console.error('Error during signup:', error);
         throw new Error(error.response.status)
     }
 };
 
 const createExpert = async (registrationData) => {
-    try{
+    try {
         await apiInstance.post('/API/createExpert', registrationData);
-    }catch (error) {
+    } catch (error) {
         console.error('Error during signup:', error);
         throw new Error(error.response.status)
     }
@@ -174,7 +180,7 @@ const modifyManager = async (id, manager) => {
 };
 
 const changeStatus = async (ticketId, status) => {
-    const response = await apiInstance.put(`/API/tickets/${ticketId}/changeStatus`, {'status': status});
+    const response = await apiInstance.put(`/API/tickets/${ticketId}/changeStatus`, { 'status': status });
     if (response.status !== 200) {
         const row = response.data;
         throw new Error(`${response.status} - ${row.detail}`);
@@ -182,7 +188,7 @@ const changeStatus = async (ticketId, status) => {
 };
 
 const changePriorityLevel = async (ticketId, priorityLevel) => {
-    const response = await apiInstance.put(`/API/tickets/${ticketId}/changePriority`, {'priorityLevel': priorityLevel});
+    const response = await apiInstance.put(`/API/tickets/${ticketId}/changePriority`, { 'priorityLevel': priorityLevel });
     if (response.status !== 200) {
         const row = response.data;
         throw new Error(`${response.status} - ${row.detail}`);
@@ -190,7 +196,7 @@ const changePriorityLevel = async (ticketId, priorityLevel) => {
 };
 
 const changeExpert = async (ticketId, expertId) => {
-    const response = await apiInstance.put(`/API/tickets/${ticketId}/changeExpert`, {'expertId': expertId});
+    const response = await apiInstance.put(`/API/tickets/${ticketId}/changeExpert`, { 'expertId': expertId });
     if (response.status !== 200) {
         const row = response.data;
         throw new Error(`${response.status} - ${row.detail}`);
@@ -211,7 +217,7 @@ const login = async (username, password, setUser) => {
         tokenManager.setAuthToken(token);
 
         // Effettua ulteriori operazioni dopo il login, come la navigazione alla pagina successiva
-        const user= tokenManager.getUser();
+        const user = tokenManager.getUser();
         //console.log("User is "+JSON.stringify(user));
         tokenManager.storeUser(user);
         setUser(user);
@@ -226,37 +232,37 @@ const logout = async () => {
 };
 
 
-const sendMessage=async (ticketId,fromUser,text,files) => {
-    const data=new FormData();
-    data.append("fromUser",fromUser);
-    data.append("text",text);
-    files.forEach(f=>data.append("attachments",f.file));
-    const res=await apiInstance.postForm("/API/tickets/"+ticketId+"/messages",data)
+const sendMessage = async (ticketId, fromUser, text, files) => {
+    const data = new FormData();
+    data.append("fromUser", fromUser);
+    data.append("text", text);
+    files.forEach(f => data.append("attachments", f.file));
+    const res = await apiInstance.postForm("/API/tickets/" + ticketId + "/messages", data)
     /*{
         fromUser:fromUser,
         text:text,
         attachments:files.map(f=>f.file)
     });*/
-    console.log("Sent message, status ",res.status);
-    if(res.status!==200){
-        const ret=await res.data;
-        console.log("Sent message ret ",ret);
-        throw new Error({status:res.status,detail:ret});
+    console.log("Sent message, status ", res.status);
+    if (res.status !== 200) {
+        const ret = await res.data;
+        console.log("Sent message ret ", ret);
+        throw new Error({ status: res.status, detail: ret });
     }
 }
 
-const getMessages=async ticketId => {
-    const res=await apiInstance.get("/API/tickets/"+ticketId+"/messages");
-    const ret=await res.data;
-    console.log("Messages ",ret," status ",res.status);
-    if(res.status!==200) throw new Error({status:res.status,detail:ret});
+const getMessages = async ticketId => {
+    const res = await apiInstance.get("/API/tickets/" + ticketId + "/messages");
+    const ret = await res.data;
+    console.log("Messages ", ret, " status ", res.status);
+    if (res.status !== 200) throw new Error({ status: res.status, detail: ret });
     else return ret;
 }
 
 const getTicketsOf = async (id, role) => {
     const queryParams = new URLSearchParams('?');
-    let queryRole="profile";
-    /*switch (role) {
+    let queryRole = "profile";
+    switch (role) {
         case 'customer':
             break;
         case 'expert':
@@ -267,57 +273,62 @@ const getTicketsOf = async (id, role) => {
             break;
         default:
             break;
-    }*/
-    queryParams.append(queryRole+"Id",id);
-    const url="/API/tickets/?"+queryParams.toString();
-    const res=await apiInstance.get(url);
-    const ret=await res.data;
+    }
+    queryParams.append(queryRole + "Id", id);
+    const url = "/API/tickets/?" + queryParams.toString();
+    const res = await apiInstance.get(url);
+    const ret = await res.data;
     //console.log("Tickets of status ",res.status,", details ",ret);
-    if(res.status!==200) throw new Error({status:res.status,detail:ret});
-    else return ret.map(row=>new Ticket(row.ticketId, row.profile, row.product, row.priorityLevel, row.expert, row.status, row.creationDate, row.messages));
+    if (res.status !== 200) throw new Error({ status: res.status, detail: ret });
+    else return ret.map(row => new Ticket(row.ticketId, row.profile, row.product, row.priorityLevel, row.expert, row.status, row.creationDate, row.messages));
 }
 
-const getTicketsOfCustomerOfPurchase=async (customerId,productEan) => {
+const getTicketsOfCustomerOfPurchase = async (customerId, productEan) => {
     const queryParams = new URLSearchParams('?');
-    queryParams.append("profileId",customerId);
-    queryParams.append("ean",productEan);
-    const url="/API/tickets/?"+queryParams.toString();
-    const res=await apiInstance.get(url);
-    const ret=await res.data;
-    console.log("Url ",url," Tickets purchase status ",res.status,", details ",ret);
-    if(res.status!==200) throw new Error({status:res.status,detail:ret});
-    else return ret.map(row=>new Ticket(row.ticketId, row.profile, row.product, row.priorityLevel, row.expert, row.status, row.creationDate, row.messages));
+    queryParams.append("profileId", customerId);
+    queryParams.append("ean", productEan);
+    const url = "/API/tickets/?" + queryParams.toString();
+    const res = await apiInstance.get(url);
+    const ret = await res.data;
+    console.log("Url ", url, " Tickets purchase status ", res.status, ", details ", ret);
+    if (res.status !== 200) throw new Error({ status: res.status, detail: ret });
+    else return ret.map(row => new Ticket(row.ticketId, row.profile, row.product, row.priorityLevel, row.expert, row.status, row.creationDate, row.messages));
 }
 
-const newTicket=async (email,ean)=>{
-    const res=await apiInstance.post("/API/tickets",{ean:ean});
-    const ret=await res.data;
-    console.log("New ticket status ",res.status,", details ",ret);
-    if(res.status!==201)    throw new Error({status:res.status,detail:ret});
+const newTicket = async (ean) => {
+    const res = await apiInstance.post("/API/tickets", { ean: ean });
+    const ret = await res.data;
+    console.log("New ticket status ", res.status, ", details ", ret);
+    if (res.status !== 201) throw new Error({ status: res.status, detail: ret });
     else return ret;
 }
 
-const getPurchasesOf=async ()=>{
-    const res=await apiInstance.get("/API/customer/purchases");
-    const ret=await res.data;
-    //console.log("Ret ",ret);
-    if(res.status!==200) throw new Error({status:res.status,detail:ret});
-    else return ret;
+const getPurchasesOf = async () => {
+    try {
+        const res = await apiInstance.get("/API/customer/purchases");
+        const ret = await res.data;
+        if (res.status !== 200)
+            throw new Error({ status: res.status, detail: ret });
+        else return ret;
+    } catch (error) {
+        console.error('Error during fetching:', error);
+        throw new Error(error.response.status)
+    }
 }
 
-const changeTicketStatus = async (ticketId,newStatus) => {
-    const res=await apiInstance.put("/API/tickets/"+ticketId+"/changeStatus",{status:newStatus});
-    if(res.status!==200){
-        const ret=await res.data;
-        throw new Error({status:res.status,detail:ret});
+const changeTicketStatus = async (ticketId, newStatus) => {
+    const res = await apiInstance.put("/API/tickets/" + ticketId + "/changeStatus", { status: newStatus });
+    if (res.status !== 200) {
+        const ret = await res.data;
+        throw new Error({ status: res.status, detail: ret });
     }
 }
 
 const getTicketHistory = async ticketId => {
-    const res= await apiInstance.get("/API/tickets/"+ticketId+"/history");
-    const ret= await res.data;
-    console.log("History returned status "+res.status," and ret ",ret);
-    if(res.status!==200) throw new Error({status:res.status,detail:ret});
+    const res = await apiInstance.get("/API/tickets/" + ticketId + "/history");
+    const ret = await res.data;
+    console.log("History returned status " + res.status, " and ret ", ret);
+    if (res.status !== 200) throw new Error({ status: res.status, detail: ret });
     return ret;
 }
 

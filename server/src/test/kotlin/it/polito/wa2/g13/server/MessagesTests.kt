@@ -15,6 +15,7 @@ import it.polito.wa2.g13.server.ticketing.experts.ExpertRepository
 import it.polito.wa2.g13.server.ticketing.messages.Message
 import it.polito.wa2.g13.server.ticketing.messages.MessageDTO
 import it.polito.wa2.g13.server.ticketing.messages.MessageRepository
+import it.polito.wa2.g13.server.ticketing.sectors.Sector
 import it.polito.wa2.g13.server.ticketing.tickets.Ticket
 import it.polito.wa2.g13.server.ticketing.tickets.TicketRepository
 import org.junit.FixMethodOrder
@@ -93,9 +94,10 @@ class MessagesTests {
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    fun t1TestGetMessage(){
+    fun t1TestGetMessage() {
         val baseUrl = "http://localhost:$port/API/tickets/1/messages"
         val uri = URI(baseUrl)
+        val mySector = Sector("Informatics")
         val myProfile = Profile(
             id = "id",
             username = "moyne",
@@ -106,7 +108,8 @@ class MessagesTests {
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
-            "JMT"
+            "JMT",
+            mySector
         )
         val myExpert = Expert(
             id = "id",
@@ -120,7 +123,7 @@ class MessagesTests {
             status = "open", creationDate = Date(), messages = mutableSetOf()
         )
         val myMessage = Message(
-            myTicket,true,"Hey I'm Test Profile, I'm having issues with my new product!",
+            myTicket, true, "Hey I'm Test Profile, I'm having issues with my new product!",
             Date(), mutableSetOf()
         )
 
@@ -130,8 +133,8 @@ class MessagesTests {
         ticketRepository.save(myTicket)
         messageRepository.save(myMessage)
 
-        val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO)?.jwtAccessToken
+        val loginDTO = LoginDTO(username = "expert", password = "password")
+        val token = authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
         if (token != null) {
             headers.setBearerAuth(token)
@@ -153,9 +156,10 @@ class MessagesTests {
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    fun t2TestGetMessageWithAttachment(){
+    fun t2TestGetMessageWithAttachment() {
         val baseUrl = "http://localhost:$port/API/tickets/1/messages"
         val uri = URI(baseUrl)
+        val mySector = Sector("Informatics")
         val myProfile = Profile(
             id = "id",
             username = "moyne",
@@ -166,7 +170,8 @@ class MessagesTests {
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
-            "JMT"
+            "JMT",
+            mySector
         )
         val myExpert = Expert(
             id = "id",
@@ -180,11 +185,11 @@ class MessagesTests {
             status = "open", creationDate = Date(), messages = mutableSetOf()
         )
         val myMessage = Message(
-            myTicket,true,"Hey I'm Test Profile, I'm having issues with my new product!",
+            myTicket, true, "Hey I'm Test Profile, I'm having issues with my new product!",
             Date(), mutableSetOf()
         )
         val myMessage2 = Message(
-            myTicket,false, "Hey I'm expert x tell me what's the issue",Date(), mutableSetOf()
+            myTicket, false, "Hey I'm expert x tell me what's the issue", Date(), mutableSetOf()
         )
 
         profileRepository.save(myProfile)
@@ -194,8 +199,8 @@ class MessagesTests {
         messageRepository.save(myMessage)
         messageRepository.save(myMessage2)
 
-        val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO)?.jwtAccessToken
+        val loginDTO = LoginDTO(username = "expert", password = "password")
+        val token = authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
         if (token != null) {
             headers.setBearerAuth(token)
@@ -209,7 +214,7 @@ class MessagesTests {
         val messages: List<MessageDTO> = gson.fromJson(result.body, arrayMessagesType)
 
         Assertions.assertEquals(HttpStatus.OK, result.statusCode)
-        Assertions.assertEquals(messages.size,2)
+        Assertions.assertEquals(messages.size, 2)
 
         messageRepository.delete(myMessage2)
         messageRepository.delete(myMessage)
@@ -221,9 +226,10 @@ class MessagesTests {
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    fun t3TestGetMessageWithAttachment(){
+    fun t3TestGetMessageWithAttachment() {
         val baseUrl = "http://localhost:$port/API/tickets/1/messages"
         val uri = URI(baseUrl)
+        val mySector = Sector("Informatics")
         val myProfile = Profile(
             id = "id",
             username = "moyne",
@@ -234,7 +240,8 @@ class MessagesTests {
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
-            "JMT"
+            "JMT",
+            mySector
         )
         val myExpert = Expert(
             id = "id",
@@ -247,9 +254,9 @@ class MessagesTests {
             profile = myProfile, product = myProduct, priorityLevel = 1, expert = myExpert,
             status = "open", creationDate = Date(), messages = mutableSetOf()
         )
-        val myAttachment=Attachment(null,"image/png",1, byteArrayOf(3),Date())
+        val myAttachment = Attachment(null, "image/png", 1, byteArrayOf(3), Date())
         val myMessage = Message(
-            myTicket,true,"Hey I'm Test Profile, I'm having issues with my new product!",
+            myTicket, true, "Hey I'm Test Profile, I'm having issues with my new product!",
             Date(), mutableSetOf(myAttachment)
 
         )
@@ -259,8 +266,8 @@ class MessagesTests {
         ticketRepository.save(myTicket)
         messageRepository.save(myMessage)
 
-        val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO)?.jwtAccessToken
+        val loginDTO = LoginDTO(username = "expert", password = "password")
+        val token = authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
         if (token != null) {
             headers.setBearerAuth(token)
@@ -279,13 +286,14 @@ class MessagesTests {
         productRepository.delete(myProduct)
         expertRepository.delete(myExpert)
     }
+
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    fun t4GetButTicketDoesntExist(){
+    fun t4GetButTicketDoesntExist() {
         val baseUrl = "http://localhost:$port/API/tickets/100/messages"
         val uri = URI(baseUrl)
-        val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO)?.jwtAccessToken
+        val loginDTO = LoginDTO(username = "expert", password = "password")
+        val token = authService.login(loginDTO)?.jwtAccessToken
         val headers = HttpHeaders()
         if (token != null) {
             headers.setBearerAuth(token)
@@ -293,7 +301,7 @@ class MessagesTests {
         headers.set("X-COM-PERSIST", "true")
         val request = HttpEntity(null, headers)
         val result = restTemplate.exchange(uri, HttpMethod.GET, request, String::class.java)
-        Assertions.assertEquals(result.statusCode,HttpStatus.NOT_FOUND)
+        Assertions.assertEquals(result.statusCode, HttpStatus.NOT_FOUND)
     }
 
     @Test
@@ -310,8 +318,8 @@ class MessagesTests {
 
         val mockMvc = webApplicationContext?.let { MockMvcBuilders.webAppContextSetup(it).build() }
 
-        val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO)?.jwtAccessToken
+        val loginDTO = LoginDTO(username = "expert", password = "password")
+        val token = authService.login(loginDTO)?.jwtAccessToken
         val requestBuilder = multipart(uri)
             .file(file)
             .param("fromUser", "False")
@@ -328,6 +336,7 @@ class MessagesTests {
     fun t6PostMessage() {
         val baseUrl = "http://localhost:$port/API/tickets/1/messages"
         val uri = URI(baseUrl)
+        val mySector = Sector("Informatics")
         val myProfile = Profile(
             id = "id",
             username = "moyne",
@@ -338,7 +347,8 @@ class MessagesTests {
         val myProduct = Product(
             "4935531465706",
             "JMT X-ring 530x2 Gold 104 Open Chain With Rivet Link for Kawasaki KH 400 a 1976",
-            "JMT"
+            "JMT",
+            mySector
         )
         val myExpert = Expert(
             id = "id",
@@ -365,8 +375,8 @@ class MessagesTests {
 
         val mockMvc = webApplicationContext?.let { MockMvcBuilders.webAppContextSetup(it).build() }
 
-        val loginDTO= LoginDTO(username = "expert", password = "password")
-        val token= authService.login(loginDTO)?.jwtAccessToken
+        val loginDTO = LoginDTO(username = "expert", password = "password")
+        val token = authService.login(loginDTO)?.jwtAccessToken
         val requestBuilder = multipart(uri)
             .file(file)
             .param("fromUser", "False")

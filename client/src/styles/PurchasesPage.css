@@ -4,7 +4,7 @@
     overflow-y: scroll;
     scroll-snap-align: center;
     scroll-behavior: smooth;
-    max-height: 93vh;   
+    max-height: 93vh;
 }
 
 .purchase-card {
@@ -17,7 +17,7 @@
 }
 
 .purchase-dropopen:hover {
-    color:cadetblue;
+    color: cadetblue;
 }
 
 .purchase-status {

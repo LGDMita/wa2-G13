@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Alert } from 'react-bootstrap';
+import React, {useState} from 'react';
+import {Alert} from 'react-bootstrap';
 
-const ErrorMessage = ({ message, onClose }) => {
+const ErrorMessage = ({message, onClose}) => {
     const [show, setShow] = useState(true);
 
     const handleClose = () => {

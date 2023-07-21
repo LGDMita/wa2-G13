@@ -1,10 +1,10 @@
 class Manager {
     constructor(id, username, email, name, surname) {
-        this.id= id;
-        this.username= username;
-        this.email= email;
-        this.name= name;
-        this.surname= surname;
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.name = name;
+        this.surname = surname;
     }
 }
 

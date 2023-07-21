@@ -22,7 +22,7 @@ class ProfileController(
     private val log = LoggerFactory.getLogger(ProfileController::class.java)
 
     @GetMapping("/API/profiles/{id}")
-    fun getProfile(@PathVariable  id: String): ProfileDTO? {
+    fun getProfile(@PathVariable id: String): ProfileDTO? {
         log.info("Request profile with id: {}", id)
         return profileService.getProfile(id) ?: throw ProfileNotFoundException()
     }
@@ -36,8 +36,8 @@ class ProfileController(
     ): Boolean {
         log.info("Edited profile with id: {} and profileDTO: {}", id, profileDTO.toString())
         return if (!br.hasErrors()) {
-            val oldProfile=profileService.getProfile(id)?.toRegisterDTO()?:throw ProfileNotFoundException()
-            authService.updateUser(id,oldProfile,profileDTO.toRegisterDTO())
+            val oldProfile = profileService.getProfile(id)?.toRegisterDTO() ?: throw ProfileNotFoundException()
+            authService.updateUser(id, oldProfile, profileDTO.toRegisterDTO())
             profileService.modifyProfile(id, profileDTO)
             true
         } else {
@@ -52,7 +52,7 @@ class ProfileController(
         @PathVariable id: String
     ) {
         log.info("Deleting profile with id: {}", id)
-        profileService.getProfile(id)?:throw ProfileNotFoundException()
+        profileService.getProfile(id) ?: throw ProfileNotFoundException()
         authService.deleteUser(id)
         profileService.deleteProfile(id)
     }
