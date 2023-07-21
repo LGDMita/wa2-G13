@@ -2,11 +2,7 @@ import React, {useContext, useEffect, useState} from 'react';
 import UserContext from "../context/UserContext";
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import API from "../API";
-import Card from 'react-bootstrap/Card';
-import ListGroup from 'react-bootstrap/ListGroup';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button'
-import Table from 'react-bootstrap/Table';
+import {Form, Button, Table, Alert} from 'react-bootstrap'
 
 function ManageTicketForm() {
 
@@ -18,11 +14,13 @@ function ManageTicketForm() {
     const [selectedPriorityLevel, setSelectedPriorityLevel] = useState(null);
     const [selectedExpert, setSelectedExpert] = useState(null)
 
+    const [openAlert, setOpenAlert] = useState(false);
+
     async function load(){
         await API.getTicket(ticketId).then(res => {
             setTicket(res);
             if(res.expert) setSelectedExpert(res.expert.id);
-            if(res.priorityLevel) setSelectedPriorityLevel(res.priorityLevel);
+            if(res.priorityLevel || res.priorityLevel === 0) setSelectedPriorityLevel(res.priorityLevel);
             API.getExpertsBySector(res.product.sector.name).then(res => setSectorExperts(res))
         });
     }
@@ -43,21 +41,21 @@ function ManageTicketForm() {
     };
 
     async function handleSave(event){
-        let changing_expert = false;
-        let changing_priority = false
+        let an_expert_is_selected = false;
+        let a_priority_is_selected = false
         if(selectedExpert !== null && selectedExpert !== 'null') {
-            changing_expert = true;
+            an_expert_is_selected = true;
         }
         if(selectedPriorityLevel !== null && selectedPriorityLevel !== 'null') {
-            changing_priority = true;
+            a_priority_is_selected = true;
         }
-        if(ticket.status === 'open' && changing_expert && changing_priority) {
-            await API.changePriorityLevel(ticketId, parseInt(selectedPriorityLevel));
-            await API.changeExpert(ticketId, selectedExpert);
-            await API.changeStatus(ticketId, "in_progress");
+        if(an_expert_is_selected && a_priority_is_selected) {
+            if(selectedPriorityLevel !== ticket.priorityLevel?.toString()) await API.changePriorityLevel(ticketId, parseInt(selectedPriorityLevel));
+            if(selectedExpert !== ticket.expert?.id.toString()) await API.changeExpert(ticketId, selectedExpert);
+            if(ticket.status === 'open') await API.changeStatus(ticketId, "in_progress");
         }else{
             event.preventDefault();
-            window.alert("Select both an expert and a priority level to save the ticket, otherwise just click 'Cancel' to go back to the tickets list")
+            setOpenAlert(true);
         }
     }
 
@@ -81,68 +79,102 @@ function ManageTicketForm() {
         return <div>Loading...</div>
 
     return (
-        <div className="table-products">
-            <Table striped bordered hover>
-                <thead>
-                <tr>
-                    <th>Customer</th>
-                    <td>{ticket.profile.username}</td>
-                </tr>
-                <tr>
-                    <th>Product Brand</th>
-                    <td>{ticket.product.brand}</td>
-                </tr>
-                <tr>
-                    <th>Product Name</th>
-                    <td>{ticket.product.name}</td>
-                </tr>
-                <tr>
-                    <th>Product Sector</th>
-                    <td>{removeUnderscoresAndCapitalize(ticket.product.sector.name)}</td>
-                </tr>
-                <tr>
-                    <th>Ticket Status</th>
-                    <td>{removeUnderscoresAndCapitalize(ticket.status)}</td>
-                </tr>
-                <tr>
-                    <th>Ticket Creation Date</th>
-                    <td>{reformatDate(ticket.creationDate)}</td>
-                </tr>
-                <tr>
-                    <th>Ticket Priority Level</th>
-                    <td><Form.Select value = {selectedPriorityLevel ? selectedPriorityLevel.toString(): "null"} onChange={handlePriorityChange}>
-                        <option value="null"></option>
-                        <option value="0">0</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                    </Form.Select></td>
-                </tr>
-                <tr>
-                    <th>Expert (only experts of the related sector can be selected):</th>
-                    <td><Form.Select value = {selectedExpert ? selectedExpert.toString(): "null"} onChange={handleExpertChange}>
-                        <option value="null"></option>
-                        {sectorExperts.map(exp => {
-                            return <option value={exp.id.toString()}>{exp.username}</option>
-                        })}
-                    </Form.Select></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>
-                        <Link to={'/tickets'} onClick={handleSave}>
-                             <Button>Save</Button>
-                        </Link>
-                        <span>{' '}</span>
-                        <Link to={'/tickets'}>
-                             <Button>Cancel</Button>
-                        </Link>
-                    </td>
-                </tr>
-                </thead>
-            </Table>
-        </div>
+        <>
+            <div className="manage-ticket-form">
+                <h4 className='text-center' style={{ marginBottom: '20px' }}>Manage the ticket with id '{ticketId}'</h4>
+                <span>{' '}</span>
+                <Table striped bordered hover>
+                    <thead>
+                        <tr>
+                            <th>Creation Date</th>
+                            <td>{reformatDate(ticket.creationDate)}</td>
+                        </tr>
+                        <tr>
+                            <th>Status</th>
+                            <td>{removeUnderscoresAndCapitalize(ticket.status)}</td>
+                        </tr>
+                        <tr>
+                            <th>Customer Email</th>
+                            <td>{ticket.profile.email}</td>
+                        </tr>
+                        <tr>
+                            <th>Customer Name</th>
+                            <td>{ticket.profile.name}</td>
+                        </tr>
+                        <tr>
+                            <th>Customer Surname</th>
+                            <td>{ticket.profile.surname}</td>
+                        </tr>
+                        <tr>
+                            <th>Customer Username</th>
+                            <td>{ticket.profile.username}</td>
+                        </tr>
+                        <tr>
+                            <th>Product Ean</th>
+                            <td>{ticket.product.ean}</td>
+                        </tr>
+                        <tr>
+                            <th>Product Brand</th>
+                            <td>{ticket.product.brand}</td>
+                        </tr>
+                        <tr>
+                            <th>Product Name</th>
+                            <td>{ticket.product.name}</td>
+                        </tr>
+                        <tr>
+                            <th>Product Sector</th>
+                            <td>{removeUnderscoresAndCapitalize(ticket.product.sector.name)}</td>
+                        </tr>
+                        <tr>
+                            <th>Expert (only experts of the related sector can be assigned to the ticket):</th>
+                            <td><Form.Select value = {selectedExpert ? selectedExpert.toString(): "null"} onChange={handleExpertChange}>
+                                <option value="null"></option>
+                                {sectorExperts.map(exp => {
+                                    return <option key={exp.id} value={exp.id.toString()}>{`${exp.name} ${exp.surname} [${exp.email} - ${exp.username}]`}</option>
+                                })}
+                            </Form.Select></td>
+                        </tr>
+                        <tr>
+                            <th>Ticket Priority Level</th>
+                            <td><Form.Select value = {(selectedPriorityLevel || selectedPriorityLevel === 0) ? selectedPriorityLevel.toString(): "null"} onChange={handlePriorityChange}>
+                                <option value="null"></option>
+                                <option value="0">0</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </Form.Select></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <Link reloadDocument to={'/tickets'} onClick={handleSave}>
+                                     <Button>Save</Button>
+                                </Link>
+                                <span>{' '}</span>
+                                <Link to={'/tickets'}>
+                                     <Button>Cancel</Button>
+                                </Link>
+                            </td>
+                        </tr>
+                    </thead>
+                </Table>
+            </div>
+            <Alert show={openAlert} variant="warning">
+                <Alert.Heading>Warning</Alert.Heading>
+                <p>
+                    Select both an expert and a priority level to save the ticket,
+                    otherwise just click 'Cancel' to go back to the ticket list
+                    without changing anything
+                </p>
+                <hr />
+                <div className="d-flex justify-content-end">
+                    <Button onClick={() => setOpenAlert(false)} variant="outline-warning">
+                        Close
+                    </Button>
+                </div>
+            </Alert>
+        </>
     );
 }
 

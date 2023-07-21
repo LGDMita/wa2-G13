@@ -8,6 +8,17 @@
     padding-top: 30px;
 }
 
+.manage-ticket-form {
+    padding-top: 25px;
+}
+
+@media screen and (min-width: 768px) {
+    .manage-ticket-form {
+        padding-right: 250px;
+        padding-left: 250px;
+    }
+}
+
 .single-product,
 .single-profile,
 .add-profile,

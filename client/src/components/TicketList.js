@@ -5,8 +5,9 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button'
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import TableWithFilterAndSort from "./TableWithFilterAndSort"
+import { Col, Container, Row } from 'react-bootstrap';
 
-import TokenManager from '../TokenManager';
 import UserContext from "../context/UserContext";
 
 function TicketList() {
@@ -17,7 +18,30 @@ function TicketList() {
     const navigate = useNavigate();
 
     async function load(){
-        setTickets(await API.getTickets());
+        await API.getTickets().then(res => {
+            setTickets(
+                res.map(t => {
+                    return {
+                        ticket_id: t.ticketId,
+                        creation_date: reformatDate(t.creationDate),
+                        status: removeUnderscoresAndCapitalize(t.status),
+                        customer_email: t.profile.email,
+                        customer_name: t.profile.name,
+                        customer_surname: t.profile.surname,
+                        customer_username: t.profile.username,
+                        product_brand: t.product.brand,
+                        product_name: t.product.name,
+                        product_ean: t.product.ean,
+                        product_sector: t.product.sector.name,
+                        expert_email: t.expert ? t.expert.email : null,
+                        expert_name: t.expert ? t.expert.name : null,
+                        expert_surname: t.expert ? t.expert.surname : null,
+                        expert_username: t.expert ? t.expert.username : null,
+                        priority_level: (t.priorityLevel || t.priorityLevel === 0) ? t.priorityLevel : null,
+                    }
+            }))
+        })
+        //setTickets(await API.getTickets());
     }
 
     useEffect(() => {
@@ -46,81 +70,21 @@ function TicketList() {
         setFilterOption(event.target.value);
     };
 
-    if(user.role === "manager") {
-        return (
-            <div className="table-products">
-                <Form>
-                    <Form.Check
-                        inline
-                        label="New tickets"
-                        name="group1"
-                        type={'radio'}
-                        value={'open'}
-                        checked={filterOption === 'open'}
-                        onChange={handleOptionChange}
-                    />
-                    <Form.Check
-                        inline
-                        label="All tickets"
-                        name="group1"
-                        type={'radio'}
-                        value={'all'}
-                        checked={filterOption === 'all'}
-                        onChange={handleOptionChange}
-                    />
-                </Form>
-                <Table striped bordered hover>
-                    <thead>
-                    <tr>
-                        <th>Customer</th>
-                        <th>Product Brand</th>
-                        <th>Product Name</th>
-                        <th>Product Sector</th>
-                        <th>Creation Date</th>
-                        {filterOption === 'all' ?
-                                <>
-                                    <th>Status</th>
-                                    <th>Priority Level</th>
-                                    <th>Expert Username</th>
-                                </>
-                            : null}
-                        <th>Manage</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {
-                        tickets
-                            .filter(t => filterOption === 'open' ? t.status === 'open' : true)
-                            .map(t => {
-                                return (
-                                    <tr key={t.ticketId}>
-                                        <td>{t.profile.username}</td>
-                                        <td>{t.product.brand}</td>
-                                        <td>{t.product.name}</td>
-                                        <td>{removeUnderscoresAndCapitalize(t.product.sector.name)}</td>
-                                        <td>{reformatDate(t.creationDate)}</td>
-                                        {filterOption === 'all' ?
-                                            <>
-                                                <td>{removeUnderscoresAndCapitalize(t.status)}</td>
-                                                <td>{t.priorityLevel}</td>
-                                                <td>{t.expert ? t.expert.username : null}</td>
-                                            </>
-                                        : null}
-                                        <td>
-                                            <Link to={`/tickets/manage/${t.ticketId}`}>
-                                                <Button>Go</Button>
-                                            </Link>
-                                        </td>
-                                    </tr>
-                                )
-                            })
-                    }
-                    </tbody>
-                </Table>
-            </div>
-        );
-    }
+    if(tickets.length === 0)
+        return <div>Loading...</div>
 
+    return (
+        <Container className='productTable-cnt'>
+            <Row>
+                <Col>
+                    <h4 className='text-center'>Here you can find the list of all tickets</h4>
+                    <div className='productTable'>
+                        <TableWithFilterAndSort data={tickets} columns={['ticket_id', 'creation_date', 'status', 'customer_email', 'product_ean', 'product_sector', 'expert_email', 'priority_level', 'manage']} actionLink ={'/tickets/manage/'}/>
+                    </div>
+                </Col>
+            </Row>
+        </Container >
+    );
 }
 
 export default TicketList;

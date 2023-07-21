@@ -39,7 +39,7 @@ function ProductTable() {
                 <Col>
                     <h4 className='text-center'>Here you can find the list of products managed by our system</h4>
                     <div className='productTable'>
-                        <TableWithFilterAndSort data={products} />
+                        <TableWithFilterAndSort data={products} columns={['ean', 'name', 'brand']}/>
                     </div>
                 </Col>
             </Row>

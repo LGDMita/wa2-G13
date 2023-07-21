@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, InputGroup, FormControl, Button, ButtonGroup } from 'react-bootstrap';
-import { BsArrowUp, BsArrowDown } from 'react-icons/bs'; // Import Bootstrap Icons
+import { BsArrowUp, BsArrowDown, BsArrowRightCircleFill } from 'react-icons/bs'; // Import Bootstrap Icons
+import { Link } from 'react-router-dom';
 
 const TableWithFilterAndSort = (props) => {
     const [data, setData] = useState([]);
@@ -95,23 +96,25 @@ const TableWithFilterAndSort = (props) => {
                 <Table striped bordered hover responsive>
                     <thead>
                         <tr>
-                            <th onClick={() => handleSort('ean')}>
-                                EAN {getSortIcon('ean')}
-                            </th>
-                            <th onClick={() => handleSort('name')}>
-                                Name {getSortIcon('name')}
-                            </th>
-                            <th onClick={() => handleSort('brand')}>
-                                Brand {getSortIcon('brand')}
-                            </th>
+                            {props.columns.map(col =>
+                                <th key={col} onClick={() => handleSort(col)}>
+                                    {col.toUpperCase()} {getSortIcon(col)}
+                                </th>
+                            )}
                         </tr>
                     </thead>
                     <tbody>
                         {currentItems.map((item) => (
-                            <tr key={item.ean}>
-                                <td>{item.ean}</td>
-                                <td>{item.name}</td>
-                                <td>{item.brand}</td>
+                            <tr key={item[props.columns[0]]}>
+                                {props.columns.map((col, index) => {
+                                    if(props.actionLink)
+                                        if(index === props.columns.length -1)
+                                            return <td key={col}><Link to={`${props.actionLink}${item[props.columns[0]]}`}><Button><BsArrowRightCircleFill/></Button></Link></td>
+                                        else
+                                            return <td key={col}>{item[col]}</td>;
+                                    else
+                                        return <td>{item[col]}</td>;
+                                })}
                             </tr>
                         ))}
                     </tbody>
