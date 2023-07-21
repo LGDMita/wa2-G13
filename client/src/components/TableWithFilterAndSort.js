@@ -113,7 +113,7 @@ const TableWithFilterAndSort = (props) => {
                                         else
                                             return <td key={col}>{item[col]}</td>;
                                     else
-                                        return <td>{item[col]}</td>;
+                                        return <td key={col}>{item[col]}</td>;
                                 })}
                             </tr>
                         ))}
