@@ -1,11 +1,14 @@
 import API from '../API';
 import React, { useEffect, useState } from 'react';
 import TableWithFilterAndSort from "./TableWithFilterAndSort"
+import { Spinner } from "react-bootstrap";
 
 import "../styles/TableWithFilterAndSort.css"
 import { Col, Container, Row } from 'react-bootstrap';
 
 function ProductTable() {
+    const [loading, setLoading] = useState(true);
+
     const columns = [
         {
             Header: "EAN",
@@ -27,6 +30,7 @@ function ProductTable() {
 
     async function load() {
         setProducts(await API.getProducts());
+        setLoading(false);
     }
 
     useEffect(() => {
@@ -38,9 +42,16 @@ function ProductTable() {
             <Row>
                 <Col>
                     <h4 className='text-center'>Here you can find the list of products managed by our system</h4>
-                    <div className='productTable'>
-                        <TableWithFilterAndSort data={products} />
-                    </div>
+                    {loading ?
+                        <Container fluid>
+                            <Row>
+                                <Spinner animation="border" variant="dark" className="spin-load" size="lg" />
+                            </Row>
+                        </Container> :
+                        <div className='productTable'>
+                            <TableWithFilterAndSort data={products} />
+                        </div>
+                    }
                 </Col>
             </Row>
         </Container >

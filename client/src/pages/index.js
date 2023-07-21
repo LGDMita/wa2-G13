@@ -4,7 +4,7 @@ import TicketPage from "./TicketPage";
 import PurchasesPage from "./PurchasesPage";
 import TicketHistory from "./TicketHistory";
 import ExpertsPage from "./ExpertsListPage";
-import SignupPage from "./Signup";
+import SignupPage from "./SignupPage";
 import CreateExpertPage from "./CreateExpert";
 import UserInfoPage from "./UserInfo";
 

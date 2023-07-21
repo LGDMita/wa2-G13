@@ -25,7 +25,7 @@ import ScrollToTopButton from './components/ScrollToTopButton';
 function CheckHeader(props) {
     const location = useLocation();
 
-    if (location.pathname.includes("/login")) {
+    if (location.pathname.includes("/login") || location.pathname.includes("/signup")) {
         return null; // Hide the menu on the login page
     }
 
@@ -35,7 +35,7 @@ function CheckHeader(props) {
 function CheckContentContainer(props) {
     const location = useLocation();
 
-    if (location.pathname.includes("/login")) {
+    if (location.pathname.includes("/login") || location.pathname.includes("/signup")) {
         return props.children;
     }
 
@@ -74,7 +74,7 @@ function App() {
                     <Route path="/tickets"
                         element={user.logged ? (user.role === "manager" ? <TicketList /> : <TicketPage />) :
                             <Navigate to="/home" />} />
-                    <Route path="/signup" element={<SignupPage />} />
+                    <Route path="/signup" element={<SignupPage setLogged={setLogged} />} />
                     <Route path="/createExpert" element={<CreateExpertPage />} />
                     <Route path="/userInfo" element={<UserInfoPage />} />
                     <Route path="/products" element={<ProductTable />} />;
