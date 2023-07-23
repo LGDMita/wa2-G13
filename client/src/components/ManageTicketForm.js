@@ -72,10 +72,6 @@ function ManageTicketForm() {
         }
     }
 
-    const removeUnderscoresAndCapitalize = (str) => {
-        return str.replace(/_/g, " ");
-    }
-
     const reformatDate = (dateString) => {
         let dateObj = new Date(dateString);
 
@@ -108,7 +104,7 @@ function ManageTicketForm() {
                             </tr>
                             <tr>
                                 <th>Status</th>
-                                <td>{removeUnderscoresAndCapitalize(ticket.status)}</td>
+                                <td>{ticket.status.replace(/_/g, " ")}</td>
                             </tr>
                             <tr>
                                 <th>Customer Email</th>
@@ -140,7 +136,7 @@ function ManageTicketForm() {
                             </tr>
                             <tr>
                                 <th>Product Sector</th>
-                                <td>{removeUnderscoresAndCapitalize(ticket.product.sector.name)}</td>
+                                <td>{ticket.product.sector.name.replace(/_/g, " ")}</td>
                             </tr>
                             <tr>
                                 <th>Expert (only experts of the related sector can be assigned to the ticket):</th>

@@ -20,7 +20,7 @@ function TicketList() {
                     return {
                         ticket_id: t.ticketId,
                         creation_date: reformatDate(t.creationDate),
-                        status: removeUnderscoresAndCapitalize(t.status),
+                        status: t.status.replace(/_/g, " "),
                         customer_email: t.profile.email,
                         customer_name: t.profile.name,
                         customer_surname: t.profile.surname,
@@ -28,7 +28,7 @@ function TicketList() {
                         product_brand: t.product.brand,
                         product_name: t.product.name,
                         product_ean: t.product.ean,
-                        product_sector: t.product.sector.name,
+                        product_sector: t.product.sector.name.replace(/_/g, " "),
                         expert_email: t.expert ? t.expert.email : null,
                         expert_name: t.expert ? t.expert.name : null,
                         expert_surname: t.expert ? t.expert.surname : null,
@@ -45,10 +45,6 @@ function TicketList() {
             navigate('/home');
         } else void load();
     }, [user.logged, user.role, navigate]);
-
-    const removeUnderscoresAndCapitalize = (str) => {
-        return str.replace(/_/g, " ");
-    }
 
     const reformatDate = (dateString) => {
         let dateObj = new Date(dateString);
