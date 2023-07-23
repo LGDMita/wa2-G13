@@ -22,6 +22,7 @@ function UserInfoPage(props){
     const [error, setError] = useState('');
     const [showMenu, setShowMenu] = useState(false);
     const [loading, setLoading]= useState(false);
+    const [sectorsState, setSectorsState]= useState([]);
 
     useEffect(() => {
         if (!user.logged) {
@@ -45,9 +46,10 @@ function UserInfoPage(props){
                 userInfo = await API.getProfileInfo(user.id);
             } else if (user.role=== 'expert') {
                 userInfo = await API.getExpertInfo(user.id);
-                const sectorsList= await API.getSectorsOfExpert(user.id);
-                sectors= sectorsList;
-                console.log(sectors);
+                sectors= await API.getSectorsOfExpert(user.id);
+                setSectorsState(sectors)
+                console.log(sectorsState)
+                console.log(sectors)
             } else if (user.role=== 'manager'){
                 userInfo = await API.getManagerInfo(user.id);
             }
@@ -117,7 +119,7 @@ function UserInfoPage(props){
                                     <strong>Sectors:</strong>
                                 </Col>
                                 <Col xs={12} sm={8}>
-                                    <span>{(sectors && sectors.length > 0) ? sectors.map(sector => sector.name).join(", ") : "No sectors available"}</span>
+                                    <span>{sectorsState.length>0 ? sectorsState.map(sector => sector.name).join(", ") : "No sectors available"}</span>
                                 </Col>
                             </Row>
                         )
@@ -146,14 +148,14 @@ function UserInfoPage(props){
                                         } else if (user.role === 'manager') {
                                             await API.modifyManager(user.id, new Manager(user.id, username, email, name, surname))
                                         }
-                                        window.alert("Modifications correctly saved. LOGIN is required!")
                                         setUsername('')
                                         setEmail('')
                                         setName('')
                                         setSurname('')
-                                        await API.logout()
                                         setLoading(false)
-                                        navigate("/login")
+                                        window.alert("Modifications correctly saved. LOGIN is required!")
+                                        props.handleLogout()
+                                        //navigate("/login")
                                     } catch (error) {
                                         setError(error);
                                         setLoading(false);

@@ -228,11 +228,6 @@ const login = async (username, password, setUser) => {
     }
 };
 
-const logout = async () => {
-    return null;
-};
-
-
 const sendMessage = async (ticketId, fromUser, text, files) => {
     const data = new FormData();
     data.append("fromUser", fromUser);
@@ -383,7 +378,6 @@ const API = {
     modifyExpert,
     modifyManager,
     login,
-    logout,
     sendMessage,
     getMessages,
     getTicketsOf,

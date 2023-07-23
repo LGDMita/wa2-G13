@@ -32,8 +32,18 @@ class ExpertServiceImpl(
     }
 
     @Transactional
-    override fun modifyExpert(id: String, expertDTO: ExpertDTO): Unit {
-        expertRepository.save(expertDTO.toExpertWithId(id))
+    override fun modifyExpert(id: String, expertDTO: ExpertDTO) {
+        val expert= expertDTO.toExpertWithId(id)
+        val sectors=  expert.let { sectorRepository.findSectorsByExperts(it)}
+        expertRepository.save(expert)
+        val expertNew= expertRepository.findByIdOrNull(id)
+        if(expertNew!= null){
+            for (s in sectors){
+                expertNew.addSector(s)
+                s.addExpert(expertNew)
+                sectorRepository.save(s)
+            }
+        }
     }
 
     override fun getExpertsBySector(sectorName: String): List<ExpertDTO>? {
