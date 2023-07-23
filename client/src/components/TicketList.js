@@ -1,9 +1,5 @@
 import API from '../API';
 import React, {useContext, useEffect, useState} from 'react';
-import Table from 'react-bootstrap/Table';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button'
-import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import TableWithFilterAndSort from "./TableWithFilterAndSort"
 import { Col, Container, Row } from 'react-bootstrap';
@@ -51,7 +47,7 @@ function TicketList() {
     }, [user.logged, user.role, navigate]);
 
     const removeUnderscoresAndCapitalize = (str) => {
-        return str.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+        return str.replace(/_/g, " ");
     }
 
     const reformatDate = (dateString) => {
@@ -70,16 +66,13 @@ function TicketList() {
         setFilterOption(event.target.value);
     };
 
-    if(tickets.length === 0)
-        return <div>Loading...</div>
-
     return (
         <Container className='productTable-cnt'>
             <Row>
                 <Col>
                     <h4 className='text-center'>Here you can find the list of all tickets</h4>
                     <div className='productTable'>
-                        <TableWithFilterAndSort data={tickets} columns={['ticket_id', 'creation_date', 'status', 'customer_email', 'product_ean', 'product_sector', 'expert_email', 'priority_level', 'manage']} actionLink ={'/tickets/manage/'}/>
+                        <TableWithFilterAndSort data={tickets.length > 0 ? tickets : []} columns={['ticket_id', 'creation_date', 'status', 'customer_email', 'product_ean', 'product_sector', 'expert_email', 'priority_level', 'manage']} actionLink ={'/tickets/manage/'}/>
                     </div>
                 </Col>
             </Row>

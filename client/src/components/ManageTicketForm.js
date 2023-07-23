@@ -73,7 +73,7 @@ function ManageTicketForm() {
     }
 
     const removeUnderscoresAndCapitalize = (str) => {
-        return str.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+        return str.replace(/_/g, " ");
     }
 
     const reformatDate = (dateString) => {
