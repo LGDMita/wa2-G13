@@ -2,6 +2,7 @@ import axios from 'axios';
 import Product from "./product";
 import Expert from "./expert";
 import Profile from "./profile";
+import Sector from "./sector";
 import TokenManager from './TokenManager';
 import Ticket from "./ticket";
 import Manager from "./manager";
@@ -85,6 +86,42 @@ const getExpertsBySector = async (sector) => {
     }
 };
 
+const getSectors = async () => {
+    try {
+        const response = await apiInstance.get(`/API/experts/sectors`);
+        const rows = response.data;
+        if (response.status === 200) {
+            return rows.map(row => {
+                return new Sector(row.sectorId, row.name);
+            });
+        } else {
+            console.log(rows)
+            throw new Error(rows.detail);
+        }
+    }
+    catch (error) {
+        console.log(error)
+    }
+};
+
+const getExpertSectors = async (id) => {
+    try {
+        const response = await apiInstance.get(`/API/experts/${id}/sectors`);
+        const rows = response.data;
+        if (response.status === 200) {
+            return rows.map(row => {
+                return new Sector(row.sectorId, row.name);
+            });
+        } else {
+            console.log(rows)
+            throw new Error(rows.detail);
+        }
+    }
+    catch (error) {
+        console.log(error)
+    }
+};
+
 const getProducts = async () => {
     const response = await apiInstance.get('/API/products/');
     const rows = response.data;
@@ -150,7 +187,19 @@ const createExpert = async (registrationData) => {
     try {
         await apiInstance.post('/API/createExpert', registrationData);
     } catch (error) {
-        console.error('Error during signup:', error);
+        console.error('Error while creating expert:', error);
+        throw new Error(error.response.status)
+    }
+};
+
+const modifyExpertWithSector = async (expertId, registrationData, sectorList) => {
+    try {
+        await apiInstance.put(`/API/modifyExpert/sectors/${expertId}`, {
+            expertDTO: registrationData,
+            sectorList: sectorList
+        });
+    } catch (error) {
+        console.error('Error while editing expert:', error);
         throw new Error(error.response.status)
     }
 };
@@ -205,7 +254,6 @@ const changeExpert = async (ticketId, expertId) => {
 
 const login = async (username, password, setUser) => {
     try {
-        //console.log("Trying login API");
         const response = await axios.post('/API/login', {
             username,
             password,
@@ -368,6 +416,7 @@ const API = {
     createExpert,
     modifyProfile,
     modifyExpert,
+    modifyExpertWithSector,
     modifyManager,
     login,
     logout,
@@ -380,7 +429,9 @@ const API = {
     changeTicketStatus,
     getTicketHistory,
     updateExpert,
-    getExperts
+    getExperts,
+    getSectors,
+    getExpertSectors
 };
 
 export default API;

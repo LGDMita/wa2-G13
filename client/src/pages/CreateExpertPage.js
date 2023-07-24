@@ -1,13 +1,29 @@
 import { useState, useContext, useEffect } from "react";
-import { Form, Button, Alert, Container, Row, Spinner } from "react-bootstrap";
+import { Form, Button, Alert, Container, Row, Spinner, Modal } from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
+import "../styles/CreateExpert.css";
 import "../styles/Loading.css";
-import "../styles/Signup.css";
 import API from "../API";
 import RegistrationData from "../registrationData";
 import UserContext from "../context/UserContext";
 
-function SignupPage() {
+const SuccessAlert = ({ show, onClose }) => {
+    return (
+        <Modal show={show} onHide={onClose}>
+            <Modal.Header closeButton>
+                <Modal.Title>Success</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>New expert has been successfully created!</Modal.Body>
+            <Modal.Footer>
+                <Button variant="primary" onClick={onClose}>
+                    Close
+                </Button>
+            </Modal.Footer>
+        </Modal>
+    );
+};
+
+function CreateExpertPage() {
     const { user } = useContext(UserContext);
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
@@ -17,15 +33,15 @@ function SignupPage() {
     const [surname, setSurname] = useState('');
     const [error, setError] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [showSuccessAlert, setShowSuccessAlert] = useState(false);
 
     useEffect(() => {
-        if (user.logged) {
+        if (!user.logged || user.role !== 'manager') {
             navigate('/home');
         }
-    }, [user.logged, navigate]);
+    }, [user.logged, user.role, navigate]);
 
-
-    if (!user.logged) {
+    if (user.logged && user.role === 'manager') {
         if (loading) {
             return (
                 <Container fluid>
@@ -36,25 +52,29 @@ function SignupPage() {
             );
         } else {
             return (
-                <div className="container-sign-up-parent">
-                    <div className="container-sign-up">
-                        <h1 className="container-sign-up-h1">Signup</h1>
-                        <Form className="container-sign-up-form"
-                            onSubmit={async e => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                setLoading(true)
-                                try {
-                                    await API.signup(new RegistrationData(username, password, email, name, surname));
-                                    window.alert("User successfully created!")
-                                    setLoading(false)
-                                    navigate('/login');
-                                } catch (error) {
-                                    console.log(error)
-                                    setError(true);
-                                    setLoading(false)
-                                }
-                            }}>
+                <div className="container-create-expert-parent">
+                    <div className="container-create-expert">
+                        <h1 className="container-create-expert-h1">Create new Expert</h1>
+                        <Form className="container-create-expert-form" onSubmit={async e => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setLoading(true)
+                            try {
+                                await API.createExpert(new RegistrationData(username, password, email, name, surname));
+                                setLoading(false)
+                                setUsername('');
+                                setPassword('')
+                                setEmail('');
+                                setName('');
+                                setSurname('');
+                                setShowSuccessAlert(true);
+                            } catch (error) {
+                                console.log(error)
+                                setLoading(false)
+                                setError(true);
+                            }
+                        }}>
+                            {showSuccessAlert && <SuccessAlert show={showSuccessAlert} onClose={() => setShowSuccessAlert(false)} />}
                             <Form.Group className="mb-3">
                                 <Form.Label style={{ fontWeight: "bolder" }}>Username : </Form.Label>
                                 <Form.Control type="text" placeholder="insert username" name="username" required
@@ -82,7 +102,8 @@ function SignupPage() {
                                     value={surname}
                                     onChange={e => setSurname(e.target.value)} />
                             </Form.Group>
-                            <Button variant="success" type="submit">Submit</Button>
+                            <Button className="mx-auto" variant="success" type="submit">Submit</Button> &nbsp;
+                            <Button variant="secondary" type="button" onClick={() => navigate("/experts")}>Back</Button>
                             {error ? <Alert className="my-3" variant="danger">Something went wrong!</Alert> : <></>}
                         </Form>
                     </div>
@@ -94,4 +115,4 @@ function SignupPage() {
     }
 }
 
-export default SignupPage
+export default CreateExpertPage

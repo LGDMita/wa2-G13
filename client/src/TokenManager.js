@@ -6,7 +6,6 @@ const TokenManager = () => {
     const setAuthToken = (newToken) => {
         token = newToken;
         // Salva il token nel localStorage
-        console.log(token)
         localStorage.setItem('jwtToken', newToken);
     };
 

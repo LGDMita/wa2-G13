@@ -12,4 +12,6 @@ interface SectorService {
     fun setSectorForExpert(id: String, sectorDTO: SectorDTO): Boolean
 
     fun deleteSectorForExpert(expertId: String, sectorId: Long)
+
+    fun findBySectorId(sectorId: Long): SectorDTO?
 }

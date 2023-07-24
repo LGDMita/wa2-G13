@@ -3,6 +3,7 @@ package it.polito.wa2.g13.server.ticketing.experts
 
 import io.micrometer.observation.annotation.Observed
 import it.polito.wa2.g13.server.jwtAuth.AuthService
+import it.polito.wa2.g13.server.ticketing.sectors.SectorDTO
 import it.polito.wa2.g13.server.ticketing.sectors.SectorNotFoundException
 import it.polito.wa2.g13.server.ticketing.sectors.SectorService
 import it.polito.wa2.g13.server.ticketing.sectors.SectorsNotFoundException
@@ -52,6 +53,46 @@ class ExpertController(
             true
         } else
             throw ExpertInvalidArgumentsException()
+    }
+
+
+    data class ExpertWithSectorsDTO(
+        val expertDTO: ExpertDTO,
+        val sectorList: List<SectorDTO>
+    )
+
+    @Transactional
+    @PutMapping("/API/modifyExpert/sectors/")
+    fun modifyExpertWithSectors(
+        //@PathVariable id: String,
+        // @RequestBody expertWithSectorsDTO: ExpertWithSectorsDTO,
+        br: BindingResult
+    ): Boolean {
+        println("Qui si")
+        /*return if (!br.hasErrors()) {
+            val oldExpert = expertService.getExpertById(id)?.toRegisterDTO() ?: throw ExpertNotFoundException()
+            authService.updateUser(id, oldExpert, expertWithSectorsDTO.expertDTO.toRegisterDTO())
+            expertService.modifyExpert(id, expertWithSectorsDTO.expertDTO)
+
+            val currentSector = sectorService.getSectorsOfExpert(expertWithSectorsDTO.expertDTO.id)
+            currentSector?.forEach { sector ->
+                val res = expertWithSectorsDTO.sectorList.contains(sector)
+                if (!res) {
+                    sectorService.deleteSectorForExpert(expertWithSectorsDTO.expertDTO.id, sector.sectorId!!)
+                }
+            }
+
+            expertWithSectorsDTO.sectorList.forEach { sector ->
+                val res = sectorService.findBySectorId(sector.sectorId!!)
+                if (res !== null) {
+                    sectorService.setSectorForExpert(expertWithSectorsDTO.expertDTO.id, sector)
+                }
+             }
+
+            true
+        } else
+            throw ExpertInvalidArgumentsException()*/
+        return true
     }
 
     @GetMapping("/API/experts/")

@@ -65,4 +65,8 @@ class SectorServiceImpl(
             }
         }
     }
+
+    override fun findBySectorId(sectorId: Long): SectorDTO? {
+        return sectorRepository.findByIdOrNull(sectorId)?.toDTO()
+    }
 }

@@ -46,7 +46,7 @@ function ExpertsListPage() {
                 <>
                     <Row className="mb-3">
                         <Col className="text-end">
-                            <Button variant="primary">
+                            <Button variant="primary" onClick={() => navigate('/createExpert')}>
                                 Add expert
                             </Button>
                         </Col>
@@ -70,7 +70,7 @@ function ExpertsListPage() {
                                         <td>{expert.email}</td>
                                         <td>{expert.username}</td>
                                         <td>
-                                            <Button variant="primary">
+                                            <Button variant="primary" onClick={() => navigate("/modifyExpert/" + expert.id)}>
                                                 Modify
                                             </Button>
                                         </td>

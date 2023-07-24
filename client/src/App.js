@@ -13,7 +13,8 @@ import {
     ExpertsPage,
     SignupPage,
     CreateExpertPage,
-    UserInfoPage
+    UserInfoPage,
+    ModifyExpertPage
 } from './pages';
 import TokenManager from './TokenManager';
 import { ProductTable } from "./components/ProductTable";
@@ -60,9 +61,6 @@ function App() {
         navigate("/home");
     }
 
-    console.log(user);
-
-
     return (
         <UserContext.Provider value={{ user, setUser }}>
             <CheckHeader handleLogout={handleLogout} logged={logged} name={user.username} />
@@ -80,6 +78,7 @@ function App() {
                     <Route path="/products" element={<ProductTable />} />;
                     <Route path="/purchases" element={<PurchasesPage />} />;
                     <Route path='/experts' element={<ExpertsPage />} />;
+                    <Route path="/modifyExpert/:expertId" element={<ModifyExpertPage />} />
                     {user.logged && user.role === "manager" &&
                         <Route path="/tickets/manage/:ticketId" element={<ManageTicketForm />} />}
                 </Routes>

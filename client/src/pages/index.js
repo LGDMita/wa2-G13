@@ -5,8 +5,9 @@ import PurchasesPage from "./PurchasesPage";
 import TicketHistory from "./TicketHistory";
 import ExpertsPage from "./ExpertsListPage";
 import SignupPage from "./SignupPage";
-import CreateExpertPage from "./CreateExpert";
+import CreateExpertPage from "./CreateExpertPage";
 import UserInfoPage from "./UserInfo";
+import ModifyExpertPage from "./ModifyExpertPage"
 
 export {
     HomepagePage,
@@ -17,5 +18,6 @@ export {
     ExpertsPage,
     SignupPage,
     CreateExpertPage,
-    UserInfoPage
+    UserInfoPage,
+    ModifyExpertPage
 };
