@@ -64,12 +64,12 @@ class ExpertController(
     @Transactional
     @PutMapping("/API/modifyExpert/sectors/")
     fun modifyExpertWithSectors(
-        //@PathVariable id: String,
-        // @RequestBody expertWithSectorsDTO: ExpertWithSectorsDTO,
+        @PathVariable id: String,
+        @RequestBody expertWithSectorsDTO: ExpertWithSectorsDTO,
         br: BindingResult
     ): Boolean {
         println("Qui si")
-        /*return if (!br.hasErrors()) {
+        return if (!br.hasErrors()) {
             val oldExpert = expertService.getExpertById(id)?.toRegisterDTO() ?: throw ExpertNotFoundException()
             authService.updateUser(id, oldExpert, expertWithSectorsDTO.expertDTO.toRegisterDTO())
             expertService.modifyExpert(id, expertWithSectorsDTO.expertDTO)
@@ -91,8 +91,7 @@ class ExpertController(
 
             true
         } else
-            throw ExpertInvalidArgumentsException()*/
-        return true
+            throw ExpertInvalidArgumentsException()
     }
 
     @GetMapping("/API/experts/")
