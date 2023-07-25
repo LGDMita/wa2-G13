@@ -14,4 +14,6 @@ interface AuthService {
     fun updateUser(id: String, oldRegisterDTO: RegisterDTO, registerDTO: RegisterDTO): Boolean
 
     fun deleteUser(id: String): Unit
+
+    fun changePassword(id: String, newPassword: String)
 }

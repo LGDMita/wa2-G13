@@ -270,6 +270,18 @@ const login = async (username, password, setUser) => {
     }
 };
 
+const changePassword = async (id, username, oldPassword, newPassword) => {
+    try {
+        await axios.post(`/API/changePassword/${id}`, {
+            "username": username,
+            "oldPassword": oldPassword,
+            "newPassword": newPassword
+        });
+    } catch (error) {
+        throw new Error(error)
+    }
+};
+
 const sendMessage = async (ticketId, fromUser, text, files) => {
     const data = new FormData();
     data.append("fromUser", fromUser);
@@ -433,7 +445,8 @@ const API = {
     getExperts,
     getSectorsOfExpert,
     getSectors,
-    getExpertSectors
+    getExpertSectors,
+    changePassword
 };
 
 export default API;

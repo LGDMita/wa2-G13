@@ -46,6 +46,7 @@ class WebSecurityConfig(private val jwtAuthConverter: JwtAuthConverter) {
             .requestMatchers(HttpMethod.PUT, "/API/managers/+*").hasAnyRole(MANAGER)
             .requestMatchers(HttpMethod.POST, "/API/createExpert").hasAnyRole(MANAGER) //Only the manager can create an expert
             .requestMatchers(HttpMethod.PUT, "/API/modifyExpert/sectors/**").hasAnyRole(MANAGER)
+            .requestMatchers(HttpMethod.POST, "/API/changePassword/**").hasAnyRole(MANAGER, EXPERT, CUSTOMER)
             .anyRequest().permitAll()
         http.oauth2ResourceServer()
             .jwt()

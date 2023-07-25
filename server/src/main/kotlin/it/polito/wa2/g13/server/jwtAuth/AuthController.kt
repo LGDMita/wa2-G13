@@ -107,6 +107,26 @@ class AuthController(
         }
     }
 
+    data class changePasswordDTO (
+        val username: String,
+        val oldPassword: String,
+        val newPassword: String
+    )
+
+    @PostMapping("/API/changePassword/{id}")
+    fun changePassword(
+        @PathVariable id: String,
+        @RequestBody changePasswordDTO: changePasswordDTO
+    ): ResponseEntity<Any> {
+        val checkOldPassword = authService.login(LoginDTO(changePasswordDTO.username, changePasswordDTO.oldPassword));
+        return if (checkOldPassword != null) {
+            authService.changePassword(id, changePasswordDTO.newPassword)
+            ResponseEntity.ok("Password changed successfully.")
+        } else {
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid old password.")
+        }
+    }
+
     fun transformResponse(response: Response): ResponseEntity<Any> {
         val status = HttpStatus.valueOf(response.status)
 

@@ -3,6 +3,7 @@ package it.polito.wa2.g13.server.jwtAuth
 import jakarta.transaction.Transactional
 import org.keycloak.admin.client.KeycloakBuilder
 import org.keycloak.admin.client.resource.RealmResource
+import org.keycloak.admin.client.resource.UserResource
 import org.keycloak.representations.idm.CredentialRepresentation
 import org.keycloak.representations.idm.UserRepresentation
 import org.springframework.beans.factory.annotation.Value
@@ -157,14 +158,14 @@ class AuthServiceImpl : AuthService {
     fun existsByUsername(
         realmResource: RealmResource,
         username: String
-    ): Unit {
+    ) {
         if (realmResource.users().searchByUsername(username, true).size > 0) throw DuplicateUsernameException()
     }
 
     fun existsByEmail(
         realmResource: RealmResource,
         email: String
-    ): Unit {
+    ) {
         if (realmResource.users().searchByEmail(email, true).size > 0) throw DuplicateEmailException()
     }
 
@@ -172,7 +173,7 @@ class AuthServiceImpl : AuthService {
         realmResource: RealmResource,
         username: String,
         email: String
-    ): Unit {
+    ) {
         existsByUsername(realmResource, username)
         existsByEmail(realmResource, email)
     }
@@ -210,7 +211,7 @@ class AuthServiceImpl : AuthService {
     }
 
     @Transactional
-    override fun deleteUser(id: String): Unit {
+    override fun deleteUser(id: String) {
         val keycloak = KeycloakBuilder.builder()
             .serverUrl("http://${keycloakPath}")
             .realm("wa2-g13")
@@ -222,5 +223,25 @@ class AuthServiceImpl : AuthService {
         val realmResource = keycloak.realm("wa2-g13")
 
         realmResource.users().delete(id)
+    }
+
+    override fun changePassword(id: String, newPassword: String) {
+        val keycloak = KeycloakBuilder.builder()
+            .serverUrl("http://${keycloakPath}")
+            .realm("wa2-g13")
+            .clientId("spring-client")
+            .username("admin")
+            .password("admin")
+            .build()
+
+        val userResource: UserResource = keycloak.realm("wa2-g13").users().get(id)
+
+        val passwordRequest = CredentialRepresentation().apply {
+            type = CredentialRepresentation.PASSWORD
+            value = newPassword
+        }
+
+        // Update the user's password
+        userResource.resetPassword(passwordRequest)
     }
 }
