@@ -23,6 +23,12 @@ function SignupPage(props) {
     const [surname, setSurname] = useState('');
     const [loading, setLoading] = useState(false);
 
+    useEffect(() => {
+        if (user.logged) {
+            navigate('/home');
+        }
+    }, [user.logged, navigate]);
+
     const handleSignup = async () => {
         setLoading(true)
         try {
@@ -34,8 +40,7 @@ function SignupPage(props) {
             navigate('/home');
         } catch (error) {
             setLoading(false);
-            console.log(error);
-            setErrorMessage("Something went wrong during the registration!");
+            setErrorMessage(error.message);
             setShowError(true);
         }
     }
