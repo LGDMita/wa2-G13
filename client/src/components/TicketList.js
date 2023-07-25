@@ -58,10 +58,6 @@ function TicketList() {
         return `${year}-${month}-${day}, ${hours}:${minutes}`;
     }
 
-    const handleOptionChange = (event) => {
-        setFilterOption(event.target.value);
-    };
-
     return (
         <Container className='productTable-cnt'>
             <Row>
