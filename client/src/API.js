@@ -6,7 +6,6 @@ import Sector from "./sector";
 import TokenManager from './TokenManager';
 import Ticket from "./ticket";
 import Manager from "./manager";
-import Sector from "./sector";
 
 const SERVER_URL = 'http://localhost:8080';
 
