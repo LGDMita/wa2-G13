@@ -9,23 +9,6 @@ import { Col, Container, Row } from 'react-bootstrap';
 function ProductTable() {
     const [loading, setLoading] = useState(true);
 
-    const columns = [
-        {
-            Header: "EAN",
-            accessor: "ean",
-        },
-        {
-            Header: "Name",
-            accessor: "name",
-            Filter: ({ column }) => <input {...column.filterProps} />,
-        },
-        {
-            Header: "Brand",
-            accessor: "Brand",
-            Filter: ({ column }) => <input {...column.filterProps} />,
-        }
-    ];
-
     const [products, setProducts] = useState([]);
 
     async function load() {

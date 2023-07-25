@@ -83,7 +83,7 @@ function PurchaseSelection(props) {
             }
         }
         getTickets();
-    }, [])
+    }, [user.id, props.purchase.product.ean])
 
     return (
         <div className="purchase-bodyopened">
@@ -162,7 +162,7 @@ function PurchasesPage(props) {
             }
         }
         getPurchases();
-    }, []);
+    }, [navigate, user.role]);
 
     if (purchases && purchases.length > 0) {
         return (

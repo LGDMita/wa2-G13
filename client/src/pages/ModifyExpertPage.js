@@ -5,7 +5,6 @@ import { useParams } from 'react-router-dom';
 import "../styles/CreateExpert.css";
 import "../styles/Loading.css";
 import API from "../API";
-import RegistrationData from "../registrationData";
 import UserContext from "../context/UserContext";
 import Expert from "../expert";
 

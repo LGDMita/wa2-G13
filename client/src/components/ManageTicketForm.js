@@ -1,15 +1,15 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import UserContext from "../context/UserContext";
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import API from "../API";
-import {Form, Button, Table, Alert} from 'react-bootstrap'
+import { Form, Button, Table, Alert } from 'react-bootstrap'
 
 function ManageTicketForm() {
 
     const [ticket, setTicket] = useState(null);
-    const {user, setUser}= useContext(UserContext);
+    const { user } = useContext(UserContext);
     const navigate = useNavigate();
-    const {ticketId} = useParams();
+    const { ticketId } = useParams();
     const [sectorExperts, setSectorExperts] = useState(null);
     const [selectedPriorityLevel, setSelectedPriorityLevel] = useState(null);
     const [selectedExpert, setSelectedExpert] = useState(null)
@@ -19,11 +19,11 @@ function ManageTicketForm() {
 
     const [expertsNotFound, setExpertsNotFound] = useState(false);
 
-    async function load(){
+    async function load() {
         await API.getTicket(ticketId).then(res => {
             setTicket(res);
-            if(res.expert) setSelectedExpert(res.expert.id);
-            if(res.priorityLevel || res.priorityLevel === 0) setSelectedPriorityLevel(res.priorityLevel);
+            if (res.expert) setSelectedExpert(res.expert.id);
+            if (res.priorityLevel || res.priorityLevel === 0) setSelectedPriorityLevel(res.priorityLevel);
             API.getExpertsBySector(res.product.sector.name)
                 .then(res => setSectorExperts(res))
                 .catch(err => {
@@ -50,20 +50,20 @@ function ManageTicketForm() {
         setSelectedExpert(event.target.value);
     };
 
-    async function handleSave(event){
+    async function handleSave(event) {
         let an_expert_is_selected = false;
         let a_priority_is_selected = false
-        if(selectedExpert !== null && selectedExpert !== 'null') {
+        if (selectedExpert !== null && selectedExpert !== 'null') {
             an_expert_is_selected = true;
         }
-        if(selectedPriorityLevel !== null && selectedPriorityLevel !== 'null') {
+        if (selectedPriorityLevel !== null && selectedPriorityLevel !== 'null') {
             a_priority_is_selected = true;
         }
-        if(an_expert_is_selected && a_priority_is_selected) {
-            if(selectedPriorityLevel !== ticket.priorityLevel?.toString()) await API.changePriorityLevel(ticketId, parseInt(selectedPriorityLevel));
-            if(selectedExpert !== ticket.expert?.id.toString()) await API.changeExpert(ticketId, selectedExpert);
-            if(ticket.status === 'open') await API.changeStatus(ticketId, "in_progress");
-        }else{
+        if (an_expert_is_selected && a_priority_is_selected) {
+            if (selectedPriorityLevel !== ticket.priorityLevel?.toString()) await API.changePriorityLevel(ticketId, parseInt(selectedPriorityLevel));
+            if (selectedExpert !== ticket.expert?.id.toString()) await API.changeExpert(ticketId, selectedExpert);
+            if (ticket.status === 'open') await API.changeStatus(ticketId, "in_progress");
+        } else {
             event.preventDefault();
             setOpenAlert(true);
             setAlertMessage('Select both an expert and a priority level to save the ticket, ' +
@@ -84,7 +84,7 @@ function ManageTicketForm() {
         return `${year}-${month}-${day}, ${hours}:${minutes}`;
     }
 
-    if((!ticket || !sectorExperts) && !expertsNotFound)
+    if ((!ticket || !sectorExperts) && !expertsNotFound)
         return <div>Loading...</div>;
     else
         return (
@@ -140,7 +140,7 @@ function ManageTicketForm() {
                             </tr>
                             <tr>
                                 <th>Expert (only experts of the related sector can be assigned to the ticket):</th>
-                                <td><Form.Select value = {selectedExpert ? selectedExpert.toString(): "null"} onChange={handleExpertChange}>
+                                <td><Form.Select value={selectedExpert ? selectedExpert.toString() : "null"} onChange={handleExpertChange}>
                                     <option value="null"></option>
                                     {sectorExperts ?
                                         sectorExperts.map(exp => {
@@ -151,7 +151,7 @@ function ManageTicketForm() {
                             </tr>
                             <tr>
                                 <th>Ticket Priority Level</th>
-                                <td><Form.Select value = {(selectedPriorityLevel || selectedPriorityLevel === 0) ? selectedPriorityLevel.toString(): "null"} onChange={handlePriorityChange}>
+                                <td><Form.Select value={(selectedPriorityLevel || selectedPriorityLevel === 0) ? selectedPriorityLevel.toString() : "null"} onChange={handlePriorityChange}>
                                     <option value="null"></option>
                                     <option value="0">0</option>
                                     <option value="1">1</option>
@@ -164,11 +164,11 @@ function ManageTicketForm() {
                                 <td></td>
                                 <td>
                                     <Link reloadDocument to={'/tickets'} onClick={handleSave}>
-                                         <Button>Save</Button>
+                                        <Button>Save</Button>
                                     </Link>
                                     <span>{' '}</span>
                                     <Link to={'/tickets'}>
-                                         <Button>Cancel</Button>
+                                        <Button>Cancel</Button>
                                     </Link>
                                 </td>
                             </tr>
@@ -179,4 +179,4 @@ function ManageTicketForm() {
         );
 }
 
-export {ManageTicketForm}
+export { ManageTicketForm }

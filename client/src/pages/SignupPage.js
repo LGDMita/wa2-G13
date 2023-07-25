@@ -55,7 +55,7 @@ function SignupPage(props) {
             <Container>
                 <Row>
                     <Col md={6} xs={12} className="text-center d-flex align-items-center">
-                        <Row>
+                        <Row onClick={() => navigate("/home")}>
                             <Col xs={12} className="text-center">
                                 <Logo
                                     alt=""

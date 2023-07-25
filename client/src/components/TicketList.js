@@ -1,5 +1,5 @@
 import API from '../API';
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TableWithFilterAndSort from "./TableWithFilterAndSort"
 import { Col, Container, Row } from 'react-bootstrap';
@@ -10,10 +10,10 @@ function TicketList() {
 
     const [tickets, setTickets] = useState([]);
     const [filterOption, setFilterOption] = useState('open');
-    const {user, setUser}= useContext(UserContext);
+    const { user } = useContext(UserContext);
     const navigate = useNavigate();
 
-    async function load(){
+    async function load() {
         await API.getTickets().then(res => {
             setTickets(
                 res.map(t => {
@@ -35,7 +35,7 @@ function TicketList() {
                         expert_username: t.expert ? t.expert.username : null,
                         priority_level: (t.priorityLevel || t.priorityLevel === 0) ? t.priorityLevel : null,
                     }
-            }))
+                }))
         })
         //setTickets(await API.getTickets());
     }
@@ -68,7 +68,7 @@ function TicketList() {
                 <Col>
                     <h4 className='text-center'>Here you can find the list of all tickets</h4>
                     <div className='productTable'>
-                        <TableWithFilterAndSort data={tickets.length > 0 ? tickets : []} columns={['ticket_id', 'creation_date', 'status', 'customer_email', 'product_ean', 'product_sector', 'expert_email', 'priority_level', 'manage']} actionLink ={'/tickets/manage/'}/>
+                        <TableWithFilterAndSort data={tickets.length > 0 ? tickets : []} columns={['ticket_id', 'creation_date', 'status', 'customer_email', 'product_ean', 'product_sector', 'expert_email', 'priority_level', 'manage']} actionLink={'/tickets/manage/'} />
                     </div>
                 </Col>
             </Row>

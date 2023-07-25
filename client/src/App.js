@@ -2,9 +2,8 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import UserContext from './context/UserContext';
-import SectorsContext from "./context/SectorsContext";
 import Header from './components/Header';
-import {useContext, useState} from 'react';
+import { useState } from 'react';
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import {
     HomepagePage,
@@ -49,7 +48,6 @@ function App() {
     const [user, setUser] = useState(tokenManager.retrieveUser());
     const [logged, setLogged] = useState(tokenManager.amILogged());
     const navigate = useNavigate();
-    let {sectors} = useContext(SectorsContext);
     /*     const [loading, setLoading] = useState(true);
     
         useEffect(() => {
@@ -60,7 +58,6 @@ function App() {
         tokenManager.removeAuthToken();
         setUser(tokenManager.clearUser());
         setLogged(false);
-        sectors= [];
         navigate("/login");
     }
 

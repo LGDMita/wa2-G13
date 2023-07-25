@@ -20,7 +20,7 @@ function LoginPage(props) {
         if (user.logged) {
             navigate('/home');
         }
-    }, [user.logged]);
+    }, [user.logged, navigate]);
 
     const handleLogin = async () => {
         setLoading(true)
@@ -56,14 +56,16 @@ function LoginPage(props) {
             <Container>
                 <Row>
                     <Col md={6} xs={12} className="text-center">
-                        <Logo
-                            alt=""
-                            width="130"
-                            height="150"
-                            className="d-inline-block align-top"
-                        />
-                        <h1 className='text-login login-col'>MyTicketManager</h1>
-                        <br />
+                        <div onClick={() => navigate("/home")}>
+                            <Logo
+                                alt=""
+                                width="130"
+                                height="150"
+                                className="d-inline-block align-top"
+                            />
+                            <h1 className='text-login login-col'>MyTicketManager</h1>
+                            <br />
+                        </div>
                     </Col>
                     <Col md={6} xs={12}>
                         {
