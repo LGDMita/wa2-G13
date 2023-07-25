@@ -3,10 +3,8 @@ import { Row, Col, Form, Button, Container, Spinner } from 'react-bootstrap';
 import ErrorMessage from '../components/ErrorMessage';
 import { useNavigate } from 'react-router-dom';
 import { ReactComponent as Logo } from "../logo.svg";
-
 import UserContext from "../context/UserContext";
 import API from "../API";
-
 import "../styles/LoginPage.css"
 
 function LoginPage(props) {
@@ -18,11 +16,19 @@ function LoginPage(props) {
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
 
+    useEffect(() => {
+        if (user.logged) {
+            navigate('/home');
+        }
+    }, [user.logged]);
+
     const handleLogin = async () => {
+        setLoading(true)
         try {
             setLoading(true)
             await API.login(username, password, setUser);
             props.setLogged(true);
+            setLoading(false)
             navigate("/home");
             setLoading(false);
         } catch (status) {
@@ -32,6 +38,7 @@ function LoginPage(props) {
             } else if (parseInt(status.message) === 401) {
                 setErrorMessage('Username or password is incorrect.');
             }
+            setLoading(false)
         }
     }
 
@@ -90,9 +97,6 @@ function LoginPage(props) {
                                         </Button>
                                         <Button variant="info" type="button" onClick={handleSignUp}>
                                             Signup
-                                        </Button>
-                                        <Button variant="secondary" type="button">
-                                            Password forgotten?
                                         </Button>
                                     </div>
                                     <br />

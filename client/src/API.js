@@ -6,6 +6,7 @@ import Sector from "./sector";
 import TokenManager from './TokenManager';
 import Ticket from "./ticket";
 import Manager from "./manager";
+import Sector from "./sector";
 
 const SERVER_URL = 'http://localhost:8080';
 
@@ -275,11 +276,6 @@ const login = async (username, password, setUser) => {
     }
 };
 
-const logout = async () => {
-    return null;
-};
-
-
 const sendMessage = async (ticketId, fromUser, text, files) => {
     const data = new FormData();
     data.append("fromUser", fromUser);
@@ -400,6 +396,18 @@ const updateExpert = async (expert) => {
     }
 };
 
+const getSectorsOfExpert = async (id) => {
+    try {
+        const response = await apiInstance.get(`/API/experts/${id}/sectors`)
+        const rows = response.data;
+        return rows.map(row => {
+            return new Sector(row.sectorId, row.name);
+        });
+    } catch (error) {
+        throw new Error(error.response.data.detail);
+    }
+}
+
 const API = {
     getTickets,
     getTicket,
@@ -419,7 +427,6 @@ const API = {
     modifyExpertWithSector,
     modifyManager,
     login,
-    logout,
     sendMessage,
     getMessages,
     getTicketsOf,
@@ -430,6 +437,7 @@ const API = {
     getTicketHistory,
     updateExpert,
     getExperts,
+    getSectorsOfExpert,
     getSectors,
     getExpertSectors
 };

@@ -31,13 +31,13 @@ function CreateExpertPage() {
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
-    const [error, setError] = useState(false);
-    const [loading, setLoading] = useState(false);
     const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (!user.logged || user.role !== 'manager') {
-            navigate('/home');
+            navigate('/login');
         }
     }, [user.logged, user.role, navigate]);
 
@@ -69,9 +69,8 @@ function CreateExpertPage() {
                                 setSurname('');
                                 setShowSuccessAlert(true);
                             } catch (error) {
-                                console.log(error)
+                                setError(error);
                                 setLoading(false)
-                                setError(true);
                             }
                         }}>
                             {showSuccessAlert && <SuccessAlert show={showSuccessAlert} onClose={() => setShowSuccessAlert(false)} />}
@@ -104,7 +103,7 @@ function CreateExpertPage() {
                             </Form.Group>
                             <Button className="mx-auto" variant="success" type="submit">Submit</Button> &nbsp;
                             <Button variant="secondary" type="button" onClick={() => navigate("/experts")}>Back</Button>
-                            {error ? <Alert className="my-3" variant="danger">Something went wrong!</Alert> : <></>}
+                            {error !== '' ? <Alert className="my-3" variant="danger">Error during expert creation: {error.message}</Alert> : <></>}
                         </Form>
                     </div>
                 </div>

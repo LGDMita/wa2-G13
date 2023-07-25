@@ -45,6 +45,11 @@
     height: auto;
 }
 
+.modify-user-info-h1-button{
+    display: flex;
+    margin-bottom: 1.5em;
+}
+
 @media (max-width: 768px) {
     .user-info-container {
         flex-direction: column;

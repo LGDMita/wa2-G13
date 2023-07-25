@@ -26,10 +26,11 @@ class SectorController(
     }
 
     @GetMapping("/API/experts/{id}/sectors")
-    fun getSectorsOfExpert(@PathVariable id: String): List<SectorDTO>? {
-        if (expertService.getExpertById(id) != null) {
+    fun getSectorsOfExpert(@PathVariable id: String): List<SectorDTO>{
+        val returnList= sectorService.getSectorsOfExpert(id);
+        return if (returnList != null) {
             log.info("Requiring services of expert with id: {}", id)
-            return sectorService.getSectorsOfExpert(id) ?: throw ExpertSectorsNotFoundException()
+            returnList
         } else {
             log.warn("No exert found with id: {}", id)
             throw ExpertNotFoundException()
