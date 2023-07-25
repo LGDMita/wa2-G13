@@ -69,20 +69,15 @@ const getTicket = async (id) => {
 };
 
 const getExpertsBySector = async (sector) => {
-    try {
-        const response = await apiInstance.get(`/API/experts/?sectorName=${sector}`);
-        const rows = response.data;
-        if (response.status === 200) {
-            return rows.map(row => {
-                return new Expert(row.id, row.username, row.email, row.name, row.surname);
-            });
-        } else {
-            console.log(rows)
-            throw new Error(rows.detail);
-        }
-    }
-    catch (error) {
-        console.log(error)
+    const response = await apiInstance.get(`/API/experts/?sectorName=${sector}`);
+    const rows = response.data;
+    if (response.status === 200) {
+        return rows.map(row => {
+            return new Expert(row.id, row.username, row.email, row.name, row.surname);
+        });
+    } else {
+        console.log(rows)
+        throw new Error(rows.detail);
     }
 };
 

@@ -49,7 +49,7 @@ function ProductTable() {
                             </Row>
                         </Container> :
                         <div className='productTable'>
-                            <TableWithFilterAndSort data={products} />
+                            <TableWithFilterAndSort data={products} columns={['ean', 'name', 'brand']} />
                         </div>
                     }
                 </Col>
