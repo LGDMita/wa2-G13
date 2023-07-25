@@ -62,30 +62,32 @@ class ExpertController(
     )
 
     @Transactional
-    @PutMapping("/API/modifyExpert/sectors/")
+    @PutMapping("/API/modifyExpert/sectors/{id}")
     fun modifyExpertWithSectors(
         @PathVariable id: String,
         @RequestBody expertWithSectorsDTO: ExpertWithSectorsDTO,
         br: BindingResult
     ): Boolean {
-        println("Qui si")
         return if (!br.hasErrors()) {
             val oldExpert = expertService.getExpertById(id)?.toRegisterDTO() ?: throw ExpertNotFoundException()
             authService.updateUser(id, oldExpert, expertWithSectorsDTO.expertDTO.toRegisterDTO())
-            expertService.modifyExpert(id, expertWithSectorsDTO.expertDTO)
 
-            val currentSector = sectorService.getSectorsOfExpert(expertWithSectorsDTO.expertDTO.id)
+            val newExpert = expertWithSectorsDTO.expertDTO
+
+            expertService.modifyExpert(id, newExpert)
+
+            val currentSector = sectorService.getSectorsOfExpert(id)
             currentSector?.forEach { sector ->
                 val res = expertWithSectorsDTO.sectorList.contains(sector)
                 if (!res) {
-                    sectorService.deleteSectorForExpert(expertWithSectorsDTO.expertDTO.id, sector.sectorId!!)
+                    sectorService.deleteSectorForExpert(id, sector.sectorId!!)
                 }
             }
 
             expertWithSectorsDTO.sectorList.forEach { sector ->
-                val res = sectorService.findBySectorId(sector.sectorId!!)
-                if (res !== null) {
-                    sectorService.setSectorForExpert(expertWithSectorsDTO.expertDTO.id, sector)
+                val res = currentSector?.contains(sector)
+                if (!res!!) {
+                    sectorService.setSectorForExpert(id, sector)
                 }
              }
 

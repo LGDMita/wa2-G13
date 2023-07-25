@@ -1,6 +1,6 @@
 class Sector {
-    constructor(id, name) {
-        this.id = id;
+    constructor(sectorId, name) {
+        this.sectorId = sectorId;
         this.name = name;
     }
 }

@@ -7,6 +7,7 @@ import "../styles/Loading.css";
 import API from "../API";
 import RegistrationData from "../registrationData";
 import UserContext from "../context/UserContext";
+import Expert from "../expert";
 
 const SuccessAlert = ({ show, onClose }) => {
     return (
@@ -29,7 +30,6 @@ function ModifyExpertPage() {
     const { user } = useContext(UserContext);
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
@@ -49,10 +49,13 @@ function ModifyExpertPage() {
                     const sectors = await API.getSectors();
                     const expertSector = await API.getExpertSectors(expertId);
 
-                    const updatedAvailableSectors = sectors.map(sector => ({
-                        ...sector,
-                        checked: expertSector.some(expertSector => expertSector.id === sector.id)
-                    }));
+                    let updatedAvailableSectors = []
+                    if (expertSector !== []) {
+                        updatedAvailableSectors = sectors.map(sector => ({
+                            ...sector,
+                            checked: expertSector.some(es => es.sectorId === sector.sectorId)
+                        }));
+                    }
 
                     setAvailableSectors(updatedAvailableSectors);
                     setUsername(expertData.username);
@@ -71,9 +74,9 @@ function ModifyExpertPage() {
     }, [user.logged, user.role, navigate, expertId]);
 
     const handleSectorSelection = (sectorId) => {
-        const isSelected = availableSectors.find(item => item.sectorId === sectorId);
+        const isSelected = availableSectors.find(item => item.sectorId === sectorId).checked;
         const updatedSectorsArray = availableSectors.map((sector) => {
-            if (sector.id === sectorId) {
+            if (sector.sectorId === sectorId) {
                 return {
                     ...sector,
                     checked: !isSelected,
@@ -112,32 +115,22 @@ function ModifyExpertPage() {
                         e.stopPropagation();
                         setLoading(true)
                         try {
-                            await API.modifyExpertWithSector(expertId, new RegistrationData(username, password, email, name, surname),
-                                availableSectors.filter((s) => s.checked === true).map((sector) => ({ id: sector.id, name: sector.name })));
+                            await API.modifyExpertWithSector(expertId, new Expert(expertId, username, email, name, surname),
+                                availableSectors.filter((s) => s.checked === true).map((sector) => ({ sectorId: sector.sectorId, name: sector.name })));
                             setLoading(false)
-                            setUsername('');
-                            setPassword('')
-                            setEmail('');
-                            setName('');
-                            setSurname('');
                             setShowSuccessAlert(true);
                         } catch (error) {
                             setLoading(false)
                             setError(true);
                         }
                     }}>
-                        {showSuccessAlert && <SuccessAlert show={showSuccessAlert} onClose={() => setShowSuccessAlert(false)} />}
+                        {showSuccessAlert && <SuccessAlert show={showSuccessAlert} onClose={() => navigate("/experts")} />}
                         {error ? <Alert className="my-3" variant="danger">Something went wrong!</Alert> : <></>}
                         <Form.Group className="mb-3">
                             <Form.Label style={{ fontWeight: "bolder" }}>Username : </Form.Label>
                             <Form.Control type="text" placeholder="insert username" name="username" required
                                 value={username} disabled
                                 onChange={e => setUsername(e.target.value)} />
-                        </Form.Group>
-                        <Form.Group className="mb-3" controlId="formBasicPassword">
-                            <Form.Label style={{ fontWeight: "bolder" }}>Password : </Form.Label>
-                            <Form.Control type="password" placeholder="insert password" name="password" required
-                                onChange={p => setPassword(p.target.value)} />
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label style={{ fontWeight: "bolder" }}>Email : </Form.Label>
@@ -166,12 +159,12 @@ function ModifyExpertPage() {
                             >
                                 {availableSectors.map((sector) => (
                                     <Form.Check
-                                        key={`availableSector_${sector.id}`}
+                                        key={`availableSector_${sector.sectorId}`}
                                         type="checkbox"
-                                        id={`availableSector_${sector.id}`}
+                                        id={`availableSector_${sector.sectorId}`}
                                         label={sector.name}
-                                        value={sector.id}
-                                        onChange={() => handleSectorSelection(sector.id)}
+                                        value={sector.sectorId}
+                                        onChange={() => handleSectorSelection(sector.sectorId)}
                                         checked={sector.checked}
                                     />
                                 ))}
