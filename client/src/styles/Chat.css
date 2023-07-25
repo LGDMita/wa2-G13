@@ -1,10 +1,12 @@
 .messages-container {
-    height: 71vh;
+    height: 55vh;
     max-height: 71vh;
     width: 100%;
     margin: 0rem;
-    -ms-overflow-style: none; /* for Internet Explorer, Edge */
-    scrollbar-width: none; /* for Firefox */
+    -ms-overflow-style: none;
+    /* for Internet Explorer, Edge */
+    scrollbar-width: none;
+    /* for Firefox */
     overflow-y: scroll;
     scroll-snap-align: center;
     scroll-behavior: smooth;
@@ -21,14 +23,16 @@
     max-width: 66%;
 
     box-shadow: 0 0 2rem rgba(black, 0.075),
-    0rem 1rem 1rem -1rem rgba(black, 0.1);
+        0rem 1rem 1rem -1rem rgba(black, 0.1);
 }
 
 .newmessage-container {
     height: 19vh;
     max-height: 19vh;
-    -ms-overflow-style: none; /* for Internet Explorer, Edge */
-    scrollbar-width: none; /* for Firefox */
+    -ms-overflow-style: none;
+    /* for Internet Explorer, Edge */
+    scrollbar-width: none;
+    /* for Firefox */
     overflow-y: scroll;
     scroll-snap-align: center;
     scroll-behavior: smooth;
@@ -44,7 +48,7 @@
     width: 100%;
 
     box-shadow: 0 0 2rem rgba(black, 0.075),
-    0rem 1rem 1rem -1rem rgba(black, 0.1);
+        0rem 1rem 1rem -1rem rgba(black, 0.1);
 }
 
 .newmessage-send {
@@ -61,7 +65,7 @@
     color: white;
 }
 
-.newmessage-send:hover > .sendmessagebutton {
+.newmessage-send:hover>.sendmessagebutton {
     color: greenyellow;
 }
 

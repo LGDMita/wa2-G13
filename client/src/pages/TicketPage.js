@@ -108,20 +108,31 @@ function TicketPage(props) {
         getTickets();
     }, [refresh]);
 
-    return (
-        <Container fluid className="ticket-page">
-            <Row>
-                <Col xs={selectedTicket !== -1 ? 4 : 12}>
-                    <MyTicketList ticketList={ticketList} setTicketList={setTicketList} selectedTicket={selectedTicket}
-                        setSelectedTicket={setSelectedTicket} />
-                </Col>
-                {ticketList.find(t => t.ticketId === selectedTicket) && <Col xs={8}>
-                    <Chat ticket={ticketList.find(t => t.ticketId === selectedTicket)} refresh={refresh}
-                        setRefresh={setRefresh} />
-                </Col>}
-            </Row>
-        </Container>
-    )
+    if (ticketList && ticketList.length > 0) {
+        return (
+            <Container fluid className="ticket-page ticketList-cnt">
+                <h4 className='text-center'>Here you can find the list of your tickets</h4><br />
+                <Row>
+                    <Col xs={selectedTicket !== -1 ? 4 : 12}>
+                        <MyTicketList ticketList={ticketList} setTicketList={setTicketList} selectedTicket={selectedTicket}
+                            setSelectedTicket={setSelectedTicket} />
+                    </Col>
+                    {ticketList.find(t => t.ticketId === selectedTicket) && <Col xs={8}>
+                        <Chat ticket={ticketList.find(t => t.ticketId === selectedTicket)} refresh={refresh}
+                            setRefresh={setRefresh} />
+                    </Col>}
+                </Row>
+            </Container>
+        )
+    }
+    else {
+        return (
+            <Container className="ticketList-cnt-void">
+                <h2 className='text-center'>Still no tickets</h2>
+                <h5 className='text-center'>When a ticket will be opened, you will see it here.</h5>
+            </Container>
+        );
+    }
 }
 
 export default TicketPage;
