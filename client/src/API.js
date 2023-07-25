@@ -353,7 +353,7 @@ const getSectorsOfExpert = async (id) =>{
         const response = await apiInstance.get(`/API/experts/${id}/sectors`)
         const rows = response.data;
         return rows.map(row => {
-            return new Sector(row.id, row.name);
+            return new Sector(row.sectorId, row.name);
         });
     } catch (error){
         throw new Error(error.response.data.detail);
