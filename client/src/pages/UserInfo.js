@@ -70,8 +70,6 @@ function UserInfoPage(props) {
                 userInfo = await API.getExpertInfo(user.id);
                 sectors = await API.getSectorsOfExpert(user.id);
                 setSectorsState(sectors)
-                console.log(sectorsState)
-                console.log(sectors)
             } else if (user.role === 'manager') {
                 userInfo = await API.getManagerInfo(user.id);
             }
