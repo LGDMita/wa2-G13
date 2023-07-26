@@ -2,7 +2,23 @@ import React, { useContext, useEffect, useState } from 'react';
 import UserContext from "../context/UserContext";
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import API from "../API";
-import { Form, Button, Table, Alert } from 'react-bootstrap'
+import { Form, Button, Table, Modal } from 'react-bootstrap'
+
+const OverlayAlert = ({ show, onClose, title, message }) => {
+    return (
+        <Modal show={show} onHide={onClose}>
+            <Modal.Header closeButton>
+                <Modal.Title>{title}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>{message}</Modal.Body>
+            <Modal.Footer>
+                <Button variant="primary" onClick={onClose}>
+                    Close
+                </Button>
+            </Modal.Footer>
+        </Modal>
+    );
+};
 
 function ManageTicketForm() {
 
@@ -14,11 +30,12 @@ function ManageTicketForm() {
     const [selectedPriorityLevel, setSelectedPriorityLevel] = useState(null);
     const [selectedExpert, setSelectedExpert] = useState(null)
 
-    const [openAlert, setOpenAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
 
     const [expertsNotFound, setExpertsNotFound] = useState(false);
 
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertTitle, setAlertTitle] = useState('');
     async function load() {
         await API.getTicket(ticketId).then(res => {
             setTicket(res);
@@ -28,7 +45,8 @@ function ManageTicketForm() {
                 .then(res => setSectorExperts(res))
                 .catch(err => {
                     setExpertsNotFound(true);
-                    setOpenAlert(true);
+                    setShowAlert(true);
+                    setAlertTitle('Attention');
                     setAlertMessage(`No experts found of the sector: ${res.product.sector.name}`);
                     console.log(`No experts found of the sector: ${res.product.sector.name}`)
                 });
@@ -63,9 +81,13 @@ function ManageTicketForm() {
             if (selectedPriorityLevel !== ticket.priorityLevel?.toString()) await API.changePriorityLevel(ticketId, parseInt(selectedPriorityLevel));
             if (selectedExpert !== ticket.expert?.id.toString()) await API.changeExpert(ticketId, selectedExpert);
             if (ticket.status === 'open') await API.changeStatus(ticketId, "in_progress");
+            setShowAlert(true);
+            setAlertTitle('Success')
+            setAlertMessage("The ticket was successfully saved")
         } else {
             event.preventDefault();
-            setOpenAlert(true);
+            setShowAlert(true);
+            setAlertTitle('Warning');
             setAlertMessage('Select both an expert and a priority level to save the ticket, ' +
                 'otherwise just click \'Cancel\' to go back to the ticket list ' +
                 'without changing anything');
@@ -81,7 +103,7 @@ function ManageTicketForm() {
         let hours = ("0" + dateObj.getHours()).slice(-2);
         let minutes = ("0" + dateObj.getMinutes()).slice(-2);
 
-        return `${year}-${month}-${day}, ${hours}:${minutes}`;
+        return `${year}/${month}/${day} ${hours}:${minutes}`;
     }
 
     if ((!ticket || !sectorExperts) && !expertsNotFound)
@@ -89,13 +111,14 @@ function ManageTicketForm() {
     else
         return (
             <>
+                {showAlert ?
+                    <OverlayAlert show={showAlert} onClose={() => {
+                        alertTitle === 'Success' ? navigate('/tickets'): setShowAlert(false);
+                    }} title={alertTitle} message={alertMessage}/>
+                : null}
                 <div className="manage-ticket-form">
                     <h4 className='text-center' style={{ marginBottom: '20px' }}>Manage the ticket with id '{ticketId}'</h4>
                     <span>{' '}</span>
-                    <Alert show={openAlert} variant="warning" onClose={() => setOpenAlert(false)} dismissible>
-                        <Alert.Heading>Warning</Alert.Heading>
-                        <p>{alertMessage}</p>
-                    </Alert>
                     <Table striped bordered hover>
                         <thead>
                             <tr>
@@ -104,7 +127,7 @@ function ManageTicketForm() {
                             </tr>
                             <tr>
                                 <th>Status</th>
-                                <td>{ticket.status.replace(/_/g, " ")}</td>
+                                <td>{ticket.status}</td>
                             </tr>
                             <tr>
                                 <th>Customer Email</th>
@@ -136,7 +159,7 @@ function ManageTicketForm() {
                             </tr>
                             <tr>
                                 <th>Product Sector</th>
-                                <td>{ticket.product.sector.name.replace(/_/g, " ")}</td>
+                                <td>{ticket.product.sector.name}</td>
                             </tr>
                             <tr>
                                 <th>Expert (only experts of the related sector can be assigned to the ticket):</th>
@@ -163,9 +186,7 @@ function ManageTicketForm() {
                             <tr>
                                 <td></td>
                                 <td>
-                                    <Link reloadDocument to={'/tickets'} onClick={handleSave}>
-                                        <Button>Save</Button>
-                                    </Link>
+                                    <Button onClick={handleSave}>Save</Button>
                                     <span>{' '}</span>
                                     <Link to={'/tickets'}>
                                         <Button>Cancel</Button>
