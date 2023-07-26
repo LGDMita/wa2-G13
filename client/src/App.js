@@ -14,7 +14,8 @@ import {
     SignupPage,
     CreateExpertPage,
     UserInfoPage,
-    ModifyExpertPage
+    ModifyExpertPage,
+    TicketHistory
 } from './pages';
 import TokenManager from './TokenManager';
 import { ProductTable } from "./components/ProductTable";
@@ -81,6 +82,7 @@ function App() {
                     <Route path="/modifyExpert/:expertId" element={<ModifyExpertPage />} />
                     {user.logged && user.role === "manager" &&
                         <Route path="/tickets/manage/:ticketId" element={<ManageTicketForm />} />}
+                    <Route path="/tickets/history" element={<TicketHistory/>}/>
                 </Routes>
             </CheckContentContainer>
             <ScrollToTopButton />

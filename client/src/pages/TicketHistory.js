@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import API from "../API";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Card } from "react-bootstrap";
 import time from "../lib/time";
 
@@ -13,8 +13,11 @@ const STATUS_TRADUCTIONS = {
 }
 
 function TicketHistory() {
+    const { user } = useContext(UserContext);
     const [history, setHistory] = useState([]);
+    const navigate=useNavigate();
     const location = useLocation();
+    if(user.role!=="manager") navigate("/home");
     useEffect(() => {
         const getHistory = async () => {
             try {

@@ -147,7 +147,7 @@ function PurchasesPage(props) {
     const [selectedPurchase, setSelectedPurchase] = useState(undefined);
     const { user } = useContext(UserContext);
     const navigate = useNavigate();
-
+    if(user.role!=="customer") navigate("/home");
     useEffect(() => {
         const getPurchases = async () => {
             try {

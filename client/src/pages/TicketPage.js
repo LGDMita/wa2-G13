@@ -106,16 +106,19 @@ function TicketPage(props) {
     useEffect(() => {
         const getTickets = async () => {
             try {
+                console.log("Getting tickets")
                 const ticks = await API.getTicketsOf(user.id, user.role);
                 setTicketList([...ticks]);
+                console.log("Got tickets "+ticks);
             } catch (error) {
                 setTicketList([]);
 
             }
         }
         getTickets();
-    }, [refresh]);
+    }, []);
 
+    if(user.role!=="customer" && user.role!=="expert") navigate("/home");
     if (ticketList && ticketList.length > 0) {
         return (
             <Container fluid className="ticket-page ticketList-cnt">
