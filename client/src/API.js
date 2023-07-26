@@ -189,7 +189,7 @@ const createExpert = async (registrationData) => {
 
 const deleteExpert = async (expertId) => {
     try {
-        await apiInstance.delete('/API/experts' + expertId);
+        await apiInstance.delete('/API/experts/' + expertId);
     } catch (error) {
         console.error('Error while deleting expert:', error);
         throw new Error(error.response.status)

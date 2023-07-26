@@ -8,13 +8,13 @@ import API from "../API";
 import UserContext from "../context/UserContext";
 import Expert from "../expert";
 
-const SuccessAlert = ({ show, onClose }) => {
+const SuccessAlert = ({ show, onClose, message, goToList }) => {
     return (
         <Modal show={show} onHide={onClose}>
             <Modal.Header closeButton>
                 <Modal.Title>Success</Modal.Title>
             </Modal.Header>
-            <Modal.Body>New expert has been successfully modified!</Modal.Body>
+            <Modal.Body>{message}</Modal.Body>
             <Modal.Footer>
                 <Button variant="primary" onClick={onClose}>
                     Close
@@ -30,7 +30,7 @@ const ConfirmDeleteAlert = ({ show, onClose, onConfirm }) => {
             <Modal.Header closeButton>
                 <Modal.Title>Confirm Deletion</Modal.Title>
             </Modal.Header>
-            <Modal.Body>Are you sure you want to delete this item?</Modal.Body>
+            <Modal.Body>Are you sure you want to delete this expert?</Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={onClose}>
                     Cancel
@@ -58,6 +58,7 @@ function ModifyExpertPage() {
     const [showDeleteAlert, setShowDeleteAlert] = useState(false);
     const [availableSectors, setAvailableSectors] = useState([]);
     const [newSector, setNewSector] = useState("");
+    const [message, setMessage] = useState("");
 
     useEffect(() => {
         if (!user.logged || user.role !== 'manager') {
@@ -117,12 +118,14 @@ function ModifyExpertPage() {
         }
     };
 
-    const handleDeleteExpert = () => {
+    const handleDeleteExpert = async () => {
         try {
-            API.deleteExpert(expertId);
-            navigate("/experts");
+            await API.deleteExpert(expertId);
+            setMessage("Expert has been succesfully deleted!");
+            setShowSuccessAlert(true);
         }
         catch (error) {
+            console.error(error);
             setShowDeleteAlert(false);
             setError(true);
         }
@@ -149,13 +152,14 @@ function ModifyExpertPage() {
                             await API.modifyExpertWithSector(expertId, new Expert(expertId, username, email, name, surname),
                                 availableSectors.filter((s) => s.checked === true).map((sector) => ({ sectorId: sector.sectorId, name: sector.name })));
                             setLoading(false)
+                            setMessage("New expert has been successfully modified!");
                             setShowSuccessAlert(true);
                         } catch (error) {
                             setLoading(false)
                             setError(true);
                         }
                     }}>
-                        {showSuccessAlert && <SuccessAlert show={showSuccessAlert} onClose={() => navigate("/experts")} />}
+                        {showSuccessAlert && <SuccessAlert show={showSuccessAlert} onClose={() => navigate("/experts")} message={message} />}
                         {showDeleteAlert && <ConfirmDeleteAlert show={showDeleteAlert} onClose={() => setShowDeleteAlert(false)} onConfirm={handleDeleteExpert} />}
                         {error ? <Alert className="my-3" variant="danger">Something went wrong!</Alert> : <></>}
                         <Form.Group className="mb-3">
@@ -219,8 +223,8 @@ function ModifyExpertPage() {
                             </div>
                         </Form.Group>
                         <Button className="mx-auto" variant="success" type="submit">Submit</Button> &nbsp;
-                        <Button variant="secondary" type="button" onClick={() => navigate("/experts")}>Back</Button> &nbsp;
-                        <Button className="mx-auto" variant="delete" type="burron" onClick={() => setShowDeleteAlert(true)}>Delete</Button>
+                        <Button className="mx-auto" variant="danger" type="button" onClick={() => setShowDeleteAlert(true)}>Delete</Button> &nbsp;
+                        <Button variant="secondary" type="button" onClick={() => navigate("/experts")}>Back</Button>
                     </Form>
                 </div >
             </div >

@@ -254,7 +254,7 @@ class MessagesTests {
             profile = myProfile, product = myProduct, priorityLevel = 1, expert = myExpert,
             status = "open", creationDate = Date(), messages = mutableSetOf()
         )
-        val myAttachment = Attachment(null, "image/png", 1, byteArrayOf(3), Date())
+        val myAttachment = Attachment(null, "image/png", "", 1, byteArrayOf(3), Date())
         val myMessage = Message(
             myTicket, true, "Hey I'm Test Profile, I'm having issues with my new product!",
             Date(), mutableSetOf(myAttachment)
