@@ -8,6 +8,8 @@ import it.polito.wa2.g13.server.profiles.ProfileService
 import it.polito.wa2.g13.server.ticketing.experts.ExpertDTO
 import it.polito.wa2.g13.server.ticketing.experts.ExpertService
 import jakarta.validation.Valid
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Size
 import lombok.extern.slf4j.Slf4j
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -108,22 +110,33 @@ class AuthController(
     }
 
     data class changePasswordDTO (
+        @field:NotBlank(message = "Username can NOT be blank")
         val username: String,
+        @field:NotBlank(message = "Old password can NOT be blank")
         val oldPassword: String,
+        @field:Size(min = 8, max = 32, message = "Password MUST be a NON empty string of min 8 and max 32 chars")
+        @field:NotBlank(message = "Password can NOT be blank")
         val newPassword: String
     )
 
     @PostMapping("/API/changePassword/{id}")
     fun changePassword(
         @PathVariable id: String,
-        @RequestBody changePasswordDTO: changePasswordDTO
+        @RequestBody @Valid changePasswordDTO: changePasswordDTO,
+        br: BindingResult
     ): ResponseEntity<Any> {
-        val checkOldPassword = authService.login(LoginDTO(changePasswordDTO.username, changePasswordDTO.oldPassword));
-        return if (checkOldPassword != null) {
-            authService.changePassword(id, changePasswordDTO.newPassword)
-            ResponseEntity.ok("Password changed successfully.")
-        } else {
-            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid old password.")
+        if (!br.hasErrors()) {
+            val checkOldPassword =
+                authService.login(LoginDTO(changePasswordDTO.username, changePasswordDTO.oldPassword));
+            return if (checkOldPassword != null) {
+                authService.changePassword(id, changePasswordDTO.newPassword)
+                ResponseEntity.ok("Password changed successfully.")
+            } else {
+                ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid old password.")
+            }
+        }
+        else {
+            throw InvalidArgumentsException()
         }
     }
 

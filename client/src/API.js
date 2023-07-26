@@ -272,7 +272,7 @@ const login = async (username, password, setUser) => {
 
 const changePassword = async (id, username, oldPassword, newPassword) => {
     try {
-        await axios.post(`/API/changePassword/${id}`, {
+        await apiInstance.post(`/API/changePassword/${id}`, {
             "username": username,
             "oldPassword": oldPassword,
             "newPassword": newPassword

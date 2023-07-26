@@ -99,6 +99,11 @@ function UserInfoPage(props) {
             return;
         }
 
+        if (newPassword.length < 8 || newPassword.length > 32) {
+            setErrorPassword({ message: "New password must be between 8 and 32 chars." });
+            return;
+        }
+
         try {
             await API.changePassword(user.id, user.username, oldPassword, newPassword);
             setErrorPassword('');
