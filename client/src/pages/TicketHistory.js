@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext } from "react";
 import API from "../API";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Card } from "react-bootstrap";
 import time from "../lib/time";
 
@@ -18,13 +18,13 @@ function TicketHistory() {
     const { user } = useContext(UserContext);
     const [history, setHistory] = useState([]);
     const navigate = useNavigate();
-    const location = useLocation();
     if (user.role !== "manager") navigate("/home");
+    const { ticketId } = useParams();
     useEffect(() => {
         const getHistory = async () => {
             try {
-                if (!location.state) throw new Error({ status: 0, detail: "No id provided" });
-                const history = await API.getTicketHistory(location.state);
+                //if (!location.state) throw new Error({ status: 0, detail: "No id provided" });
+                const history = await API.getTicketHistory(ticketId);
                 setHistory(history);
             } catch (error) {
                 setHistory([]);

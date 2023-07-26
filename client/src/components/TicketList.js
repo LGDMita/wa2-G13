@@ -64,7 +64,7 @@ function TicketList() {
                 <Col>
                     <h4 className='text-center'>Here you can find the list of all tickets</h4>
                     <div className='productTable'>
-                        <TableWithFilterAndSort data={tickets.length > 0 ? tickets : []} columns={['ticket_id', 'creation_date', 'status', 'customer_email', 'product_ean', 'product_sector', 'expert_email', 'priority_level', 'manage']} actionLink={'/tickets/manage/'} />
+                        <TableWithFilterAndSort data={tickets.length > 0 ? tickets : []} columns={['ticket_id', 'creation_date', 'status', 'customer_email', 'product_ean', 'product_sector', 'expert_email', 'priority_level', 'manage', 'history']} actionLinks={['/tickets/manage/', '/tickets/history/']} />
                     </div>
                 </Col>
             </Row>
