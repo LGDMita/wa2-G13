@@ -5,6 +5,7 @@ import UserContext from "../context/UserContext";
 import "../styles/TicketPage.css";
 import API from "../API";
 import { useLocation, useNavigate } from "react-router";
+import { Spinner } from "react-bootstrap";
 
 function MyTicketList(props) {
     const { user } = useContext(UserContext);
@@ -98,6 +99,7 @@ function TicketPage(props) {
     const location = useLocation();
     const [openList, setOpenList] = useState(true);
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
 
 
     // single route
@@ -110,10 +112,9 @@ function TicketPage(props) {
     useEffect(() => {
         const getTickets = async () => {
             try {
-                console.log("Getting tickets")
                 const ticks = await API.getTicketsOf(user.id, user.role);
                 setTicketList([...ticks]);
-                console.log("Got tickets " + ticks);
+                setLoading(false);
             } catch (error) {
                 setTicketList([]);
 
@@ -123,30 +124,40 @@ function TicketPage(props) {
     }, [refreshTickets]);
 
     if (user.role !== "customer" && user.role !== "expert") navigate("/home");
-    if (ticketList && ticketList.length > 0) {
-        return (
-            <Container fluid className="ticket-page ticketList-cnt">
-                <h4 className='text-center'>Here you can find the list of your tickets</h4><br />
-                <Row>
-                    <Col xs={12} md={selectedTicket !== -1 ? 4 : 12}>
-                        <MyTicketList ticketList={ticketList} setTicketList={setTicketList} selectedTicket={selectedTicket}
-                            setSelectedTicket={setSelectedTicket} openList={openList} setOpenList={setOpenList} />
-                    </Col>
-                    {ticketList.find(t => t.ticketId === selectedTicket) && <Col xs={12} md={8}>
-                        <Chat ticket={ticketList.find(t => t.ticketId === selectedTicket)} refresh={refresh}
-                            setRefresh={setRefresh} refreshTickets={refreshTickets} setRefreshTickets={setRefreshTickets} />
-                    </Col>}
-                </Row>
-            </Container>
-        )
+
+    if (loading) {
+        return (<Container fluid>
+            <Row>
+                <Spinner animation="border" variant="dark" className="spin-load" size="lg" />
+            </Row>
+        </Container>);
     }
     else {
-        return (
-            <Container className="ticketList-cnt-void">
-                <h2 className='text-center'>Still no tickets</h2>
-                <h5 className='text-center'>When a ticket will be opened, you will see it here.</h5>
-            </Container>
-        );
+        if (ticketList && ticketList.length > 0) {
+            return (
+                <Container fluid className="ticket-page ticketList-cnt">
+                    <h4 className='text-center'>Here you can find the list of your tickets</h4><br />
+                    <Row>
+                        <Col xs={12} md={selectedTicket !== -1 ? 4 : 12}>
+                            <MyTicketList ticketList={ticketList} setTicketList={setTicketList} selectedTicket={selectedTicket}
+                                setSelectedTicket={setSelectedTicket} openList={openList} setOpenList={setOpenList} />
+                        </Col>
+                        {ticketList.find(t => t.ticketId === selectedTicket) && <Col xs={12} md={8}>
+                            <Chat ticket={ticketList.find(t => t.ticketId === selectedTicket)} refresh={refresh}
+                                setRefresh={setRefresh} refreshTickets={refreshTickets} setRefreshTickets={setRefreshTickets} />
+                        </Col>}
+                    </Row>
+                </Container>
+            )
+        }
+        else {
+            return (
+                <Container className="ticketList-cnt-void">
+                    <h2 className='text-center'>Still no tickets</h2>
+                    <h5 className='text-center'>When a ticket will be opened, you will see it here.</h5>
+                </Container>
+            );
+        }
     }
 }
 

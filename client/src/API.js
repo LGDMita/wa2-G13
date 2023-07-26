@@ -304,7 +304,6 @@ const sendMessage = async (ticketId, fromUser, text, files) => {
 const getMessages = async ticketId => {
     const res = await apiInstance.get("/API/tickets/" + ticketId + "/messages");
     const ret = await res.data;
-    console.log("Messages ", ret, " status ", res.status);
     if (res.status !== 200) throw new Error({ status: res.status, detail: ret });
     else return ret;
 }

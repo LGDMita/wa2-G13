@@ -255,7 +255,7 @@ function UserInfoPage(props) {
                                             onChange={e => setNewPassword(e.target.value)} />
                                     </Form.Group>
                                     <Form.Group className="mb-5">
-                                        <Form.Label style={{ fontWeight: "bolder" }}>Confrim password : </Form.Label>
+                                        <Form.Label style={{ fontWeight: "bolder" }}>Confirm password : </Form.Label>
                                         <Form.Control type="password"
                                             placeholder="Confirm your new password"
                                             name="confirm-password" required

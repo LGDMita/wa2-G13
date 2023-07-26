@@ -1,10 +1,11 @@
-import { Button, Col, Modal, Row } from "react-bootstrap";
+import { Button, Col, Modal, Row, Container } from "react-bootstrap";
 import { useContext, useEffect, useState } from "react";
 import UserContext from "../context/UserContext";
 import "../styles/Chat.css";
 import { GallerySlider } from ".";
 import API from "../API";
 import time from "../lib/time";
+import { Spinner } from "react-bootstrap";
 
 function Message(props) {
     return (
@@ -32,7 +33,7 @@ function MessageList(props) {
                 props.messages.map(m => {
                     return (
                         <Row key={m.messageId}>
-                            <Message message={m} />
+                            <Message message={m} key={m.messageId} />
                         </Row>
                     )
                 })
@@ -45,17 +46,19 @@ function NewMessage(props) {
     const { user } = useContext(UserContext);
     const [newMessageText, setNewMessageText] = useState("");
     const [files, setFiles] = useState([]);
+    const [loading, setLoading] = useState(false);
     const handleMessage = async () => {
         try {
             // modify file structure, actually useless now
             //const attachments=files.map(f=>{});
             if (newMessageText.length > 0 || files.length > 0) {
+                setLoading(true);
                 await API.sendMessage(props.ticket.ticketId, user.role === 'customer', newMessageText, files);
-                console.log("cleanin up files");
                 files.forEach(f => URL.revokeObjectURL(f.url));
                 setFiles([]);
                 setNewMessageText("");
                 props.handleNewMessage();
+                setLoading(false);
             }
         } catch (exc) {
             console.log("Error sending message!! ", JSON.stringify(exc));
@@ -64,7 +67,7 @@ function NewMessage(props) {
     }
     //just to unmount URLs and fix leak memory
     useEffect(() => {
-        return () => { console.log("cleanin up files unmount"); files.forEach(f => URL.revokeObjectURL(f.url)); }
+        return () => { files.forEach(f => URL.revokeObjectURL(f.url)); }
     }, []);
     return (
         <div className="newmessage-container">
@@ -101,6 +104,16 @@ function NewMessage(props) {
                         <span disabled={props.disabled} className="material-icons-round md-24 sendmessagebutton">
                             send
                         </span>
+                        {
+                            loading ?
+                                <Container fluid>
+                                    <Row>
+                                        <Spinner animation="border" variant="dark" size="lg" />
+                                    </Row>
+                                </Container>
+                                :
+                                <></>
+                        }
                     </div>
                 </Col>
             </Row>
@@ -306,7 +319,6 @@ function Chat(props) {
     const [error, setError] = useState(undefined);
     const [lastTimeout, setLastTimeout] = useState(-1);
     const cleanupFiles = (calledBy) => {
-        console.log("cleanin up files by " + calledBy);
         messages.forEach(m => m.files.forEach(f => URL.revokeObjectURL(f.url)));
     }
     const handleChangeStatus = async newStatus => {
@@ -324,13 +336,10 @@ function Chat(props) {
     const getNewMessages = async (scrollDown) => {
         try {
             clearTimeout(lastTimeout);
-            console.log("Getting messages for ticket " + props.ticket.ticketId + " and have messages " + JSON.stringify(messages));
             if (messages.length > 0 && messages.find(m => m.ticketId !== props.ticket.ticketId)) {
-                console.log("Messages of other tickets error " + props.ticket.ticketId);
                 setMessages([]);
             }
             const mex = await API.getMessages(props.ticket.ticketId);
-            console.log("Got messages for ticket " + props.ticket.ticketId + " . " + mex);
             const newMexs = mex.filter(m => !messages.find(me => me.messageId === m.messageId) && m.ticketId === props.ticket.ticketId);
             const mexs = [];
             for (const m of newMexs) {
@@ -345,11 +354,9 @@ function Chat(props) {
                 mexs.push(mexa);
             }
             if (messages.length > 0 && messages.find(m => m.ticketId !== props.ticket.ticketId)) {
-                console.log("Setting messages for " + props.ticket.ticketId + " as " + JSON.stringify([...mexs]))
                 setMessages([...mexs]);
             }
             else {
-                console.log("Setting messages for " + props.ticket.ticketId + " as " + JSON.stringify([...messages, ...mexs]))
                 setMessages([...messages, ...mexs]);
             }
             if (scrollDown) setTimeout(() => document.getElementById("messages-list").scrollTop = document.getElementById("messages-list").scrollHeight, 100);
@@ -385,6 +392,7 @@ function Chat(props) {
                         text: m.text,
                         data: m.files ? m.files : [],
                         datetime: m.datetime,
+                        messageId: m.messageId
                     }
                 })} />
             <NewMessage setError={setError}
