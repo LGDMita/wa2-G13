@@ -14,7 +14,6 @@ const STATUS_TRADUCTIONS = {
 
 function TicketHistory() {
     const [history, setHistory] = useState([]);
-    const location = useLocation();
     const { ticketId } = useParams();
     useEffect(() => {
         const getHistory = async () => {
