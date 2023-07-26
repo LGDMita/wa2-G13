@@ -170,7 +170,7 @@ function PurchasesPage(props) {
                 <h4 className='text-center'>Here you can find the list of your purchases</h4><br />
                 <div className="purchase-list justify-content-center">
                     {purchases.map((purch) => {
-                        const isWarrantyValid = time.isStillValid(purch.warranty.datetimeExpire);
+                        const isWarrantyValid = purch.warranty?time.isStillValid(purch.warranty.datetimeExpire):false;
                         return (
                             <Card key={purch.product.ean} border={purch === selectedPurchase ? "info" : "dark"} className="purchase-card my-2">
                                 <Card.Header>

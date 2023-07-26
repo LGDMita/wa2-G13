@@ -10,8 +10,15 @@ function MyTicketList(props) {
     const { user } = useContext(UserContext);
     return (
         <div className="ticket-list">
+            <span className="material-icons-round md-36 purchase-dropopen" onClick={e => {
+                e.preventDefault();
+                e.stopPropagation();
+                props.setOpenList(!props.openList);
+            }}>
+                keyboard_double_arrow_{props.openList ? "up" : "down"}
+            </span>
             {
-                props.ticketList.map(tick => {
+                props.openList && props.ticketList.map(tick => {
                     return (
                         <Card key={tick.ticketId} border={tick.ticketId === props.selectedTicket ? "info" : "dark"}
                             onClick={e => {
@@ -88,6 +95,7 @@ function TicketPage(props) {
     const [refresh, setRefresh] = useState(false);
     const [ticketList, setTicketList] = useState([]);
     const location = useLocation();
+    const [openList,setOpenList]=useState(true);
     // single route
     const [selectedTicket, setSelectedTicket] = useState(location.state ? location.state : -1);
     // to clear location state without rerender
@@ -113,11 +121,11 @@ function TicketPage(props) {
             <Container fluid className="ticket-page ticketList-cnt">
                 <h4 className='text-center'>Here you can find the list of your tickets</h4><br />
                 <Row>
-                    <Col xs={selectedTicket !== -1 ? 4 : 12}>
+                    <Col xs={12} md={selectedTicket !== -1 ? 4 : 12}>
                         <MyTicketList ticketList={ticketList} setTicketList={setTicketList} selectedTicket={selectedTicket}
-                            setSelectedTicket={setSelectedTicket} />
+                            setSelectedTicket={setSelectedTicket} openList={openList} setOpenList={setOpenList}/>
                     </Col>
-                    {ticketList.find(t => t.ticketId === selectedTicket) && <Col xs={8}>
+                    {ticketList.find(t => t.ticketId === selectedTicket) && <Col xs={12} md={8}>
                         <Chat ticket={ticketList.find(t => t.ticketId === selectedTicket)} refresh={refresh}
                             setRefresh={setRefresh} />
                     </Col>}

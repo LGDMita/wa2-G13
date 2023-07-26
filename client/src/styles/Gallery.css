@@ -132,9 +132,15 @@
 }
 
 .addfilecontainer {
-    border-radius: 50%;
-    background-color: indianred;
-    vertical-align: middle;
+    /*background-color: indianred;
+    border-radius: 70%;
+    width: max-content;
+    height: max-content;
+    */
+    display: flex;
+    align-items: center;
+    /*padding: 0rem 1rem;
+    margin: 0.5rem;*/
 }
 
 .addfilelogo {
@@ -147,8 +153,12 @@
     filter: brightness(50%);
 }
 
-.addfilecontainer:hover > .addfilelogo {
+.addfilelogo {
     color: darkkhaki;
+}
+
+.addfilelogo:hover{
+    color: indianred;
 }
 
 .slidecont {
