@@ -52,20 +52,25 @@
 }
 
 .newmessage-send {
-    background-color: green;
+    /*background-color: green;
     border-radius: 50%;
     width: max-content;
     height: max-content;
-    text-align: center;
-    padding: 0.5rem 1rem;
-    margin: 1rem;
+    */
+    display: flex;
+    align-items: center;
+    /*padding: 0rem 1rem;
+    margin: 1rem;*/
 }
 
 .sendmessagebutton {
     color: white;
 }
 
-.newmessage-send:hover>.sendmessagebutton {
+.sendmessagebutton{
+    color: green;
+}
+.sendmessagebutton:hover {
     color: greenyellow;
 }
 
@@ -90,7 +95,7 @@
 .chat-header {
     background-color: cadetblue;
     width: 100%;
-    height: 6vh;
+    max-height: 25vh;
 }
 
 .chat-header-receiver {
@@ -99,6 +104,7 @@
     justify-content: center;
     color: white;
     font-weight: bolder;
+    font-size: smaller;
 }
 
 .chat-header-status-management {

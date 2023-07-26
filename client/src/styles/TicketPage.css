@@ -1,5 +1,5 @@
 .ticket-page {
-    max-height: 93vh;
+    max-height: 120vh;
     overflow: hidden;
 }
 
@@ -11,7 +11,7 @@
     overflow-y: auto;
     scroll-snap-align: center;
     scroll-behavior: smooth;
-    max-height: 93vh;
+    max-height: 90vh;
 }
 
 .ticketList-cnt {

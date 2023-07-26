@@ -13,9 +13,10 @@ function openFileUpload() {
 function GallerySlider(props) {
     useEffect(() => {
         if (props.add) return () => {
+            console.log("cleanin up files gallery slider clean");
             props.files.forEach(f => URL.revokeObjectURL(f.url));
         }
-    });
+    },[]);
     const addFile = file => {
         console.log("Adding file", file.target.files[0]);
         props.setFiles([...props.files, {
@@ -27,6 +28,7 @@ function GallerySlider(props) {
     };
     const removeFile = url => {
         props.setFiles([...props.files.filter(f => f.url !== url)]);
+        console.log("cleanin up file "+url);
         URL.revokeObjectURL(url);
     }
     const setFullScreenUrl = id => {
@@ -43,7 +45,7 @@ function GallerySlider(props) {
     const sliderSettings = {
         arrows: props.files.length > 1,
         infinite: true,
-        dots: props.dots === undefined ? true : props.dots,
+        dots: false,
         lazyLoad: true,
         slidesToShow: 1,
         slidesToScroll: 1,
@@ -59,7 +61,7 @@ function GallerySlider(props) {
                 <Col xs={props.files.length > 0 ? 6 : 12} sm={props.files.length > 0 ? 4 : 12}
                     className='justify-content-center mx-auto my-2'>
                     <div className="addfilecontainer" disabled={props.disabled}>
-                        <span className="material-icons-round md-36 addfilelogo" disabled={props.disabled}
+                        <span className="material-icons-round md-24 addfilelogo" disabled={props.disabled}
                             onClick={e => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -90,7 +92,7 @@ function GallerySlider(props) {
                                             </div>}
                                         <div className="slideoverlay">
                                             {f.type.split("/")[0] === "image" &&
-                                                <span className="material-icons-round md-36 slidefullscreen"
+                                                <span className="material-icons-round md-24 slidefullscreen"
                                                     onClick={e => {
                                                         e.preventDefault();
                                                         e.stopPropagation();
@@ -99,7 +101,7 @@ function GallerySlider(props) {
                                                     open_in_full
                                                 </span>}
                                             {props.add &&
-                                                <span className="material-icons-round md-36 slidedelete" onClick={e => {
+                                                <span className="material-icons-round md-24 slidedelete" onClick={e => {
                                                     e.preventDefault();
                                                     e.stopPropagation();
                                                     removeFile(f.url)
@@ -108,7 +110,7 @@ function GallerySlider(props) {
                                                 </span>
                                             }
                                             {!props.add &&
-                                                <span className="material-icons-round md-36 slidedown">
+                                                <span className="material-icons-round md-24 slidedown">
                                                     file_download
                                                     <a href={f.url} download />
                                                 </span>

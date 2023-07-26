@@ -50,6 +50,7 @@ function NewMessage(props) {
             // modify file structure, actually useless now
             //const attachments=files.map(f=>{});
             await API.sendMessage(props.ticket.ticketId, user.role === 'customer', newMessageText, files);
+            console.log("cleanin up files");
             files.forEach(f => URL.revokeObjectURL(f.url));
             setFiles([]);
             setNewMessageText("");
@@ -61,7 +62,7 @@ function NewMessage(props) {
     }
     //just to unmount URLs and fix leak memory
     useEffect(() => {
-        return () => files.forEach(f => URL.revokeObjectURL(f.url));
+        return () => {console.log("cleanin up files unmount");files.forEach(f => URL.revokeObjectURL(f.url));}
     }, []);
     return (
         <div className="newmessage-container">
@@ -95,7 +96,7 @@ function NewMessage(props) {
                         e.stopPropagation();
                         if (!props.disabled) handleMessage();
                     }}>
-                        <span disabled={props.disabled} className="material-icons-round md-36 sendmessagebutton">
+                        <span disabled={props.disabled} className="material-icons-round md-24 sendmessagebutton">
                             send
                         </span>
                     </div>
@@ -301,7 +302,11 @@ function Chat(props) {
     }]; */
     const [messages, setMessages] = useState([]);
     const [error, setError] = useState(undefined);
-    const cleanupFiles = () => messages.forEach(m => m.files.forEach(f => URL.revokeObjectURL(f.url)));
+    const [lastTimeout,setLastTimeout]=useState(-1);
+    const cleanupFiles = (calledBy) =>{
+        console.log("cleanin up files by "+calledBy);
+        messages.forEach(m => m.files.forEach(f => URL.revokeObjectURL(f.url)));
+    }
     const handleChangeStatus = async newStatus => {
         try {
             await API.changeTicketStatus(props.ticket.ticketId, newStatus);
@@ -314,10 +319,17 @@ function Chat(props) {
         props.setRefresh(!props.refresh);
         setTimeout(() => document.getElementById("messages-list").scrollTop = document.getElementById("messages-list").scrollHeight, 250);
     }
-    const getNewMessages = async scrollDown => {
+    const getNewMessages = async (scrollDown) => {
         try {
+            clearTimeout(lastTimeout);
+            console.log("Getting messages for ticket "+props.ticket.ticketId+" and have messages "+JSON.stringify(messages));
+            if(messages.length>0 && messages.find(m=>m.ticketId!==props.ticket.ticketId)){
+                console.log("Messages of other tickets error "+props.ticket.ticketId);
+                setMessages([]);
+            }
             const mex = await API.getMessages(props.ticket.ticketId);
-            const newMexs = mex.filter(m => !messages.find(me => me.messageId === m.messageId));
+            console.log("Got messages for ticket "+props.ticket.ticketId+" . "+mex);
+            const newMexs = mex.filter(m => !messages.find(me => me.messageId === m.messageId) && m.ticketId===props.ticket.ticketId);
             const mexs = [];
             for (const m of newMexs) {
                 const mexa = m;
@@ -330,24 +342,29 @@ function Chat(props) {
                 }
                 mexs.push(mexa);
             }
-            setMessages([...messages, ...mexs]);
+            if(messages.length>0 && messages.find(m=>m.ticketId!==props.ticket.ticketId)){
+                console.log("Setting messages for "+props.ticket.ticketId+" as "+JSON.stringify([...mexs]))
+                setMessages([...mexs]);
+            }
+            else{
+                console.log("Setting messages for "+props.ticket.ticketId+" as "+JSON.stringify([...messages,...mexs]))
+                setMessages([...messages, ...mexs]);
+            }
             if (scrollDown) setTimeout(() => document.getElementById("messages-list").scrollTop = document.getElementById("messages-list").scrollHeight, 100);
+            setLastTimeout(setTimeout(() => props.setRefresh(!props.refresh), 1500));
         } catch (error) {
-            cleanupFiles();
+            console.log("Got error while getting new messages "+JSON.stringify(error));
+            cleanupFiles("error");
             setMessages([]);
         }
     }
     useEffect(() => {
-        cleanupFiles();
-        setMessages([]);
+        cleanupFiles("use effect ticket id with id "+props.ticket.ticketId);
         getNewMessages(true);
-        setTimeout(() => props.setRefresh(!props.refresh), 1500);
-        return cleanupFiles;
+        return ()=>cleanupFiles("use effect clean ticket id");
     }, [props.ticket.ticketId]);
     useEffect(() => {
         getNewMessages(document.getElementById("messages-list").scrollTop === document.getElementById("messages-list").scrollHeight);
-        setTimeout(() => props.setRefresh(!props.refresh), 1500);
-        return cleanupFiles;
     }, [props.refresh]);
     return (
         <Row>
