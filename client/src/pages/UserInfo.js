@@ -242,14 +242,14 @@ function UserInfoPage(props) {
                                 <br />
                                 <h5>Change your password</h5>
                                 <Form>
-                                    <Form.Group className="mb-5">
+                                    <Form.Group className="mb-4">
                                         <Form.Label style={{ fontWeight: "bolder" }}>Old password : </Form.Label>
                                         <Form.Control type="password"
                                             placeholder="Insert your old password"
                                             name="old-password" required
                                             onChange={e => setOldPassword(e.target.value)} />
                                     </Form.Group>
-                                    <Form.Group className="mb-5">
+                                    <Form.Group className="mb-4">
                                         <Form.Label style={{ fontWeight: "bolder" }}>New password : </Form.Label>
                                         <Form.Control type="password"
                                             placeholder="Insert your new password"
