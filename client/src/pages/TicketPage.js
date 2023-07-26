@@ -4,7 +4,7 @@ import { useContext, useEffect, useState } from "react";
 import UserContext from "../context/UserContext";
 import "../styles/TicketPage.css";
 import API from "../API";
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 function MyTicketList(props) {
     const { user } = useContext(UserContext);
@@ -95,7 +95,10 @@ function TicketPage(props) {
     const [refresh, setRefresh] = useState(false);
     const [ticketList, setTicketList] = useState([]);
     const location = useLocation();
-    const [openList,setOpenList]=useState(true);
+    const [openList, setOpenList] = useState(true);
+    const navigate = useNavigate();
+
+
     // single route
     const [selectedTicket, setSelectedTicket] = useState(location.state ? location.state : -1);
     // to clear location state without rerender
@@ -109,7 +112,7 @@ function TicketPage(props) {
                 console.log("Getting tickets")
                 const ticks = await API.getTicketsOf(user.id, user.role);
                 setTicketList([...ticks]);
-                console.log("Got tickets "+ticks);
+                console.log("Got tickets " + ticks);
             } catch (error) {
                 setTicketList([]);
 
@@ -118,7 +121,7 @@ function TicketPage(props) {
         getTickets();
     }, []);
 
-    if(user.role!=="customer" && user.role!=="expert") navigate("/home");
+    if (user.role !== "customer" && user.role !== "expert") navigate("/home");
     if (ticketList && ticketList.length > 0) {
         return (
             <Container fluid className="ticket-page ticketList-cnt">
@@ -126,7 +129,7 @@ function TicketPage(props) {
                 <Row>
                     <Col xs={12} md={selectedTicket !== -1 ? 4 : 12}>
                         <MyTicketList ticketList={ticketList} setTicketList={setTicketList} selectedTicket={selectedTicket}
-                            setSelectedTicket={setSelectedTicket} openList={openList} setOpenList={setOpenList}/>
+                            setSelectedTicket={setSelectedTicket} openList={openList} setOpenList={setOpenList} />
                     </Col>
                     {ticketList.find(t => t.ticketId === selectedTicket) && <Col xs={12} md={8}>
                         <Chat ticket={ticketList.find(t => t.ticketId === selectedTicket)} refresh={refresh}
