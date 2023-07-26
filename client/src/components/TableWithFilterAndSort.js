@@ -107,12 +107,19 @@ const TableWithFilterAndSort = (props) => {
                         {currentItems.map((item) => (
                             <tr key={item[props.columns[0]]}>
                                 {props.columns.map((col, index) => {
-                                    if(props.actionLink)
-                                        if(index === props.columns.length -1)
-                                            return <td key={col}><Link to={`${props.actionLink}${item[props.columns[0]]}`}><Button><BsArrowRightCircleFill/></Button></Link></td>
+                                    if(props.actionLinks) {
+                                        if (index === props.columns.length - 2)
+                                            return <td key={col}><Link
+                                                to={`${props.actionLinks[0]}${item[props.columns[0]]}`}><Button><BsArrowRightCircleFill/></Button></Link>
+                                            </td>
+                                        if (index === props.columns.length - 1)
+                                            return <td key={col}><Link
+                                                //to={`${props.actionLinks[1]}`} state={{state: `${item[props.columns[0]]}`}}><Button><BsArrowRightCircleFill/></Button></Link>
+                                                to={`${props.actionLinks[1]}${item[props.columns[0]]}`}><Button><BsArrowRightCircleFill/></Button></Link>
+                                            </td>
                                         else
                                             return <td key={col}>{item[col]}</td>;
-                                    else
+                                    } else
                                         return <td key={col}>{item[col]}</td>;
                                 })}
                             </tr>

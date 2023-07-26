@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import API from "../API";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { Card } from "react-bootstrap";
 import time from "../lib/time";
 
@@ -15,11 +15,12 @@ const STATUS_TRADUCTIONS = {
 function TicketHistory() {
     const [history, setHistory] = useState([]);
     const location = useLocation();
+    const { ticketId } = useParams();
     useEffect(() => {
         const getHistory = async () => {
             try {
-                if (!location.state) throw new Error({ status: 0, detail: "No id provided" });
-                const history = await API.getTicketHistory(location.state);
+                //if (!location.state) throw new Error({ status: 0, detail: "No id provided" });
+                const history = await API.getTicketHistory(ticketId);
                 setHistory(history);
             } catch (error) {
                 setHistory([]);
