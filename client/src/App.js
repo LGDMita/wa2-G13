@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import UserContext from './context/UserContext';
 import Header from './components/Header';
-import { useState } from 'react';
+import {useContext, useState} from 'react';
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import {
     HomepagePage,
@@ -21,6 +21,7 @@ import { ProductTable } from "./components/ProductTable";
 import { ManageTicketForm } from "./components/ManageTicketForm";
 import { TicketList } from './components';
 import ScrollToTopButton from './components/ScrollToTopButton';
+import SectorsContext from "./context/SectorsContext";
 
 
 function CheckHeader(props) {
@@ -48,16 +49,13 @@ function App() {
     const [user, setUser] = useState(tokenManager.retrieveUser());
     const [logged, setLogged] = useState(tokenManager.amILogged());
     const navigate = useNavigate();
-    /*     const [loading, setLoading] = useState(true);
-    
-        useEffect(() => {
-            setLoading(false);
-        }, []); */
+    let {sectors} = useContext(SectorsContext);
 
     const handleLogout = () => {
         tokenManager.removeAuthToken();
         setUser(tokenManager.clearUser());
         setLogged(false);
+        sectors= []
         navigate("/login");
     }
 
