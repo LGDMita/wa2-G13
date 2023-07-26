@@ -12,6 +12,7 @@ class Attachment(
     @JoinColumn(name = "messageId")
     var message: Message? = null,
     var type: String,
+    var attachmentName: String,
     var size: Long,
     var dataBin: ByteArray,
     var datetime: Date,
@@ -21,5 +22,5 @@ class Attachment(
 }
 
 fun AttachmentDTO.toAttachment(message: Message?): Attachment {
-    return Attachment(message, type, size, dataBin, datetime, attachmentId)
+    return Attachment(message, type, attachmentName,size, dataBin, datetime, attachmentId)
 }

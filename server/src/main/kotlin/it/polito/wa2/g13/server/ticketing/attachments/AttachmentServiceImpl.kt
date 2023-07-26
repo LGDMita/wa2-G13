@@ -10,9 +10,13 @@ class AttachmentServiceImpl(
 ) : AttachmentService {
 
     override fun createAttachment(attachment: MultipartFile): Attachment {
+        var attachmentName: String
+        if (attachment.originalFilename!=null) attachmentName= attachment.originalFilename!!
+        else attachmentName=attachment.name
         return Attachment(
             size = attachment.size,
             type = attachment.contentType!!,
+            attachmentName = attachmentName,
             dataBin = attachment.bytes,
             datetime = Date()
         )

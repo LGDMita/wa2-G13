@@ -7,6 +7,11 @@ import API from "../API";
 import { useLocation, useNavigate } from "react-router";
 import { Spinner } from "react-bootstrap";
 
+const setCurrentSelectedTicketAs= val=>{
+    console.log("Trying to set current selected ticket as ",JSON.stringify(val));
+    localStorage.setItem("currentSelectedTicket",JSON.stringify(val));
+}
+
 function MyTicketList(props) {
     const { user } = useContext(UserContext);
     return (
@@ -27,6 +32,7 @@ function MyTicketList(props) {
                                 e.stopPropagation();
                                 // single route
                                 props.setSelectedTicket(tick.ticketId === props.selectedTicket ? -1 : tick.ticketId);
+                                setCurrentSelectedTicketAs(props.selectedTicket);
                                 // route when select
                                 //navigate("/tickets/"+tick.ticketId);
                             }} className="ticket-card my-2">
@@ -104,6 +110,7 @@ function TicketPage(props) {
 
     // single route
     const [selectedTicket, setSelectedTicket] = useState(location.state ? location.state : -1);
+    setCurrentSelectedTicketAs(selectedTicket);
     // to clear location state without rerender
     window.history.replaceState({}, document.title);
     // instead if we use a specific route when the ticket is opened
@@ -112,6 +119,7 @@ function TicketPage(props) {
     useEffect(() => {
         const getTickets = async () => {
             try {
+                console.log("Getting tickets!");
                 const ticks = await API.getTicketsOf(user.id, user.role);
                 setTicketList([...ticks]);
                 setLoading(false);

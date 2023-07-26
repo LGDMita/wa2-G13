@@ -6,6 +6,7 @@ data class AttachmentDTO(
     var attachmentId: Long?,
     var messageId: Long?,
     var type: String,
+    var attachmentName: String,
     var size: Long,
     var dataBin: ByteArray,
     var datetime: Date
@@ -47,5 +48,5 @@ data class AttachmentDTO(
 }
 
 fun Attachment.toDTO(): AttachmentDTO {
-    return AttachmentDTO(getId(), message?.getId(), type, size, dataBin, datetime)
+    return AttachmentDTO(getId(), message?.getId(), type, attachmentName, size, dataBin, datetime)
 }

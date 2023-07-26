@@ -110,10 +110,11 @@ function GallerySlider(props) {
                                                 </span>
                                             }
                                             {!props.add &&
-                                                <span className="material-icons-round md-24 slidedown">
-                                                    file_download
-                                                    <a href={f.url} download />
-                                                </span>
+                                                <a href={f.url} download>
+                                                    <span className="material-icons-round md-24 slidedown">
+                                                        file_download
+                                                    </span>
+                                                </a>
                                             }
                                         </div>
                                     </div>)

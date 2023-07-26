@@ -29,6 +29,7 @@ function Message(props) {
 function MessageList(props) {
     return (
         <div id="messages-list" className="messages-container">
+            {props.loading && <h3>loading ...</h3>}
             {
                 props.messages.map(m => {
                     return (
@@ -318,13 +319,14 @@ function Chat(props) {
     const [messages, setMessages] = useState([]);
     const [error, setError] = useState(undefined);
     const [lastTimeout, setLastTimeout] = useState(-1);
+    const [loading,setLoading] = useState(true);
     const cleanupFiles = (calledBy) => {
         messages.forEach(m => m.files.forEach(f => URL.revokeObjectURL(f.url)));
     }
     const handleChangeStatus = async newStatus => {
         try {
             await API.changeTicketStatus(props.ticket.ticketId, newStatus);
-            props.setRefreshTickets(!props.setRefreshTickets);
+            props.setRefreshTickets(!props.refreshTickets);
         } catch (exc) {
             setError({ title: "Couldn't update the ticket status", details: exc.detail });
         }
@@ -333,34 +335,37 @@ function Chat(props) {
         props.setRefresh(!props.refresh);
         setTimeout(() => document.getElementById("messages-list").scrollTop = document.getElementById("messages-list").scrollHeight, 250);
     }
-    const getNewMessages = async (scrollDown) => {
+    const getNewMessages = async (scrollDown,firstLoad) => {
         try {
             clearTimeout(lastTimeout);
             if (messages.length > 0 && messages.find(m => m.ticketId !== props.ticket.ticketId)) {
                 setMessages([]);
             }
             const mex = await API.getMessages(props.ticket.ticketId);
-            const newMexs = mex.filter(m => !messages.find(me => me.messageId === m.messageId) && m.ticketId === props.ticket.ticketId);
-            const mexs = [];
-            for (const m of newMexs) {
-                const mexa = m;
-                mexa.files = [];
-                for (const a of m.attachments) {
-                    const base64Response = await fetch("data:" + a.type + ";base64," + a.dataBin);
-                    const byteblob = await base64Response.blob();
-                    const genurl = URL.createObjectURL(byteblob);
-                    mexa.files.push({ url: genurl, type: a.type, name: "defaultFilename" });
+            if (parseInt(localStorage.getItem("currentSelectedTicket"))===props.ticket.ticketId){
+                const newMexs = mex.filter(m => !messages.find(me => me.messageId === m.messageId) && m.ticketId === props.ticket.ticketId);
+                const mexs = [];
+                for (const m of newMexs) {
+                    const mexa = m;
+                    mexa.files = [];
+                    for (const a of m.attachments) {
+                        const base64Response = await fetch("data:" + a.type + ";base64," + a.dataBin);
+                        const byteblob = await base64Response.blob();
+                        const genurl = URL.createObjectURL(byteblob);
+                        mexa.files.push({ url: genurl, type: a.type, name: a.attachmentName });
+                    }
+                    mexs.push(mexa);
                 }
-                mexs.push(mexa);
+                if (messages.length > 0 && messages.find(m => m.ticketId !== props.ticket.ticketId)) {
+                    setMessages([...mexs]);
+                }
+                else {
+                    setMessages([...messages, ...mexs]);
+                }
+                if (scrollDown) setTimeout(() => document.getElementById("messages-list").scrollTop = document.getElementById("messages-list").scrollHeight, 100);
+                setLastTimeout(setTimeout(() => props.setRefresh(!props.refresh), 1500));
+                if (firstLoad) setLoading(false);
             }
-            if (messages.length > 0 && messages.find(m => m.ticketId !== props.ticket.ticketId)) {
-                setMessages([...mexs]);
-            }
-            else {
-                setMessages([...messages, ...mexs]);
-            }
-            if (scrollDown) setTimeout(() => document.getElementById("messages-list").scrollTop = document.getElementById("messages-list").scrollHeight, 100);
-            setLastTimeout(setTimeout(() => props.setRefresh(!props.refresh), 1500));
         } catch (error) {
             console.log("Got error while getting new messages " + JSON.stringify(error));
             cleanupFiles("error");
@@ -368,20 +373,22 @@ function Chat(props) {
         }
     }
     useEffect(() => {
+        setLoading(true);
         cleanupFiles("use effect ticket id with id " + props.ticket.ticketId);
-        getNewMessages(true);
+        getNewMessages(true,true);
         return () => cleanupFiles("use effect clean ticket id");
     }, [props.ticket.ticketId]);
     useEffect(() => {
-        getNewMessages(document.getElementById("messages-list").scrollTop === document.getElementById("messages-list").scrollHeight);
+        getNewMessages(loading?false:document.getElementById("messages-list").scrollTop === document.getElementById("messages-list").scrollHeight,false);
     }, [props.refresh]);
     return (
         <Row>
             <ChatHeader ticket={props.ticket}
                 ticketToAssign={props.ticket.status === "open" || props.ticket.status === "reopened" || props.ticket.expert === null}
                 handleChangeStatus={handleChangeStatus} />
-            <MessageList className='message-list'
+                <MessageList className='message-list'
                 lockable={true}
+                loading={loading}
                 toBottomHeight={'100%'}
                 messages={messages.map(m => {
                     const pos = (m.fromUser && user.role === "customer") || (!m.fromUser && user.role !== "customer") ? "right" : "left";
@@ -396,7 +403,7 @@ function Chat(props) {
                     }
                 })} />
             <NewMessage setError={setError}
-                disabled={false}
+                disabled={loading}
                 ticket={props.ticket} handleNewMessage={handleNewMessage} />
             {error &&
                 <Modal show={true} onHide={() => setError(undefined)} size="md"
