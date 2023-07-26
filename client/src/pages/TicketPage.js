@@ -93,6 +93,7 @@ function TicketPage(props) {
     ]; */
     const { user } = useContext(UserContext);
     const [refresh, setRefresh] = useState(false);
+    const [refreshTickets, setRefreshTickets] = useState(false);
     const [ticketList, setTicketList] = useState([]);
     const location = useLocation();
     const [openList, setOpenList] = useState(true);
@@ -119,7 +120,7 @@ function TicketPage(props) {
             }
         }
         getTickets();
-    }, []);
+    }, [refreshTickets]);
 
     if (user.role !== "customer" && user.role !== "expert") navigate("/home");
     if (ticketList && ticketList.length > 0) {
@@ -133,7 +134,7 @@ function TicketPage(props) {
                     </Col>
                     {ticketList.find(t => t.ticketId === selectedTicket) && <Col xs={12} md={8}>
                         <Chat ticket={ticketList.find(t => t.ticketId === selectedTicket)} refresh={refresh}
-                            setRefresh={setRefresh} />
+                            setRefresh={setRefresh} refreshTickets={refreshTickets} setRefreshTickets={setRefreshTickets} />
                     </Col>}
                 </Row>
             </Container>

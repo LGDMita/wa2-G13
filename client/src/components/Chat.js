@@ -312,7 +312,7 @@ function Chat(props) {
     const handleChangeStatus = async newStatus => {
         try {
             await API.changeTicketStatus(props.ticket.ticketId, newStatus);
-            props.setRefresh(!props.refresh);
+            props.setRefreshTickets(!props.setRefreshTickets);
         } catch (exc) {
             setError({ title: "Couldn't update the ticket status", details: exc.detail });
         }
