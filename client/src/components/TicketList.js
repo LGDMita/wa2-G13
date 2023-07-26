@@ -2,16 +2,16 @@ import API from '../API';
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TableWithFilterAndSort from "./TableWithFilterAndSort"
-import { Col, Container, Row } from 'react-bootstrap';
+import { Col, Container, Row, Spinner } from 'react-bootstrap';
 
 import UserContext from "../context/UserContext";
 
 function TicketList() {
 
     const [tickets, setTickets] = useState([]);
-    const [filterOption, setFilterOption] = useState('open');
     const { user } = useContext(UserContext);
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
 
     async function load() {
         await API.getTickets().then(res => {
@@ -43,7 +43,10 @@ function TicketList() {
     useEffect(() => {
         if (!user.logged && user.role !== 'manager') {
             navigate('/home');
-        } else void load();
+        } else {
+            load();
+            setLoading(false);
+        }
     }, [user.logged, user.role, navigate]);
 
     const reformatDate = (dateString) => {
@@ -58,18 +61,27 @@ function TicketList() {
         return `${year}-${month}-${day}, ${hours}:${minutes}`;
     }
 
-    return (
-        <Container className='productTable-cnt'>
+    if (loading) {
+        return (<Container fluid>
             <Row>
-                <Col>
-                    <h4 className='text-center'>Here you can find the list of all tickets</h4>
-                    <div className='productTable'>
-                        <TableWithFilterAndSort data={tickets.length > 0 ? tickets : []} columns={['ticket_id', 'creation_date', 'status', 'customer_email', 'product_ean', 'product_sector', 'expert_email', 'priority_level', 'manage', 'history']} actionLinks={['/tickets/manage/', '/tickets/history/']} />
-                    </div>
-                </Col>
+                <Spinner animation="border" variant="dark" className="spin-load" size="lg" />
             </Row>
-        </Container >
-    );
+        </Container>);
+    }
+    else {
+        return (
+            <div className='productTable-cnt'>
+                <Row>
+                    <Col>
+                        <h4 className='text-center'>Here you can find the list of all tickets</h4>
+                        <div className='productTable'>
+                            <TableWithFilterAndSort data={tickets.length > 0 ? tickets : []} columns={['ticket_id', 'creation_date', 'status', 'customer_email', 'product_ean', 'product_sector', 'expert_email', 'priority_level', 'manage', 'history']} actionLinks={['/tickets/manage/', '/tickets/history/']} />
+                        </div>
+                    </Col>
+                </Row>
+            </div >
+        );
+    }
 }
 
 export default TicketList;
