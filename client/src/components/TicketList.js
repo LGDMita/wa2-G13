@@ -74,9 +74,9 @@ function TicketList() {
                 <Row>
                     <Col>
                         <h4 className='text-center'>Here you can find the list of all tickets</h4>
-                        <div className='productTable'>
+                        <Container className='productTable' style={{ fontSize: "11pt" }}>
                             <TableWithFilterAndSort data={tickets.length > 0 ? tickets : []} columns={['ticket_id', 'creation_date', 'status', 'customer_email', 'product_ean', 'product_sector', 'expert_email', 'priority_level', 'manage', 'history']} actionLinks={['/tickets/manage/', '/tickets/history/']} />
-                        </div>
+                        </Container>
                     </Col>
                 </Row>
             </div >

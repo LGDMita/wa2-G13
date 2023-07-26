@@ -12,7 +12,9 @@ function ProductTable() {
     const [products, setProducts] = useState([]);
 
     async function load() {
-        setProducts(await API.getProducts());
+        const productsTemp = await API.getProducts();
+        const droppedEan = productsTemp.map(({ ean, ...rest }) => rest);
+        setProducts(droppedEan);
         setLoading(false);
     }
 
@@ -32,7 +34,7 @@ function ProductTable() {
                             </Row>
                         </Container> :
                         <div className='productTable'>
-                            <TableWithFilterAndSort data={products} columns={['ean', 'name', 'brand']} />
+                            <TableWithFilterAndSort data={products} columns={['name', 'brand']} />
                         </div>
                     }
                 </Col>
