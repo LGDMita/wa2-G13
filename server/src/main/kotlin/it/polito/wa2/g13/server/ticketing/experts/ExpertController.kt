@@ -47,12 +47,15 @@ class ExpertController(
         br: BindingResult
     ): Boolean {
         return if (!br.hasErrors()) {
+            log.info("Modifying user with id: {} with data: {}", id, expertDTO)
             val oldExpert = expertService.getExpertById(id)?.toRegisterDTO() ?: throw ExpertNotFoundException()
             authService.updateUser(id, oldExpert, expertDTO.toRegisterDTO())
             expertService.modifyExpert(id, expertDTO)
             true
-        } else
+        } else {
+            log.error("Invalid argument while modifying user with id: {} with data: {}", id, expertDTO)
             throw ExpertInvalidArgumentsException()
+        }
     }
 
 
@@ -68,6 +71,7 @@ class ExpertController(
         @RequestBody expertWithSectorsDTO: ExpertWithSectorsDTO,
         br: BindingResult
     ): Boolean {
+        log.info("Modifying expert with id: {} with data: {}", id, expertWithSectorsDTO)
         return if (!br.hasErrors()) {
             val oldExpert = expertService.getExpertById(id)?.toRegisterDTO() ?: throw ExpertNotFoundException()
             authService.updateUser(id, oldExpert, expertWithSectorsDTO.expertDTO.toRegisterDTO())
@@ -92,8 +96,10 @@ class ExpertController(
              }
 
             true
-        } else
+        } else {
+            log.error("Invalid argument while modifying expert with id: {} with data: {}", id, expertWithSectorsDTO)
             throw ExpertInvalidArgumentsException()
+        }
     }
 
     @GetMapping("/API/experts/")
@@ -118,7 +124,7 @@ class ExpertController(
     @Transactional
     @DeleteMapping("/API/experts/{id}")
     fun deleteExpertById(@PathVariable id: String) {
-        println("Deleting $id expert!")
+        log.info("Deleting expert with id: {}", id)
         expertService.getExpertById(id) ?: throw ExpertNotFoundException()
         authService.deleteUser(id)
         expertService.deleteExpertById(id)

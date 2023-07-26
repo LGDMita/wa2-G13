@@ -24,6 +24,26 @@ const SuccessAlert = ({ show, onClose }) => {
     );
 };
 
+const ConfirmDeleteAlert = ({ show, onClose, onConfirm }) => {
+    return (
+        <Modal show={show} onHide={onClose}>
+            <Modal.Header closeButton>
+                <Modal.Title>Confirm Deletion</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>Are you sure you want to delete this item?</Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={onClose}>
+                    Cancel
+                </Button>
+                <Button variant="danger" onClick={onConfirm}>
+                    Confirm Delete
+                </Button>
+            </Modal.Footer>
+        </Modal>
+    );
+};
+
+
 function ModifyExpertPage() {
     const { expertId } = useParams();
     const { user } = useContext(UserContext);
@@ -35,6 +55,7 @@ function ModifyExpertPage() {
     const [error, setError] = useState(false);
     const [loading, setLoading] = useState(true);
     const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+    const [showDeleteAlert, setShowDeleteAlert] = useState(false);
     const [availableSectors, setAvailableSectors] = useState([]);
     const [newSector, setNewSector] = useState("");
 
@@ -96,6 +117,17 @@ function ModifyExpertPage() {
         }
     };
 
+    const handleDeleteExpert = () => {
+        try {
+            API.deleteExpert(expertId);
+            navigate("/experts");
+        }
+        catch (error) {
+            setShowDeleteAlert(false);
+            setError(true);
+        }
+    };
+
     if (loading) {
         return (
             <Container fluid>
@@ -124,6 +156,7 @@ function ModifyExpertPage() {
                         }
                     }}>
                         {showSuccessAlert && <SuccessAlert show={showSuccessAlert} onClose={() => navigate("/experts")} />}
+                        {showDeleteAlert && <ConfirmDeleteAlert show={showDeleteAlert} onClose={() => setShowDeleteAlert(false)} onConfirm={handleDeleteExpert} />}
                         {error ? <Alert className="my-3" variant="danger">Something went wrong!</Alert> : <></>}
                         <Form.Group className="mb-3">
                             <Form.Label style={{ fontWeight: "bolder" }}>Username : </Form.Label>
@@ -186,10 +219,11 @@ function ModifyExpertPage() {
                             </div>
                         </Form.Group>
                         <Button className="mx-auto" variant="success" type="submit">Submit</Button> &nbsp;
-                        <Button variant="secondary" type="button" onClick={() => navigate("/experts")}>Back</Button>
+                        <Button variant="secondary" type="button" onClick={() => navigate("/experts")}>Back</Button> &nbsp;
+                        <Button className="mx-auto" variant="delete" type="burron" onClick={() => setShowDeleteAlert(true)}>Delete</Button>
                     </Form>
-                </div>
-            </div>
+                </div >
+            </div >
         );
     }
 }

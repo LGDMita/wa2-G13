@@ -132,10 +132,12 @@ class AuthController(
                 authService.changePassword(id, changePasswordDTO.newPassword)
                 ResponseEntity.ok("Password changed successfully.")
             } else {
+                log.warn("Failed to change password. Credential not valid. Input data: {}", changePasswordDTO)
                 ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid old password.")
             }
         }
         else {
+            log.warn("Invalid input data: {}", changePasswordDTO)
             throw InvalidArgumentsException()
         }
     }
