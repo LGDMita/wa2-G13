@@ -208,11 +208,6 @@ function UserInfoPage(props) {
                             </Row>
                         )
                         }
-                        {
-                            user.role === 'customer' ?
-                                <Button className="mx-auto" variant="danger" type="button" onClick={() => setShowDeleteAlert(true)}>Delete</Button>
-                                : <></>
-                        }
                     </Container>
 
                     <Container className="modify-user-info">
@@ -304,9 +299,15 @@ function UserInfoPage(props) {
                                             name="confirm-password" required
                                             onChange={e => setConfirmPassword(e.target.value)} />
                                     </Form.Group>
-                                    <Button variant="success" type="button" onClick={handleChangePassword}>Set new password</Button>
+                                    <Button className="mb-5" variant="success" type="button" onClick={handleChangePassword}>Set new password</Button>
                                     {errorPassword !== "" ? <Alert className="my-3" variant="danger">Error during password change: {errorPassword.message}</Alert> : <></>}
                                 </Form>
+                                {
+                                    user.role === 'customer' ?
+                                        <Button className="mt-5" variant="danger" type="button" onClick={() => setShowDeleteAlert(true)}>Delete</Button>
+                                        :
+                                        <></>
+                                }
                             </div>
                         )}
                     </Container>
