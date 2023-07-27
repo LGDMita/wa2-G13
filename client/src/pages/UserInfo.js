@@ -304,7 +304,7 @@ function UserInfoPage(props) {
                                 </Form>
                                 {
                                     user.role === 'customer' ?
-                                        <Button className="mt-5" variant="danger" type="button" onClick={() => setShowDeleteAlert(true)}>Delete</Button>
+                                        <Button className="mt-5" variant="danger" type="button" onClick={() => setShowDeleteAlert(true)}>Delete account</Button>
                                         :
                                         <></>
                                 }
