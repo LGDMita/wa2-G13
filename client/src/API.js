@@ -173,7 +173,6 @@ const signup = async (registrationData) => {
     try {
         await apiInstance.post('/API/signup', registrationData);
     } catch (error) {
-        console.error('Error during signup:', error);
         throw new Error(error.response.status)
     }
 };

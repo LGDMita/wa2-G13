@@ -40,7 +40,10 @@ function SignupPage(props) {
             navigate('/home');
         } catch (error) {
             setLoading(false);
-            setErrorMessage(error.message);
+            if (parseInt(error.message) === 409)
+                setErrorMessage("Invalid data: username or email already present in the system");
+            else
+                setErrorMessage(error.message);
             setShowError(true);
         }
     }
