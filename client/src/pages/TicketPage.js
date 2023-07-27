@@ -129,7 +129,7 @@ function TicketPage(props) {
             }
         }
         getTickets();
-    }, [refreshTickets]);
+    }, [/*refreshTickets,*/ refresh]);
 
     if (user.role !== "customer" && user.role !== "expert") navigate("/home");
 

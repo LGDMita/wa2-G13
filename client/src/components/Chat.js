@@ -127,15 +127,7 @@ function StatusBasedOptions(props) {
 
     // All the buttons written once so they just have to be put together later
     function StartProgress(props) {
-        return (user.role !== "customer" &&
-            <Button size="sm" variant="success" onClick={e => {
-                e.preventDefault();
-                e.stopPropagation();
-                props.handleChangeStatus("in_progress");
-            }}>
-                Start progress!
-            </Button>
-        );
+        return (<></>);
     }
 
     function StopProgress(props) {
@@ -326,14 +318,15 @@ function Chat(props) {
     const handleChangeStatus = async newStatus => {
         try {
             await API.changeTicketStatus(props.ticket.ticketId, newStatus);
-            props.setRefreshTickets(!props.refreshTickets);
+            //props.setRefreshTickets(!props.refreshTickets);
+            props.setRefresh(!props.refresh)
         } catch (exc) {
             setError({ title: "Couldn't update the ticket status", details: exc.detail });
         }
     }
     const handleNewMessage = () => {
         props.setRefresh(!props.refresh);
-        setTimeout(() => document.getElementById("messages-list").scrollTop = document.getElementById("messages-list").scrollHeight, 250);
+        setTimeout(() => document.getElementById("messages-list").scrollTop = document.getElementById("messages-list").scrollHeight, 500);
     }
     const getNewMessages = async (scrollDown,firstLoad) => {
         try {
@@ -362,7 +355,7 @@ function Chat(props) {
                 else {
                     setMessages([...messages, ...mexs]);
                 }
-                if (scrollDown) setTimeout(() => document.getElementById("messages-list").scrollTop = document.getElementById("messages-list").scrollHeight, 100);
+                if (scrollDown || newMexs.length>0) setTimeout(() => document.getElementById("messages-list").scrollTop = document.getElementById("messages-list").scrollHeight, 500);
                 setLastTimeout(setTimeout(() => props.setRefresh(!props.refresh), 1500));
                 if (firstLoad) setLoading(false);
             }
@@ -379,7 +372,7 @@ function Chat(props) {
         return () => cleanupFiles("use effect clean ticket id");
     }, [props.ticket.ticketId]);
     useEffect(() => {
-        getNewMessages(loading?false:document.getElementById("messages-list").scrollTop === document.getElementById("messages-list").scrollHeight,false);
+        getNewMessages(/*loading?*/false/*:document.getElementById("messages-list").scrollTop === document.getElementById("messages-list").scrollHeight*/,false);
     }, [props.refresh]);
     return (
         <Row>
