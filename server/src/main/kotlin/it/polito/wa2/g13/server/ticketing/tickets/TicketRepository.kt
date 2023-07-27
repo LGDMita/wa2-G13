@@ -1,5 +1,6 @@
 package it.polito.wa2.g13.server.ticketing.tickets
 
+import it.polito.wa2.g13.server.profiles.Profile
 import it.polito.wa2.g13.server.ticketing.experts.Expert
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
@@ -30,4 +31,8 @@ interface TicketRepository : JpaRepository<Ticket, Long> {
     @Modifying
     @Query("UPDATE Ticket t SET t.expert = null WHERE t.expert = :expert")
     fun clearExpertIdForTicketsWithExpert(@Param("expert") expert: Expert?)
+
+    @Modifying
+    @Query("UPDATE Ticket t SET t.profile = null WHERE t.profile = :profile")
+    fun clearProfileIdForTicketsWithProfiles(@Param("profile") profile: Profile?)
 }

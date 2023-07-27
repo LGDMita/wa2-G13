@@ -18,7 +18,7 @@ import java.util.Date
 class Ticket(
     @ManyToOne
     @JoinColumn(name = "profile_id")
-    var profile: Profile,
+    var profile: Profile?,
     @ManyToOne
     @JoinColumn(name = "ean")
     var product: Product,
@@ -40,7 +40,7 @@ class Ticket(
 
 fun TicketDTO.toTicket(): Ticket {
     val tick = Ticket(
-        profile.toProfile(), product.toProduct(), priorityLevel, expert?.toExpert(), status,
+        profile?.toProfile(), product.toProduct(), priorityLevel, expert?.toExpert(), status,
         creationDate, mutableSetOf(), ticketId
     );
     tick.messages = messages.map { it.toMessage(tick) }.toMutableSet();

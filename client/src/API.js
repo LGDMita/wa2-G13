@@ -196,6 +196,16 @@ const deleteExpert = async (expertId) => {
     }
 };
 
+const deleteCustomer = async (customerId) => {
+    try {
+        console.log(customerId)
+        await apiInstance.delete('/API/profiles/' + customerId);
+    } catch (error) {
+        console.error('Error while deleting expert:', error);
+        throw new Error(error.response.status)
+    }
+};
+
 const modifyExpertWithSector = async (expertId, registrationData, sectorList) => {
     try {
         await apiInstance.put(`/API/modifyExpert/sectors/${expertId}`, {
@@ -455,7 +465,8 @@ const API = {
     getSectors,
     getExpertSectors,
     changePassword,
-    deleteExpert
+    deleteExpert,
+    deleteCustomer
 };
 
 export default API;

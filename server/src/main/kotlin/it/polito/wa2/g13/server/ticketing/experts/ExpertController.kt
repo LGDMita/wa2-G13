@@ -128,8 +128,8 @@ class ExpertController(
     @DeleteMapping("/API/experts/{id}")
     fun deleteExpertById(@PathVariable id: String) {
         log.info("Deleting expert with id: {}", id);
-        ticketService.deleteExpert(id)
         expertService.getExpertById(id) ?: throw ExpertNotFoundException()
+        ticketService.deleteExpert(id)
         authService.deleteUser(id)
         expertService.deleteExpertById(id)
     }

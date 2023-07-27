@@ -45,4 +45,5 @@ interface TicketService {
     fun changeExpert(ticketId: Long, expertId: String): Boolean
 
     fun deleteExpert(expertId: String): Boolean
+    fun deleteCustomer(customerId: String): Boolean
 }

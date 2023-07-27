@@ -2,6 +2,10 @@ package it.polito.wa2.g13.server.profiles
 
 import io.micrometer.observation.annotation.Observed
 import it.polito.wa2.g13.server.jwtAuth.AuthService
+import it.polito.wa2.g13.server.purchase.PurchaseService
+import it.polito.wa2.g13.server.ticketing.experts.ExpertNotFoundException
+import it.polito.wa2.g13.server.ticketing.messages.MessageService
+import it.polito.wa2.g13.server.ticketing.tickets.TicketService
 import jakarta.transaction.Transactional
 import jakarta.validation.Valid
 import lombok.extern.slf4j.Slf4j
@@ -16,7 +20,9 @@ import org.springframework.web.bind.annotation.*
 @Slf4j
 class ProfileController(
     private val profileService: ProfileService,
-    private val authService: AuthService
+    private val authService: AuthService,
+    private val ticketService: TicketService,
+    private val purchaseService: PurchaseService
 ) {
 
     private val log = LoggerFactory.getLogger(ProfileController::class.java)
@@ -51,9 +57,16 @@ class ProfileController(
     fun deleteProfile(
         @PathVariable id: String
     ) {
-        log.info("Deleting profile with id: {}", id)
-        profileService.getProfile(id) ?: throw ProfileNotFoundException()
-        authService.deleteUser(id)
-        profileService.deleteProfile(id)
+        try {
+            log.info("Deleting profile with id: {}", id)
+            profileService.getProfile(id) ?: throw ProfileNotFoundException()
+            ticketService.deleteCustomer(id)
+            purchaseService.deleteCustomer(id)
+            profileService.deleteProfile(id)
+            authService.deleteUser(id)
+        }
+        catch (error: Error) {
+            println(error)
+        }
     }
 }

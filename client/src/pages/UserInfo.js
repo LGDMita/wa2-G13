@@ -11,16 +11,35 @@ import Expert from "../expert";
 import { MdAddCircleOutline, MdRemoveCircleOutline } from 'react-icons/md'
 import SectorsContext from "../context/SectorsContext";
 
-const SuccessAlert = ({ show, onClose }) => {
+const SuccessAlert = ({ show, onClose, message, goToList }) => {
     return (
         <Modal show={show} onHide={onClose}>
             <Modal.Header closeButton>
                 <Modal.Title>Success</Modal.Title>
             </Modal.Header>
-            <Modal.Body>Your password have been successfully changed!</Modal.Body>
+            <Modal.Body>{message}</Modal.Body>
             <Modal.Footer>
                 <Button variant="primary" onClick={onClose}>
                     Close
+                </Button>
+            </Modal.Footer>
+        </Modal>
+    );
+};
+
+const ConfirmDeleteAlert = ({ show, onClose, onConfirm }) => {
+    return (
+        <Modal show={show} onHide={onClose}>
+            <Modal.Header closeButton>
+                <Modal.Title>Confirm Deletion</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>Are you sure you want to delete this profile?</Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={onClose}>
+                    Cancel
+                </Button>
+                <Button variant="danger" onClick={onConfirm}>
+                    Confirm Delete
                 </Button>
             </Modal.Footer>
         </Modal>
@@ -45,6 +64,24 @@ function UserInfoPage(props) {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+    const [message, setMessage] = useState("");
+    const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+
+    const handleDelete = async () => {
+        try {
+            setShowDeleteAlert(false);
+            setLoading(true);
+            await API.deleteCustomer(user.id);
+            setMessage("Profile has been succesfully deleted!");
+            setLoading(false);
+            setShowSuccessAlert(true);
+        }
+        catch (error) {
+            console.error(error);
+            setShowDeleteAlert(false);
+            setError(true);
+        }
+    };
 
     useEffect(() => {
         if (!user.logged) {
@@ -105,6 +142,7 @@ function UserInfoPage(props) {
         try {
             await API.changePassword(user.id, user.username, oldPassword, newPassword);
             setErrorPassword('');
+            setMessage("Password has been successfully modified!");
             setShowSuccessAlert(true);
         } catch (error) {
             setErrorPassword(error);
@@ -124,7 +162,8 @@ function UserInfoPage(props) {
             return (
                 <div className="user-info-container">
                     <Container className="user-info">
-                        {showSuccessAlert && <SuccessAlert show={showSuccessAlert} onClose={() => setShowSuccessAlert(false)} />}
+                        {showSuccessAlert && <SuccessAlert show={showSuccessAlert} onClose={() => props.handleLogout()} message={message} />}
+                        {showDeleteAlert && <ConfirmDeleteAlert show={showDeleteAlert} onClose={() => setShowDeleteAlert(false)} onConfirm={handleDelete} />}
                         <h1 className="user-info-h1">User Info</h1>
                         <Row className="user-info-row">
                             <Col xs={12} sm={4}>
@@ -168,6 +207,11 @@ function UserInfoPage(props) {
                                 </Col>
                             </Row>
                         )
+                        }
+                        {
+                            user.role === 'customer' ?
+                                <Button className="mx-auto" variant="danger" type="button" onClick={() => setShowDeleteAlert(true)}>Delete</Button>
+                                : <></>
                         }
                     </Container>
 

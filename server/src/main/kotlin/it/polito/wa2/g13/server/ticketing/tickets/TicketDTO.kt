@@ -17,7 +17,7 @@ data class TicketDTO(
     @field:NotNull
     var ticketId: Long?,
     @Valid
-    var profile: ProfileDTO,
+    var profile: ProfileDTO?,
     @Valid
     var product: ProductDTO,
     @field:Min(value = 0, message = "Minimum value for priorityLevel is 0")
@@ -40,7 +40,7 @@ data class TicketDTO(
 }
 
 fun Ticket.toDTO(): TicketDTO {
-    return TicketDTO(getId(), profile.toDTO(), product.toDTO(), priorityLevel, expert?.toDTO(), status, creationDate,
+    return TicketDTO(getId(), profile?.toDTO(), product.toDTO(), priorityLevel, expert?.toDTO(), status, creationDate,
         messages.map { m -> m.toDTO() }.toMutableSet()
     )
 }

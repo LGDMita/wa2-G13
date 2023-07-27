@@ -31,7 +31,7 @@ class TicketController(
     @GetMapping("/API/tickets")
     fun getTickets(): List<Ticket>? {
         log.info("Request all tickets")
-        return ticketService.getTickets()
+        return ticketService.getTickets().filter { ticket: Ticket -> ticket.profile !== null }
     }
 
     @GetMapping("/API/tickets/{ticketId}")
