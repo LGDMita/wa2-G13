@@ -59,7 +59,7 @@ function ExpertsListPage() {
                                     <th>Surname</th>
                                     <th>Email</th>
                                     <th>Username</th>
-                                    <th>Modifica</th>
+                                    <th>Modify</th>
                                 </tr>
                             </thead>
                             <tbody>

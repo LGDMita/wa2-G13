@@ -121,7 +121,7 @@ function ModifyExpertPage() {
     const handleDeleteExpert = async () => {
         try {
             await API.deleteExpert(expertId);
-            setMessage("Expert has been succesfully deleted!");
+            setMessage("Expert has been successfully deleted!");
             setShowSuccessAlert(true);
         }
         catch (error) {

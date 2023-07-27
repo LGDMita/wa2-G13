@@ -244,7 +244,6 @@ function UserInfoPage(props) {
                                         setLoading(false)
                                         window.alert("Modifications correctly saved. LOGIN is required!")
                                         props.handleLogout()
-                                        //navigate("/login")
                                     } catch (error) {
                                         setError(error);
                                         setLoading(false);
@@ -271,18 +270,18 @@ function UserInfoPage(props) {
                                             name="name" required value={name}
                                             onChange={e => setName(e.target.value)} />
                                     </Form.Group>
-                                    <Form.Group className="mb-5">
+                                    <Form.Group className="mb-4">
                                         <Form.Label style={{ fontWeight: "bolder" }}>Surname : </Form.Label>
                                         <Form.Control type="text"
                                             placeholder="insert the new surname or confirm the old one"
                                             name="surname" required value={surname}
                                             onChange={e => setSurname(e.target.value)} />
                                     </Form.Group>
-                                    <Button variant="success" type="submit">Change info</Button>
+                                    <Button className="mb-5" variant="success" type="submit">Change info</Button>
                                     {error !== "" ? <Alert className="my-3" variant="danger">Error during modification: {error.message}</Alert> : <></>}
                                 </Form>
                                 <br />
-                                <h5>Change your password</h5>
+                                <h4 className="mb-3">Change your password</h4>
                                 <Form>
                                     <Form.Group className="mb-4">
                                         <Form.Label style={{ fontWeight: "bolder" }}>Old password : </Form.Label>
@@ -298,14 +297,14 @@ function UserInfoPage(props) {
                                             name="new-password" required
                                             onChange={e => setNewPassword(e.target.value)} />
                                     </Form.Group>
-                                    <Form.Group className="mb-5">
+                                    <Form.Group className="mb-4">
                                         <Form.Label style={{ fontWeight: "bolder" }}>Confirm password : </Form.Label>
                                         <Form.Control type="password"
                                             placeholder="Confirm your new password"
                                             name="confirm-password" required
                                             onChange={e => setConfirmPassword(e.target.value)} />
                                     </Form.Group>
-                                    <Button variant="success" type="button" onClick={handleChangePassword}>Change new password</Button>
+                                    <Button variant="success" type="button" onClick={handleChangePassword}>Set new password</Button>
                                     {errorPassword !== "" ? <Alert className="my-3" variant="danger">Error during password change: {errorPassword.message}</Alert> : <></>}
                                 </Form>
                             </div>
