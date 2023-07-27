@@ -3,10 +3,12 @@ package it.polito.wa2.g13.server.ticketing.experts
 
 import io.micrometer.observation.annotation.Observed
 import it.polito.wa2.g13.server.jwtAuth.AuthService
+import it.polito.wa2.g13.server.ticketing.messages.MessageService
 import it.polito.wa2.g13.server.ticketing.sectors.SectorDTO
 import it.polito.wa2.g13.server.ticketing.sectors.SectorNotFoundException
 import it.polito.wa2.g13.server.ticketing.sectors.SectorService
 import it.polito.wa2.g13.server.ticketing.sectors.SectorsNotFoundException
+import it.polito.wa2.g13.server.ticketing.tickets.TicketService
 import jakarta.transaction.Transactional
 import jakarta.validation.Valid
 import lombok.extern.slf4j.Slf4j
@@ -20,7 +22,8 @@ import org.springframework.web.bind.annotation.*
 class ExpertController(
     private val expertService: ExpertService,
     private val sectorService: SectorService,
-    private val authService: AuthService
+    private val authService: AuthService,
+    private val ticketService: TicketService
 ) {
 
     private val log = LoggerFactory.getLogger(ExpertController::class.java)
@@ -124,7 +127,8 @@ class ExpertController(
     @Transactional
     @DeleteMapping("/API/experts/{id}")
     fun deleteExpertById(@PathVariable id: String) {
-        log.info("Deleting expert with id: {}", id)
+        log.info("Deleting expert with id: {}", id);
+        ticketService.deleteExpert(id)
         expertService.getExpertById(id) ?: throw ExpertNotFoundException()
         authService.deleteUser(id)
         expertService.deleteExpertById(id)

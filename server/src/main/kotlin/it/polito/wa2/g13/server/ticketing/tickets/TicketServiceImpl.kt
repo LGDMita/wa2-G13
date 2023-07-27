@@ -173,4 +173,12 @@ class TicketServiceImpl(
         return true
     }
 
+    override fun deleteExpert(expertId: String): Boolean {
+        val expert = expertRepository.findByIdOrNull((expertId)) ?: throw ExpertNotFoundException()
+
+        ticketRepository.clearExpertIdForTicketsWithExpert(expert)
+
+        return true
+    }
+
 }

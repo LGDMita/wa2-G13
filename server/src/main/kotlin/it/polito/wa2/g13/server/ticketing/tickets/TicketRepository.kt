@@ -1,10 +1,13 @@
 package it.polito.wa2.g13.server.ticketing.tickets
 
+import it.polito.wa2.g13.server.ticketing.experts.Expert
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 import java.util.*
+
 
 @Repository
 interface TicketRepository : JpaRepository<Ticket, Long> {
@@ -23,4 +26,8 @@ interface TicketRepository : JpaRepository<Ticket, Long> {
         @Param("status") status: String?, @Param("creationDateStart") creationDateStart: Date?,
         @Param("creationDateStop") creationDateStop: Date?
     ): List<Ticket>
+
+    @Modifying
+    @Query("UPDATE Ticket t SET t.expert = null WHERE t.expert = :expert")
+    fun clearExpertIdForTicketsWithExpert(@Param("expert") expert: Expert?)
 }
